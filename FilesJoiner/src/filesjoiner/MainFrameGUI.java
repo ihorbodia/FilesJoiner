@@ -33,9 +33,9 @@ public class MainFrameGUI extends javax.swing.JFrame {
         btnProcessFiles = new javax.swing.JButton();
         lblUrlsCount = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
-        btnRemoveDuplicates = new javax.swing.JButton();
         dropPane1 = new filesjoiner.DropPane();
         lblUrlsCountData = new javax.swing.JLabel();
+        cbRemoveDuplicates = new javax.swing.JCheckBox();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -49,17 +49,11 @@ public class MainFrameGUI extends javax.swing.JFrame {
 
         lblUrlsCount.setText("URLs count:");
 
-        btnRemoveDuplicates.setText("Remove duplicates");
-        btnRemoveDuplicates.setMargin(new java.awt.Insets(5, 5, 5, 5));
-        btnRemoveDuplicates.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnRemoveDuplicatesActionPerformed(evt);
-            }
-        });
-
         dropPane1.setName(""); // NOI18N
 
         lblUrlsCountData.setText("0");
+
+        cbRemoveDuplicates.setText("Remove duplicates");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -82,8 +76,8 @@ public class MainFrameGUI extends javax.swing.JFrame {
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                                 .addComponent(lblUrlsCountData)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(btnRemoveDuplicates)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(cbRemoveDuplicates)
+                                .addGap(18, 18, 18)
                                 .addComponent(btnProcessFiles)
                                 .addGap(5, 5, 5))))))
         );
@@ -97,16 +91,15 @@ public class MainFrameGUI extends javax.swing.JFrame {
                 .addGap(0, 0, 0)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btnProcessFiles)
-                    .addComponent(btnRemoveDuplicates)
                     .addComponent(lblUrlsCount)
-                    .addComponent(lblUrlsCountData))
+                    .addComponent(lblUrlsCountData)
+                    .addComponent(cbRemoveDuplicates))
                 .addGap(0, 0, 0))
         );
 
         btnProcessFiles.getAccessibleContext().setAccessibleName("btnProcessFiles");
         lblUrlsCount.getAccessibleContext().setAccessibleName("urlsCountLabel");
         jLabel2.getAccessibleContext().setAccessibleName("urlsCountLabelData");
-        btnRemoveDuplicates.getAccessibleContext().setAccessibleName("btnRemoveDuplicates");
         dropPane1.getAccessibleContext().setAccessibleName("");
 
         pack();
@@ -116,11 +109,6 @@ public class MainFrameGUI extends javax.swing.JFrame {
         // TODO add your handling code here:
         System.out.print("Process files action performed");
     }//GEN-LAST:event_btnProcessFilesActionPerformed
-
-    private void btnRemoveDuplicatesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRemoveDuplicatesActionPerformed
-        // TODO add your handling code here:
-        System.out.print("Remove duplicates action performed");
-    }//GEN-LAST:event_btnRemoveDuplicatesActionPerformed
 
     /**
      * @param args the command line arguments
@@ -159,7 +147,7 @@ public class MainFrameGUI extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnProcessFiles;
-    private javax.swing.JButton btnRemoveDuplicates;
+    private javax.swing.JCheckBox cbRemoveDuplicates;
     private filesjoiner.DropPane dropPane1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel lblUrlsCount;

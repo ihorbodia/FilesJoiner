@@ -42,8 +42,8 @@
                               <EmptySpace type="unrelated" max="-2" attributes="0"/>
                               <Component id="lblUrlsCountData" min="-2" max="-2" attributes="0"/>
                               <EmptySpace max="32767" attributes="0"/>
-                              <Component id="btnRemoveDuplicates" min="-2" max="-2" attributes="0"/>
-                              <EmptySpace max="-2" attributes="0"/>
+                              <Component id="cbRemoveDuplicates" min="-2" max="-2" attributes="0"/>
+                              <EmptySpace type="separate" max="-2" attributes="0"/>
                               <Component id="btnProcessFiles" min="-2" max="-2" attributes="0"/>
                               <EmptySpace min="-2" pref="5" max="-2" attributes="0"/>
                           </Group>
@@ -63,9 +63,9 @@
               <EmptySpace min="0" pref="0" max="-2" attributes="0"/>
               <Group type="103" groupAlignment="3" attributes="0">
                   <Component id="btnProcessFiles" alignment="3" min="-2" max="-2" attributes="0"/>
-                  <Component id="btnRemoveDuplicates" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="lblUrlsCount" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="lblUrlsCountData" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="cbRemoveDuplicates" alignment="3" min="-2" max="-2" attributes="0"/>
               </Group>
               <EmptySpace min="0" pref="0" max="-2" attributes="0"/>
           </Group>
@@ -100,20 +100,6 @@
         <Property name="AccessibleContext.accessibleName" type="java.lang.String" value="urlsCountLabelData"/>
       </AccessibilityProperties>
     </Component>
-    <Component class="javax.swing.JButton" name="btnRemoveDuplicates">
-      <Properties>
-        <Property name="text" type="java.lang.String" value="Remove duplicates"/>
-        <Property name="margin" type="java.awt.Insets" editor="org.netbeans.beaninfo.editors.InsetsEditor">
-          <Insets value="[5, 5, 5, 5]"/>
-        </Property>
-      </Properties>
-      <AccessibilityProperties>
-        <Property name="AccessibleContext.accessibleName" type="java.lang.String" value="btnRemoveDuplicates"/>
-      </AccessibilityProperties>
-      <Events>
-        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnRemoveDuplicatesActionPerformed"/>
-      </Events>
-    </Component>
     <Component class="filesjoiner.DropPane" name="dropPane1">
       <Properties>
         <Property name="name" type="java.lang.String" value="" noResource="true"/>
@@ -125,6 +111,11 @@
     <Component class="javax.swing.JLabel" name="lblUrlsCountData">
       <Properties>
         <Property name="text" type="java.lang.String" value="0"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JCheckBox" name="cbRemoveDuplicates">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Remove duplicates"/>
       </Properties>
     </Component>
   </SubComponents>

@@ -54,7 +54,6 @@ public class DropPane extends JPanel {
         table.setModel(tm);
         table.setFillsViewportHeight(true);
         table.setDefaultEditor(Object.class, null);
-        //table.setPreferredSize(new Dimension(1500, 300));
         
         this.setLayout(new GridLayout());
         Border padding = BorderFactory.createEmptyBorder(0, 0, 0, 0);
