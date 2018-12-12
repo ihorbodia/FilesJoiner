@@ -5,6 +5,12 @@
  */
 package filesjoiner;
 
+import java.awt.EventQueue;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
+
 /**
  *
  * @author ibodia
@@ -15,8 +21,24 @@ public class FilesJoiner {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        MainFrameGUI gui = new MainFrameGUI();
-        gui.setVisible(true);
+        EventQueue.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    try {
+                        UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+                    } catch (UnsupportedLookAndFeelException ex) {
+                        Logger.getLogger(FilesJoiner.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                } catch (ClassNotFoundException | InstantiationException | IllegalAccessException ex) {
+                }
+                MainFrameGUI gui = new MainFrameGUI();
+                gui.setTitle("Files joiner");
+                gui.setResizable(false);
+                gui.setVisible(true);
+            }
+        });
+        
         // TODO code application logic here
     }
     
