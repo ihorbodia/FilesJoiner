@@ -30,23 +30,33 @@ public class MainFrameGUI extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        jButton1 = new javax.swing.JButton();
+        btnProcessFiles = new javax.swing.JButton();
         lblUrlsCount = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
-        jButton2 = new javax.swing.JButton();
+        btnRemoveDuplicates = new javax.swing.JButton();
         dropPane1 = new filesjoiner.DropPane();
         lblUrlsCountData = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
-        jButton1.setText("Process files");
+        btnProcessFiles.setText("Process files");
+        btnProcessFiles.setMargin(new java.awt.Insets(5, 5, 5, 5));
+        btnProcessFiles.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnProcessFilesActionPerformed(evt);
+            }
+        });
 
         lblUrlsCount.setText("URLs count:");
 
-        jButton2.setText("Remove duplicates");
+        btnRemoveDuplicates.setText("Remove duplicates");
+        btnRemoveDuplicates.setMargin(new java.awt.Insets(5, 5, 5, 5));
+        btnRemoveDuplicates.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnRemoveDuplicatesActionPerformed(evt);
+            }
+        });
 
-        dropPane1.setMaximumSize(new java.awt.Dimension(400, 500));
-        dropPane1.setMinimumSize(new java.awt.Dimension(400, 500));
         dropPane1.setName(""); // NOI18N
 
         lblUrlsCountData.setText("0");
@@ -56,51 +66,61 @@ public class MainFrameGUI extends javax.swing.JFrame {
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
+                .addGap(5, 5, 5)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(dropPane1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addContainerGap())
+                        .addGap(5, 5, 5))
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(lblUrlsCount)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(layout.createSequentialGroup()
                                 .addGap(915, 915, 915)
                                 .addComponent(jLabel2)
-                                .addContainerGap(12, Short.MAX_VALUE))
+                                .addContainerGap(13, Short.MAX_VALUE))
                             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                                 .addComponent(lblUrlsCountData)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(jButton2)
+                                .addComponent(btnRemoveDuplicates)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jButton1)
-                                .addContainerGap())))))
+                                .addComponent(btnProcessFiles)
+                                .addGap(5, 5, 5))))))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
+                .addGap(5, 5, 5)
                 .addComponent(dropPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 500, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGap(5, 5, 5)
                 .addComponent(jLabel2)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGap(0, 0, 0)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jButton1)
-                    .addComponent(jButton2)
+                    .addComponent(btnProcessFiles)
+                    .addComponent(btnRemoveDuplicates)
                     .addComponent(lblUrlsCount)
                     .addComponent(lblUrlsCountData))
-                .addContainerGap())
+                .addGap(0, 0, 0))
         );
 
-        jButton1.getAccessibleContext().setAccessibleName("btnProcessFiles");
+        btnProcessFiles.getAccessibleContext().setAccessibleName("btnProcessFiles");
         lblUrlsCount.getAccessibleContext().setAccessibleName("urlsCountLabel");
         jLabel2.getAccessibleContext().setAccessibleName("urlsCountLabelData");
-        jButton2.getAccessibleContext().setAccessibleName("btnRemoveDuplicates");
+        btnRemoveDuplicates.getAccessibleContext().setAccessibleName("btnRemoveDuplicates");
         dropPane1.getAccessibleContext().setAccessibleName("");
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+    private void btnProcessFilesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnProcessFilesActionPerformed
+        // TODO add your handling code here:
+        System.out.print("Process files action performed");
+    }//GEN-LAST:event_btnProcessFilesActionPerformed
+
+    private void btnRemoveDuplicatesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRemoveDuplicatesActionPerformed
+        // TODO add your handling code here:
+        System.out.print("Remove duplicates action performed");
+    }//GEN-LAST:event_btnRemoveDuplicatesActionPerformed
 
     /**
      * @param args the command line arguments
@@ -138,9 +158,9 @@ public class MainFrameGUI extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btnProcessFiles;
+    private javax.swing.JButton btnRemoveDuplicates;
     private filesjoiner.DropPane dropPane1;
-    private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton2;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel lblUrlsCount;
     private javax.swing.JLabel lblUrlsCountData;
