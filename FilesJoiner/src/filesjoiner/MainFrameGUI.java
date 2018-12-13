@@ -20,7 +20,7 @@ public class MainFrameGUI extends javax.swing.JFrame {
     public MainFrameGUI() {
         initComponents();
     }
-
+    
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -108,6 +108,7 @@ public class MainFrameGUI extends javax.swing.JFrame {
     private void btnProcessFilesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnProcessFilesActionPerformed
         // TODO add your handling code here:
         System.out.print("Process files action performed");
+        LogicSingleton.getLogic().StartRun();
     }//GEN-LAST:event_btnProcessFilesActionPerformed
 
     /**

@@ -102,6 +102,7 @@ public class DropPane extends JPanel {
                                     }
                                 }
                             }
+                            LogicSingleton.getLogic().initFilesList(fileList);
                         }
                     } catch (IOException ex) {
                         Logger.getLogger(DropPane.class.getName()).log(Level.SEVERE, null, ex);
