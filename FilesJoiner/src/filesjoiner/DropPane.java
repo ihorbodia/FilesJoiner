@@ -78,9 +78,10 @@ public class DropPane extends JPanel {
                 if (dtde.isDataFlavorSupported(DataFlavor.javaFileListFlavor)) {
                     dtde.acceptDrop(DnDConstants.ACTION_COPY_OR_MOVE);
                     Transferable t = dtde.getTransferable();
-                    ArrayList<File> fileList = null;
+                    ArrayList<ExtendedFile> fileList = null;
+                    ArrayList<ExtendedFile> fileListToTransfer = new ArrayList<ExtendedFile>();
                     try {
-                        ArrayList<ArrayList<File>> arr = new ArrayList(Arrays.asList(t.getTransferData(DataFlavor.javaFileListFlavor)));
+                        ArrayList<ArrayList<ExtendedFile>> arr = new ArrayList(Arrays.asList(t.getTransferData(DataFlavor.javaFileListFlavor)));
                         fileList = new ArrayList(arr.get(0));
                         if (fileList.size() > 0) {
                             table.clearSelection();
@@ -90,6 +91,7 @@ public class DropPane extends JPanel {
                             for (Object value : fileList) {
                                 if (value instanceof File) {
                                     File f = (File) value;
+                                    fileListToTransfer.add(new ExtendedFile(f.getAbsolutePath()));
                                     if (FilenameUtils.getExtension(f.getAbsolutePath()).equalsIgnoreCase("csv")
                                             || FilenameUtils.getExtension(f.getAbsolutePath()).equalsIgnoreCase("txt")
                                             || FilenameUtils.getExtension(f.getAbsolutePath()).equalsIgnoreCase("xlsx")) {
@@ -102,7 +104,7 @@ public class DropPane extends JPanel {
                                     }
                                 }
                             }
-                            LogicSingleton.getLogic().initFilesList(fileList);
+                            LogicSingleton.getLogic().initFilesList(fileListToTransfer);
                         }
                     } catch (IOException ex) {
                         Logger.getLogger(DropPane.class.getName()).log(Level.SEVERE, null, ex);
