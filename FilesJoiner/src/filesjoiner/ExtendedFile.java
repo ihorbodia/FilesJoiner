@@ -24,4 +24,6 @@ public class ExtendedFile extends File {
     public Map<String, Integer> headersPositionsTo;
     public Map<String, Integer> headersPositionsFrom;
     public boolean hasHeader;
+    public char separator = ',';
+    public String[] headers;
 }

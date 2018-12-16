@@ -11,21 +11,19 @@ import java.io.File;
 import java.io.IOException;
 import java.io.Reader;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
-import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  *
@@ -47,25 +45,15 @@ public class FilesJoinerLogic {
     }
     
     public void StartRun() {
-        
         if (files == null) {
             return;
         }
         initHeaders();
+        detectHeaders();
         for (ExtendedFile file : files) {
-            try {
-                Reader reader = Files.newBufferedReader(Paths.get(file.getAbsolutePath()));
-                CSVReader csvReader = new CSVReader(reader);
-                String[] nextRecord;
-                while ((nextRecord = csvReader.readNext()) != null) {
-                       normalizeHeaders(nextRecord, file); 
-                       break;
-                }
-            } catch (IOException ex) {
-                Logger.getLogger(FilesJoinerLogic.class.getName()).log(Level.SEVERE, null, ex);
-            }
+            normalizeHeaders(file);
         }
-        scrapeDataFromFile();
+        scrapeDataFromFiles();
         saveDataToFile();
     }
     
@@ -86,9 +74,11 @@ public class FilesJoinerLogic {
             sb.append("\"" + entry.getKey() + "\"");
             sb.append(",");
         }
+        sb.append("\n");
         for (String[] row : resultList) {
             for (String string : row) {
-                sb.append(string);
+                String content = StringUtils.isEmpty(string) ? "" : string;
+                sb.append("\"" + content + "\"");
                 sb.append(",");
             }
             sb.append("\n");
@@ -97,7 +87,6 @@ public class FilesJoinerLogic {
           File f = new File(".");
           String path = f.getAbsolutePath();
         try {
-            //Files.createDirectories(Paths.get(f.getParentFile().getAbsolutePath()));
             String pathToSave = path.replace(".", "")+"test.csv";
             Files.write(Paths.get(pathToSave), sb.toString().getBytes(), StandardOpenOption.WRITE, StandardOpenOption.CREATE);
         } catch (IOException ex) {
@@ -135,12 +124,12 @@ public class FilesJoinerLogic {
         return sortedMap;
     }
     
-    private void scrapeDataFromFile() {
+    private void scrapeDataFromFiles() {
       resultList = new ArrayList<String[]>();
       for (ExtendedFile file : files) {
             try {
                 Reader reader = Files.newBufferedReader(Paths.get(file.getAbsolutePath()));
-                CSVReader csvReader = new CSVReader(reader);
+                CSVReader csvReader = new CSVReader(reader, file.separator);
                 String[] nextRecord;
                 int counter = 0;
                 while ((nextRecord = csvReader.readNext()) != null) {
@@ -164,13 +153,42 @@ public class FilesJoinerLogic {
         }
     }
     
-    private void normalizeHeaders(String[] headerRow, ExtendedFile file){
-        if (headerRow.length == 1) {
-            file.hasHeader = false;
-            return;
+    private void detectHeaders() {
+        Reader reader = null;
+        CSVReader csvReader = null;
+        try {
+            for (ExtendedFile file : files) {
+                reader = Files.newBufferedReader(Paths.get(file.getAbsolutePath()));
+                csvReader = new CSVReader(reader);
+                String[] nextRecord;
+                while ((nextRecord = csvReader.readNext()) != null) {
+                    if (nextRecord.length == 1) {
+                        String str = nextRecord[0];
+                        if (str.split("\t").length > 1) {
+                            file.separator = "\t".charAt(0);
+                            file.headers = str.split("\t");
+                        }
+                        if (str.contains("http") || str.contains("www.")) {
+                            file.separator = ",".charAt(0);
+                            file.headers = new String[] {"Website"};
+                            file.hasHeader = false;
+                        }
+                    }
+                    else {
+                        file.separator = ",".charAt(0);
+                        file.headers = nextRecord;
+                    }
+                    break;
+                }
+            }
+        } catch (IOException ex) {
+            Logger.getLogger(FilesJoinerLogic.class.getName()).log(Level.SEVERE, null, ex);
         }
+    }
+    
+    private void normalizeHeaders(ExtendedFile file){
         int counter = 0;
-        for (String header : headerRow) {
+        for (String header : file.headers) {
             file.headersPositionsFrom.put(header, counter);
             counter++;
             Object value = null;
