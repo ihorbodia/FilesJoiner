@@ -14,6 +14,8 @@ import java.util.Map;
  * @author Ihor
  */
 public class ExtendedFile extends File {
+
+    static ExtendedFile DEFAULT;
     
     public ExtendedFile(String pathname) {
         super(pathname);
