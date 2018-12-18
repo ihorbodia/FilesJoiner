@@ -7,11 +7,7 @@ package filesjoiner;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
 import java.awt.GridLayout;
-import java.awt.List;
 import java.awt.Point;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
@@ -94,7 +90,8 @@ public class DropPane extends JPanel {
                                     fileListToTransfer.add(new ExtendedFile(f.getAbsolutePath()));
                                     if (FilenameUtils.getExtension(f.getAbsolutePath()).equalsIgnoreCase("csv")
                                             || FilenameUtils.getExtension(f.getAbsolutePath()).equalsIgnoreCase("txt")
-                                            || FilenameUtils.getExtension(f.getAbsolutePath()).equalsIgnoreCase("xlsx")) {
+                                            || FilenameUtils.getExtension(f.getAbsolutePath()).equalsIgnoreCase("xlsx")
+                                            || FilenameUtils.getExtension(f.getAbsolutePath()).equalsIgnoreCase("xls")) {
                                         if (row < 0) {
                                             model.addRow(new Object[]{f.getName(), FilenameUtils.getExtension(f.getAbsolutePath()), f.length()});
                                         } else {

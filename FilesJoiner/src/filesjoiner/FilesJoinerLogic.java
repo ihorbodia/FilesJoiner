@@ -12,6 +12,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
+import java.io.StringReader;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
@@ -25,12 +26,7 @@ import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.ss.usermodel.Workbook;
-import org.apache.poi.ss.usermodel.WorkbookFactory;
 
 /**
  *
@@ -60,14 +56,7 @@ public class FilesJoinerLogic {
         for (ExtendedFile file : files) {
             normalizeHeaders(file);
         }
-        ExtendedFile selectedFile = files.stream()
-                .filter((file) -> 
-                        FilenameUtils.getExtension(file.getAbsolutePath()).equalsIgnoreCase("xlsx") || 
-                        FilenameUtils.getExtension(file.getAbsolutePath()).equalsIgnoreCase("xls"))
-                .findFirst()
-                .orElse(ExtendedFile.DEFAULT);
-        convertExceltoCSV(selectedFile);
-        scrapeDataFromFiles();
+        scrapeDataFromCsvFiles();
         saveDataToFile();
     }
     
@@ -97,41 +86,12 @@ public class FilesJoinerLogic {
             }
             sb.append("\n");
         }
-        
           File f = new File(".");
           String path = f.getAbsolutePath();
         try {
             String pathToSave = path.replace(".", "")+"Merged data.csv";
+            Files.deleteIfExists(Paths.get(path.replace(".", "")+"Merged data.csv"));
             Files.write(Paths.get(pathToSave), sb.toString().getBytes(), StandardOpenOption.WRITE, StandardOpenOption.CREATE);
-        } catch (IOException ex) {
-            Logger.getLogger(FilesJoinerLogic.class.getName()).log(Level.SEVERE, null, ex);
-        }
-    }
-    
-    private static void echoAsCSV(Sheet sheet) {
-        Row row = null;
-        for (int i = 0; i < sheet.getLastRowNum(); i++) {
-            row = sheet.getRow(i);
-            for (int j = 0; j < row.getLastCellNum(); j++) {
-                System.out.print("\"" + row.getCell(j) + "\";");
-            }
-            System.out.println();
-        }
-    }
-    
-    private void convertExceltoCSV(File xlsxFile) {
-       InputStream inp = null;
-        try {
-            inp = new FileInputStream(xlsxFile);
-            Workbook wb = WorkbookFactory.create(inp);
-
-            for(int i=0;i<wb.getNumberOfSheets();i++) {
-                System.out.println(wb.getSheetAt(i).getSheetName());
-                echoAsCSV(wb.getSheetAt(i));
-            }
-            inp.close();
-        } catch (FileNotFoundException ex) {
-            Logger.getLogger(FilesJoinerLogic.class.getName()).log(Level.SEVERE, null, ex);
         } catch (IOException ex) {
             Logger.getLogger(FilesJoinerLogic.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -167,14 +127,13 @@ public class FilesJoinerLogic {
         return sortedMap;
     }
     
-    private void scrapeDataFromFiles() {
+    private void scrapeDataFromCsvFiles() {
       resultList = new ArrayList<String[]>();
       for (ExtendedFile file : files) {
             try {
-                Reader reader = Files.newBufferedReader(Paths.get(file.getAbsolutePath()));
-                CSVReader csvReader = new CSVReader(reader, file.separator);
                 String[] nextRecord;
                 int counter = 0;
+                CSVReader csvReader = file.getCsvReader();
                 while ((nextRecord = csvReader.readNext()) != null) {
                     if (counter == 0 && file.hasHeader) {
                         counter = -1;
@@ -197,13 +156,10 @@ public class FilesJoinerLogic {
     }
     
     private void detectHeaders() {
-        Reader reader = null;
-        CSVReader csvReader = null;
         try {
             for (ExtendedFile file : files) {
-                reader = Files.newBufferedReader(Paths.get(file.getAbsolutePath()));
-                csvReader = new CSVReader(reader);
                 String[] nextRecord;
+                CSVReader csvReader = file.getCsvReader();
                 while ((nextRecord = csvReader.readNext()) != null) {
                     if (nextRecord.length == 1) {
                         String str = nextRecord[0];
@@ -234,14 +190,15 @@ public class FilesJoinerLogic {
         if (file.headers == null) {
             return;
         }
-        for (String header : file.headers) {
-            file.headersPositionsFrom.put(header, counter);
+        for (String fileHeader : file.headers) {
+            file.headersPositionsFrom.put(fileHeader, counter);
             counter++;
             Object value = null;
             for (Map.Entry<String, Integer> entry : headers.entrySet()) {
-                if (entry.getKey().toLowerCase().contains(header.replace(" ", "").toLowerCase())) {
+                if (fileHeader.replace(" ", "").toLowerCase().contains(entry.getKey().toLowerCase()) ||
+                    entry.getKey().replace(" ", "").toLowerCase().contains(fileHeader.toLowerCase())) {
                     value = entry;
-                    file.headersPositionsTo.put(header, entry.getValue());
+                    file.headersPositionsTo.put(fileHeader, entry.getValue());
                     break;
                 }
             }
@@ -255,8 +212,8 @@ public class FilesJoinerLogic {
                         maxEntry = entry;
                     }
                 }
-                file.headersPositionsTo.put(header, maxEntry.getValue() + 1);
-                headers.put(header, maxEntry.getValue() + 1);
+                file.headersPositionsTo.put(fileHeader, maxEntry.getValue() + 1);
+                headers.put(fileHeader, maxEntry.getValue() + 1);
             }
         }
     }
