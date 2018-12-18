@@ -7,12 +7,7 @@ package filesjoiner;
 
 import com.opencsv.CSVReader;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.Reader;
-import java.io.StringReader;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
@@ -33,43 +28,57 @@ import org.apache.commons.lang3.StringUtils;
  * @author ibodia
  */
 public class FilesJoinerLogic {
+
     ArrayList<ExtendedFile> files;
+    MainFrameGUI parent;
     ArrayList<String[]> resultList;
     HashMap<String, Integer> headers = new HashMap<String, Integer>();
-    
-    public FilesJoinerLogic(){
-        
+
+    public FilesJoinerLogic(MainFrameGUI parent) {
+        this.parent = parent;
     }
-    
+
     public void initFilesList(ArrayList<ExtendedFile> inputFiles) {
         if (inputFiles != null) {
             files = inputFiles;
         }
     }
-    
+
     public void StartRun() {
         if (files == null) {
             return;
         }
+        headers = new HashMap<String, Integer>();
         initHeaders();
         detectHeaders();
         for (ExtendedFile file : files) {
             normalizeHeaders(file);
         }
         scrapeDataFromCsvFiles();
+        countItems();
         saveDataToFile();
     }
-    
+
+    private void countItems() {
+        ArrayList<String> urls = new ArrayList<String>();
+        for (String[] row : resultList) {
+            if (StringUtils.isEmpty(row[0])) {
+                urls.add(row[0]);
+            }
+        }
+        parent.getlblUrlsCountData().setText(Integer.toString(urls.size()));
+    }
+
     public static <String, Integer> Entry<String, Integer> getKeysByValue(Map<String, Integer> map, Integer value) {
-    Entry<String, Integer> resEntry = null;
-    for (Entry<String, Integer> entry : map.entrySet()) {
+        Entry<String, Integer> resEntry = null;
+        for (Entry<String, Integer> entry : map.entrySet()) {
             if (Objects.equals(value, entry.getValue())) {
                 resEntry = entry;
             }
         }
         return resEntry;
     }
-    
+
     private void saveDataToFile() {
         StringBuilder sb = new StringBuilder();
         HashMap<String, Integer> sortedHeaders = sortHashMapByValues(headers);
@@ -90,17 +99,17 @@ public class FilesJoinerLogic {
             }
             sb.append("\n");
         }
-          File f = new File(".");
-          String path = f.getAbsolutePath();
+        File f = new File(".");
+        String path = f.getAbsolutePath();
         try {
-            String pathToSave = path.replace(".", "")+"Merged data.csv";
-            Files.deleteIfExists(Paths.get(path.replace(".", "")+"Merged data.csv"));
+            String pathToSave = path.replace(".", "") + "Merged data.csv";
+            Files.deleteIfExists(Paths.get(path.replace(".", "") + "Merged data.csv"));
             Files.write(Paths.get(pathToSave), sb.toString().getBytes(), StandardOpenOption.WRITE, StandardOpenOption.CREATE);
         } catch (IOException ex) {
             Logger.getLogger(FilesJoinerLogic.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-    
+
     private LinkedHashMap<String, Integer> sortHashMapByValues(
             HashMap<String, Integer> passedMap) {
         ArrayList<String> mapKeys = new ArrayList<String>(passedMap.keySet());
@@ -130,10 +139,10 @@ public class FilesJoinerLogic {
         }
         return sortedMap;
     }
-    
+
     private void scrapeDataFromCsvFiles() {
-      resultList = new ArrayList<String[]>();
-      for (ExtendedFile file : files) {
+        resultList = new ArrayList<String[]>();
+        for (ExtendedFile file : files) {
             try {
                 String[] nextRecord;
                 int counter = 0;
@@ -158,7 +167,7 @@ public class FilesJoinerLogic {
             }
         }
     }
-    
+
     private void detectHeaders() {
         try {
             for (ExtendedFile file : files) {
@@ -173,11 +182,10 @@ public class FilesJoinerLogic {
                         }
                         if (str.contains("http") || str.contains("www.")) {
                             file.separator = ",".charAt(0);
-                            file.headers = new String[] {"Website"};
+                            file.headers = new String[]{"Website"};
                             file.hasHeader = false;
                         }
-                    }
-                    else {
+                    } else {
                         file.separator = ",".charAt(0);
                         file.headers = nextRecord;
                     }
@@ -188,8 +196,8 @@ public class FilesJoinerLogic {
             Logger.getLogger(FilesJoinerLogic.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-    
-    private void normalizeHeaders(ExtendedFile file){
+
+    private void normalizeHeaders(ExtendedFile file) {
         int counter = 0;
         if (file.headers == null) {
             return;
@@ -199,20 +207,18 @@ public class FilesJoinerLogic {
             counter++;
             Object value = null;
             for (Map.Entry<String, Integer> entry : headers.entrySet()) {
-                if (fileHeader.replace(" ", "").toLowerCase().contains(entry.getKey().toLowerCase()) ||
-                    entry.getKey().replace(" ", "").toLowerCase().contains(fileHeader.toLowerCase())) {
+                if (fileHeader.replace(" ", "").toLowerCase().contains(entry.getKey().toLowerCase())
+                        || entry.getKey().replace(" ", "").toLowerCase().contains(fileHeader.toLowerCase())) {
                     value = entry;
                     file.headersPositionsTo.put(fileHeader, entry.getValue());
                     break;
                 }
             }
-           
+
             if (value == null) {
                 Map.Entry<String, Integer> maxEntry = null;
-                for (Map.Entry<String, Integer> entry : headers.entrySet())
-                {
-                    if (maxEntry == null || entry.getValue().compareTo(maxEntry.getValue()) > 0)
-                    {
+                for (Map.Entry<String, Integer> entry : headers.entrySet()) {
+                    if (maxEntry == null || entry.getValue().compareTo(maxEntry.getValue()) > 0) {
                         maxEntry = entry;
                     }
                 }
@@ -221,7 +227,7 @@ public class FilesJoinerLogic {
             }
         }
     }
-    
+
     private void initHeaders() {
         headers.put("URL", 0);
         headers.put("Email", 1);
@@ -243,5 +249,3 @@ public class FilesJoinerLogic {
         headers.put("Company Size", 17);
     }
 }
-
-

@@ -11,10 +11,15 @@ package filesjoiner;
  */
 public class LogicSingleton {
     private static FilesJoinerLogic logic;
+    private static MainFrameGUI parent;
     public static FilesJoinerLogic getLogic() {
-            if (logic == null) {
-                logic = new FilesJoinerLogic();
+            if (logic == null && parent != null) {
+                logic = new FilesJoinerLogic(parent);
             }
             return logic;
+    }
+    
+    public static void initParent(MainFrameGUI inParent){
+        parent = inParent;
     }
 }

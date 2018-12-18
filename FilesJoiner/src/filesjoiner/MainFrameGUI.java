@@ -5,9 +5,7 @@
  */
 package filesjoiner;
 
-import java.awt.BorderLayout;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
+import javax.swing.JLabel;
 
 /**
  *
@@ -104,9 +102,10 @@ public class MainFrameGUI extends javax.swing.JFrame {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
-
+    
     private void btnProcessFilesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnProcessFilesActionPerformed
         // TODO add your handling code here:
+        
         System.out.print("Process files action performed");
         LogicSingleton.getLogic().StartRun();
     }//GEN-LAST:event_btnProcessFilesActionPerformed
@@ -144,6 +143,13 @@ public class MainFrameGUI extends javax.swing.JFrame {
                 new MainFrameGUI().setVisible(true);
             }
         });
+    }
+    
+    public JLabel getlblUrlsCountData(){
+        if (lblUrlsCountData != null) {
+            return lblUrlsCountData;
+        }
+        return null;
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
