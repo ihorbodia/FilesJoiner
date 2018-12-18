@@ -71,6 +71,8 @@ public class DropPane extends JPanel {
 
             @Override
             public synchronized void drop(DropTargetDropEvent dtde) {
+                tm = new DefaultTableModel(new String[]{"File", "File Type", "Size(Kb)"}, 0);
+                table.setModel(tm);
                 if (dtde.isDataFlavorSupported(DataFlavor.javaFileListFlavor)) {
                     dtde.acceptDrop(DnDConstants.ACTION_COPY_OR_MOVE);
                     Transferable t = dtde.getTransferable();
@@ -93,9 +95,9 @@ public class DropPane extends JPanel {
                                             || FilenameUtils.getExtension(f.getAbsolutePath()).equalsIgnoreCase("xlsx")
                                             || FilenameUtils.getExtension(f.getAbsolutePath()).equalsIgnoreCase("xls")) {
                                         if (row < 0) {
-                                            model.addRow(new Object[]{f.getName(), FilenameUtils.getExtension(f.getAbsolutePath()), f.length()});
+                                            model.addRow(new Object[]{f.getName(), FilenameUtils.getExtension(f.getAbsolutePath()), (int)Math.ceil(f.length() / 1024.0)});
                                         } else {
-                                            model.insertRow(row, new Object[]{f.getName(), FilenameUtils.getExtension(f.getAbsolutePath()), f.length()});
+                                            model.insertRow(row, new Object[]{f.getName(), FilenameUtils.getExtension(f.getAbsolutePath()), (int)Math.ceil(f.length() / 1024.0)});
                                             row++;
                                         }
                                     }

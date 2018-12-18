@@ -73,9 +73,13 @@ public class FilesJoinerLogic {
     private void saveDataToFile() {
         StringBuilder sb = new StringBuilder();
         HashMap<String, Integer> sortedHeaders = sortHashMapByValues(headers);
+        int counter = sortedHeaders.entrySet().size();
         for (Map.Entry<String, Integer> entry : sortedHeaders.entrySet()) {
             sb.append("\"" + entry.getKey() + "\"");
-            sb.append(",");
+            counter--;
+            if (counter != 0) {
+                sb.append(",");
+            }
         }
         sb.append("\n");
         for (String[] row : resultList) {
