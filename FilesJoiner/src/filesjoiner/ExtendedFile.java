@@ -77,13 +77,11 @@ public class ExtendedFile extends File {
     private String echoAsCSV(Sheet sheet) {
         String result = "";
         Row row = null;
-        for (int i = 0; i < sheet.getLastRowNum(); i++) {
+        for (int i = 0; i <= sheet.getLastRowNum(); i++) {
             row = sheet.getRow(i);
             for (int j = 0; j < row.getLastCellNum(); j++) {
-                //System.out.print("\"" + row.getCell(j) + "\",");
                 result += "\"" + row.getCell(j) + "\",";
             }
-            //System.out.println();
             result += "\n";
         }
         return result;
