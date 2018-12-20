@@ -11,12 +11,14 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
@@ -49,6 +51,7 @@ public class FilesJoinerLogic {
         if (files == null) {
             return;
         }
+        parent.getBtnProcessFiles().setEnabled(false);
         headers = new HashMap<String, Integer>();
         initHeaders();
         detectHeaders();
@@ -56,14 +59,18 @@ public class FilesJoinerLogic {
             normalizeHeaders(file);
         }
         scrapeDataFromCsvFiles();
+        if (parent.getCbRemoveDuplicates().isSelected()) {
+            removeDuplicates();
+        }
         countItems();
         saveDataToFile();
+        parent.getBtnProcessFiles().setEnabled(true);
     }
 
     private void countItems() {
         ArrayList<String> urls = new ArrayList<String>();
         for (String[] row : resultList) {
-            if (StringUtils.isEmpty(row[0])) {
+            if (!StringUtils.isEmpty(row[0])) {
                 urls.add(row[0]);
             }
         }
@@ -103,8 +110,10 @@ public class FilesJoinerLogic {
         File f = new File(".");
         String path = f.getAbsolutePath();
         try {
-            String pathToSave = path.replace(".", "") + "Merged data.csv";
-            Files.deleteIfExists(Paths.get(path.replace(".", "") + "Merged data.csv"));
+            DateFormat sdf = new SimpleDateFormat("yyyyMMdd_HHmmss");
+            Date date = new Date();
+            System.out.println(sdf.format(date));
+            String pathToSave = path.replace(".", "") + "Merged data_"+sdf.format(date)+".csv";
             Files.write(Paths.get(pathToSave), sb.toString().getBytes(), StandardOpenOption.WRITE, StandardOpenOption.CREATE);
         } catch (IOException ex) {
             Logger.getLogger(FilesJoinerLogic.class.getName()).log(Level.SEVERE, null, ex);
@@ -157,8 +166,13 @@ public class FilesJoinerLogic {
                     for (int i = 0; i < headers.size(); i++) {
                         Entry<String, Integer> itemFrom = getKeysByValue(file.headersPositionsFrom, i);
                         if (itemFrom != null) {
-                            Integer index = file.headersPositionsTo.get(itemFrom.getKey());
-                            row[index] = nextRecord[itemFrom.getValue()];
+                            Integer index = 0;
+                            try {
+                                index = file.headersPositionsTo.get(itemFrom.getKey());
+                                row[index] = nextRecord[itemFrom.getValue()];
+                            } catch (Exception ex) {
+                                Logger.getLogger(FilesJoinerLogic.class.getName()).log(Level.SEVERE, null, ex);
+                            }
                         }
                     }
                     resultList.add(row);
@@ -189,6 +203,11 @@ public class FilesJoinerLogic {
                     } else {
                         file.separator = ",".charAt(0);
                         file.headers = nextRecord;
+                    }
+                    for (int i = 0; i < file.headers.length; i++) {
+                        if (file.headers[i].toLowerCase().contains("url")) {
+                            file.headers[i] = "Website";
+                        }
                     }
                     break;
                 }
@@ -233,7 +252,7 @@ public class FilesJoinerLogic {
     }
 
     private void initHeaders() {
-        headers.put("URL", 0);
+        headers.put("Website", 0);
         headers.put("Email", 1);
         headers.put("First Name", 2);
         headers.put("Last Name", 3);
@@ -251,5 +270,38 @@ public class FilesJoinerLogic {
         headers.put("LinkedIn", 15);
         headers.put("VerifyStatus", 16);
         headers.put("Company Size", 17);
+    }
+    
+    private void removeDuplicates() {
+        ArrayList<String[]> result = new ArrayList<String[]>();
+        for (int i = 0; i < resultList.size(); i++) {
+            if (!isContainsSameURL(resultList.get(i), result)) {
+                result.add(resultList.get(i));
+            }
+        }
+        resultList = result;
+    }
+    
+    private boolean isContainsSameURL(String[] from, ArrayList<String[]> result){
+        boolean flag = false;
+        try {
+            if (StringUtils.isEmpty(from[0])) {
+                return true;
+            }
+            for (String[] strings : result) {
+                for (String string : strings) {
+                    if (string == null) {
+                        continue;
+                    }
+                    if (string.equalsIgnoreCase(from[0])) {
+                        flag = true;
+                        return flag;
+                    }
+                }
+            }
+        } catch (NullPointerException ex) {
+            System.out.print(ex);
+        }
+        return flag;
     }
 }

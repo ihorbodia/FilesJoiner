@@ -22,4 +22,8 @@ public class LogicSingleton {
     public static void initParent(MainFrameGUI inParent){
         parent = inParent;
     }
+    
+    public static void nullLogicObject() {
+        logic = null;
+    }
 }

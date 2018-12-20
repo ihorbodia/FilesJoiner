@@ -5,6 +5,8 @@
  */
 package filesjoiner;
 
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 
 /**
@@ -108,6 +110,7 @@ public class MainFrameGUI extends javax.swing.JFrame {
         
         System.out.print("Process files action performed");
         LogicSingleton.getLogic().StartRun();
+        LogicSingleton.nullLogicObject();
     }//GEN-LAST:event_btnProcessFilesActionPerformed
 
     /**
@@ -145,9 +148,23 @@ public class MainFrameGUI extends javax.swing.JFrame {
         });
     }
     
-    public JLabel getlblUrlsCountData(){
+    public JLabel getlblUrlsCountData() {
         if (lblUrlsCountData != null) {
             return lblUrlsCountData;
+        }
+        return null;
+    }
+    
+    public JCheckBox getCbRemoveDuplicates() {
+        if (cbRemoveDuplicates != null) {
+            return cbRemoveDuplicates;
+        }
+        return null;
+    }
+    
+    public JButton getBtnProcessFiles() {
+        if (btnProcessFiles != null) {
+            return btnProcessFiles;
         }
         return null;
     }
