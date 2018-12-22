@@ -32,4 +32,8 @@ public class LogicSingleton {
     public static void setCountToZero() {
         parent.getlblUrlsCountData().setText("0");
     }
+    
+    public static void setOutputPath(String path) {
+        logic.setOutputPath(path);
+    }
 }

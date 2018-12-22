@@ -35,6 +35,7 @@ public class FilesJoinerLogic {
     ArrayList<ExtendedFile> files;
     MainFrameGUI parent;
     ArrayList<String[]> resultList;
+    String outputPath = null;
     HashMap<String, Integer> headers = new HashMap<String, Integer>();
 
     public FilesJoinerLogic(MainFrameGUI parent) {
@@ -51,20 +52,27 @@ public class FilesJoinerLogic {
         if (files == null) {
             return;
         }
-        parent.getBtnProcessFiles().setEnabled(false);
-        headers = new HashMap<String, Integer>();
-        initHeaders();
-        detectHeaders();
-        for (ExtendedFile file : files) {
-            normalizeHeaders(file);
-        }
-        scrapeDataFromCsvFiles();
-        if (parent.getCbRemoveDuplicates().isSelected()) {
-            removeDuplicates();
-        }
-        countItems();
-        saveDataToFile();
-        parent.getBtnProcessFiles().setEnabled(true);
+
+        Thread producerThread = new Thread() {
+            @Override
+            public void run() {
+                LogicSingleton.setCountToZero();
+                headers = new HashMap<String, Integer>();
+                initHeaders();
+                detectHeaders();
+                for (ExtendedFile file : files) {
+                    normalizeHeaders(file);
+                }
+                scrapeDataFromCsvFiles();
+                if (parent.getCbRemoveDuplicates().isSelected()) {
+                    removeDuplicates();
+                }
+                countItems();
+                saveDataToFile();
+                this.interrupt();
+            }
+        };
+        producerThread.start();
     }
 
     private void countItems() {
@@ -107,16 +115,20 @@ public class FilesJoinerLogic {
             }
             sb.append("\n");
         }
-        File f = new File(".");
-        String path = f.getAbsolutePath();
         try {
             DateFormat sdf = new SimpleDateFormat("yyyyMMdd_HHmmss");
             Date date = new Date();
-            System.out.println(sdf.format(date));
-            String pathToSave = path.replace(".", "") + "Merged data_"+sdf.format(date)+".csv";
+            String pathToSave = outputPath.replace(".", "") +File.separator+ "Merged data_"+sdf.format(date)+".csv";
             Files.write(Paths.get(pathToSave), sb.toString().getBytes(), StandardOpenOption.WRITE, StandardOpenOption.CREATE);
+            outputPath = null;
         } catch (IOException ex) {
             Logger.getLogger(FilesJoinerLogic.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
+    public void setOutputPath(String path) {
+        if (outputPath == null) {
+              outputPath = path;
         }
     }
 
@@ -151,6 +163,12 @@ public class FilesJoinerLogic {
     }
 
     private void scrapeDataFromCsvFiles() {
+        Map.Entry<String, Integer> maxEntry = null;
+        for (Map.Entry<String, Integer> entry : headers.entrySet()) {
+            if (maxEntry == null || entry.getValue().compareTo(maxEntry.getValue()) > 0) {
+                maxEntry = entry;
+            }
+        }
         resultList = new ArrayList<String[]>();
         for (ExtendedFile file : files) {
             try {
@@ -162,7 +180,7 @@ public class FilesJoinerLogic {
                         counter = -1;
                         continue;
                     }
-                    String[] row = new String[headers.size()];
+                    String[] row = new String[maxEntry.getValue() + 1];
                     for (int i = 0; i < headers.size(); i++) {
                         Entry<String, Integer> itemFrom = getKeysByValue(file.headersPositionsFrom, i);
                         if (itemFrom != null) {
@@ -184,10 +202,8 @@ public class FilesJoinerLogic {
     }
 
     private void detectHeaders() {
-        ExtendedFile fileq = null;
         try {
             for (ExtendedFile file : files) {
-                fileq = file;
                 String[] nextRecord;
                 CSVReader csvReader = file.getCsvReader();
                 while ((nextRecord = csvReader.readNext()) != null) {

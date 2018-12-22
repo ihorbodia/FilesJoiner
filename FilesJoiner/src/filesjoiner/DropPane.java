@@ -128,6 +128,7 @@ public class DropPane extends JPanel {
         String[] exts = {"xlsx", "xls", "csv", "txt"};
         for (File file : files) {
             if (file.isDirectory()) {
+                LogicSingleton.getLogic().setOutputPath(file.getParentFile().getAbsolutePath());
                 allFiles.addAll(FileUtils.listFiles(file, exts, true));
             }
             else {
