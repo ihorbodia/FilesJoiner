@@ -5,6 +5,8 @@
  */
 package filesjoiner;
 
+import javax.swing.JLabel;
+
 /**
  *
  * @author ibodia
@@ -25,5 +27,9 @@ public class LogicSingleton {
     
     public static void nullLogicObject() {
         logic = null;
+    }
+    
+    public static void setCountToZero() {
+        parent.getlblUrlsCountData().setText("0");
     }
 }

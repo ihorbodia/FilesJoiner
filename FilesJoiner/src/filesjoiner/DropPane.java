@@ -20,6 +20,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.BorderFactory;
@@ -28,6 +29,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.border.Border;
 import javax.swing.table.DefaultTableModel;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 
 /**
@@ -39,7 +41,7 @@ public class DropPane extends JPanel {
     private JTable table;
     private JScrollPane scroll;
     private DefaultTableModel tm = new DefaultTableModel(new String[]{"File", "File Type", "Size(Kb)"}, 0);
-
+    
     public DropPane() {
         table = new JTable();
         table.setShowGrid(true);
@@ -81,7 +83,9 @@ public class DropPane extends JPanel {
                     try {
                         ArrayList<ArrayList<ExtendedFile>> arr = new ArrayList(Arrays.asList(t.getTransferData(DataFlavor.javaFileListFlavor)));
                         fileList = new ArrayList(arr.get(0));
+                        fileList = getFiles(fileList);
                         if (fileList.size() > 0) {
+                            LogicSingleton.setCountToZero();
                             table.clearSelection();
                             Point point = dtde.getLocation();
                             int row = table.rowAtPoint(point);
@@ -117,5 +121,28 @@ public class DropPane extends JPanel {
 
         });
         add(scroll, BorderLayout.CENTER);
+    }
+    
+    public ArrayList<ExtendedFile> getFiles(ArrayList<ExtendedFile> files){
+        ArrayList<File> allFiles = new ArrayList<File>();
+        String[] exts = {"xlsx", "xls", "csv", "txt"};
+        for (File file : files) {
+            if (file.isDirectory()) {
+                allFiles.addAll(FileUtils.listFiles(file, exts, true));
+            }
+            else {
+                allFiles.add(file);
+            }
+        }
+        ArrayList<ExtendedFile> result = new ArrayList<ExtendedFile>();
+        for (File file : allFiles) {
+            if (FilenameUtils.getExtension(file.getAbsolutePath()).equalsIgnoreCase("xlsx") ||
+                FilenameUtils.getExtension(file.getAbsolutePath()).equalsIgnoreCase("xls") ||
+                FilenameUtils.getExtension(file.getAbsolutePath()).equalsIgnoreCase("txt") || 
+                FilenameUtils.getExtension(file.getAbsolutePath()).equalsIgnoreCase("csv")) {
+                result.add(new ExtendedFile(file.getAbsolutePath()));
+            }
+        }
+        return result;
     }
 }

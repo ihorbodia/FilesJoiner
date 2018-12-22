@@ -184,8 +184,10 @@ public class FilesJoinerLogic {
     }
 
     private void detectHeaders() {
+        ExtendedFile fileq = null;
         try {
             for (ExtendedFile file : files) {
+                fileq = file;
                 String[] nextRecord;
                 CSVReader csvReader = file.getCsvReader();
                 while ((nextRecord = csvReader.readNext()) != null) {
@@ -213,6 +215,8 @@ public class FilesJoinerLogic {
                 }
             }
         } catch (IOException ex) {
+            Logger.getLogger(FilesJoinerLogic.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (NullPointerException ex) {
             Logger.getLogger(FilesJoinerLogic.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
