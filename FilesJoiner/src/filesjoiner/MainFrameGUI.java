@@ -86,7 +86,7 @@ public class MainFrameGUI extends javax.swing.JFrame {
             .addGroup(layout.createSequentialGroup()
                 .addGap(5, 5, 5)
                 .addComponent(dropPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 500, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(5, 5, 5)
+                .addGap(6, 6, 6)
                 .addComponent(jLabel2)
                 .addGap(0, 0, 0)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
@@ -94,7 +94,7 @@ public class MainFrameGUI extends javax.swing.JFrame {
                     .addComponent(lblUrlsCount)
                     .addComponent(lblUrlsCountData)
                     .addComponent(cbRemoveDuplicates))
-                .addGap(0, 0, 0))
+                .addGap(6, 6, 6))
         );
 
         btnProcessFiles.getAccessibleContext().setAccessibleName("btnProcessFiles");
