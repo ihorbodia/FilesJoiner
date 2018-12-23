@@ -20,7 +20,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.BorderFactory;
@@ -40,6 +39,7 @@ public class DropPane extends JPanel {
 
     private JTable table;
     private JScrollPane scroll;
+    ArrayList<ExtendedFile> fileList = null;
     private DefaultTableModel tm = new DefaultTableModel(new String[]{"File", "File Type", "Size(Kb)"}, 0);
     
     public DropPane() {
@@ -78,7 +78,7 @@ public class DropPane extends JPanel {
                 if (dtde.isDataFlavorSupported(DataFlavor.javaFileListFlavor)) {
                     dtde.acceptDrop(DnDConstants.ACTION_COPY_OR_MOVE);
                     Transferable t = dtde.getTransferable();
-                    ArrayList<ExtendedFile> fileList = null;
+                    
                     ArrayList<ExtendedFile> fileListToTransfer = new ArrayList<ExtendedFile>();
                     try {
                         ArrayList<ArrayList<ExtendedFile>> arr = new ArrayList(Arrays.asList(t.getTransferData(DataFlavor.javaFileListFlavor)));

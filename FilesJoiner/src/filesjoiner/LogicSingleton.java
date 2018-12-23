@@ -5,6 +5,7 @@
  */
 package filesjoiner;
 
+import java.util.ArrayList;
 import javax.swing.JLabel;
 
 /**
@@ -25,8 +26,12 @@ public class LogicSingleton {
         parent = inParent;
     }
     
-    public static void nullLogicObject() {
+    public static void recreateLogicObject(ArrayList<ExtendedFile> files) {
+        String op = logic.outputPath;
         logic = null;
+        logic = new FilesJoinerLogic(parent);
+        logic.initFilesList(files);
+        logic.outputPath = op;
     }
     
     public static void setCountToZero() {

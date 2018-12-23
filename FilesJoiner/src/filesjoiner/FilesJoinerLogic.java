@@ -69,7 +69,9 @@ public class FilesJoinerLogic {
                 }
                 countItems();
                 saveDataToFile();
-                this.interrupt();
+                for (ExtendedFile file : files) {
+                    file.separator = ',';
+                }
             }
         };
         producerThread.start();
