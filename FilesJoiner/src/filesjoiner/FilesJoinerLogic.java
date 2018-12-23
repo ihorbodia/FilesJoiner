@@ -120,7 +120,6 @@ public class FilesJoinerLogic {
             Date date = new Date();
             String pathToSave = outputPath.replace(".", "") +File.separator+ "Merged data_"+sdf.format(date)+".csv";
             Files.write(Paths.get(pathToSave), sb.toString().getBytes(), StandardOpenOption.WRITE, StandardOpenOption.CREATE);
-            outputPath = null;
         } catch (IOException ex) {
             Logger.getLogger(FilesJoinerLogic.class.getName()).log(Level.SEVERE, null, ex);
         }
