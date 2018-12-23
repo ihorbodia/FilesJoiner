@@ -22,6 +22,9 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.commons.lang3.StringUtils;
@@ -37,6 +40,9 @@ public class FilesJoinerLogic {
     ArrayList<String[]> resultList;
     String outputPath = null;
     HashMap<String, Integer> headers = new HashMap<String, Integer>();
+    ExecutorService executorService;
+    File propertiesFile;
+    public Future<?> future;
 
     public FilesJoinerLogic(MainFrameGUI parent) {
         this.parent = parent;
@@ -53,8 +59,8 @@ public class FilesJoinerLogic {
             return;
         }
 
-        Thread producerThread = new Thread() {
-            @Override
+        executorService = Executors.newSingleThreadExecutor();
+        future = executorService.submit(new Runnable() {
             public void run() {
                 LogicSingleton.setCountToZero();
                 headers = new HashMap<String, Integer>();
@@ -72,6 +78,27 @@ public class FilesJoinerLogic {
                 for (ExtendedFile file : files) {
                     file.separator = ',';
                 }
+            }
+        });
+        
+        Thread seeker = new Thread() {
+            public void run() {
+                parent.getBtnProcessFiles().setEnabled(false);
+                parent.getlblUrlsCountData().setText("Processing...");
+                while (true) {
+                    if (future.isDone()) {
+                        break;
+                    }
+                }
+                parent.getBtnProcessFiles().setEnabled(true);
+            }
+        };
+        seeker.start();
+
+        Thread producerThread = new Thread() {
+            @Override
+            public void run() {
+               
             }
         };
         producerThread.start();
