@@ -5,6 +5,7 @@
  */
 package filesjoiner;
 
+import com.opencsv.CSVReader;
 import com.univocity.parsers.common.processor.RowListProcessor;
 import com.univocity.parsers.csv.CsvFormat;
 import com.univocity.parsers.csv.CsvParser;
@@ -29,11 +30,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-import org.apache.commons.csv.CSVFormat;
-import org.apache.commons.csv.CSVParser;
-import org.apache.commons.csv.CSVRecord;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
@@ -45,14 +41,11 @@ import org.apache.poi.ss.usermodel.WorkbookFactory;
  * @author Ihor
  */
 public class ExtendedFile extends File {
-
-    static ExtendedFile DEFAULT;
     private List<String[]> lines;
-    private String txtSeparator = ",";
     public String getFileExtension() {
         return FilenameUtils.getExtension(this.getAbsolutePath());
     }
-    
+
     public ExtendedFile(String pathname) {
         super(pathname);
         headersPositionsTo = new HashMap<String, Integer>();
@@ -62,48 +55,21 @@ public class ExtendedFile extends File {
     public Map<String, Integer> headersPositionsTo;
     public Map<String, Integer> headersPositionsFrom;
     public boolean hasHeader;
-    public char separator = ',';
     public String[] headers;
-
-    public com.opencsv.CSVReader getCsvReader() {
-        Reader reader;
-        com.opencsv.CSVReader csvReader = null;
-        try {
-            if (getFileExtension().equalsIgnoreCase("csv")) {
-               
-            } else if (getFileExtension().equalsIgnoreCase("xlsx")
-                    || getFileExtension().equalsIgnoreCase("xls")) {
-
-                InputStream inp = new FileInputStream(this);
-                Workbook wb = WorkbookFactory.create(inp);
-                csvReader = new com.opencsv.CSVReader(new StringReader(echoAsCSV(wb.getSheetAt(0))));
-                inp.close();
-
-            } else if (getFileExtension().equalsIgnoreCase("txt")) {
-                initTxtFile();
-            }
-        } catch (FileNotFoundException ex) {
-            Logger.getLogger(FilesJoinerLogic.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (IOException ex) {
-            Logger.getLogger(FilesJoinerLogic.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return csvReader;
+    
+    public List<String[]> getLines() {
+        return lines;
     }
-    
 
-    
     public void initFile() {
-        if (getFileExtension().equalsIgnoreCase("csv")) {
-            initCsvFile();
-        } else if (getFileExtension().equalsIgnoreCase("xlsx")
-                || getFileExtension().equalsIgnoreCase("xls")) {
-            initExcelFile();
-        } else if (getFileExtension().equalsIgnoreCase("txt")) {
-            try {
-                initTxtFile();
-            } catch (IOException ex) {
-                Logger.getLogger(ExtendedFile.class.getName()).log(Level.SEVERE, null, ex);
+        try {
+            if (getFileExtension().equalsIgnoreCase("csv") || getFileExtension().equalsIgnoreCase("txt")) {
+                initPlainTextFile();
+            } else if (getFileExtension().equalsIgnoreCase("xlsx") || getFileExtension().equalsIgnoreCase("xls")) {
+                initExcelFile();
             }
+        } catch (IOException ex) {
+            Logger.getLogger(ExtendedFile.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
@@ -119,112 +85,55 @@ public class ExtendedFile extends File {
         }
         return result;
     }
-    
-    private void initExcelFile() {
-        try {
-            Reader reader = Files.newBufferedReader(Paths.get(this.getAbsolutePath()));
-            CSVParser csvParser = new org.apache.commons.csv.CSVParser(reader, CSVFormat.EXCEL
-                    .withSkipHeaderRecord()
-                    .withTrim());
-             for (CSVRecord csvRecord : csvParser) {
-                 System.out.println(csvRecord.get(0));
-             }
-        } catch (IOException ex) {
-            Logger.getLogger(ExtendedFile.class.getName()).log(Level.SEVERE, null, ex);
-        }
-    }
-    
-    private void initCsvFile() {
+
+    private void initExcelFile() throws IOException {
+        InputStream inp = new FileInputStream(this);
+        Workbook wb = WorkbookFactory.create(inp);
+        StringReader strReader = new StringReader(echoAsCSV(wb.getSheetAt(0)));
+
         CsvParserSettings settings = new CsvParserSettings();
         settings.detectFormatAutomatically();
-        
+
         RowListProcessor rowProcessor = new RowListProcessor();
         settings.setProcessor(rowProcessor);
         settings.setHeaderExtractionEnabled(true);
-        
 
         CsvParser parser = new CsvParser(settings);
-        lines = parser.parseAll(this);
-        CsvFormat format = parser.getDetectedFormat();
+        lines = parser.parseAll(strReader);
         String[] headers = rowProcessor.getHeaders();
-        
+        if (headers.length > 0) {
+            this.headers = headers;
+            initHeaderPositionsFrom();
+        }
+        inp.close();
     }
-      
-    private void initTxtFile() throws IOException {
+
+    private void initPlainTextFile() {
         CsvParserSettings settings = new CsvParserSettings();
         settings.detectFormatAutomatically();
-        
+
         RowListProcessor rowProcessor = new RowListProcessor();
         settings.setProcessor(rowProcessor);
         settings.setHeaderExtractionEnabled(true);
-        
 
         CsvParser parser = new CsvParser(settings);
         lines = parser.parseAll(this);
-        CsvFormat format = parser.getDetectedFormat();
         String[] headers = rowProcessor.getHeaders();
-        
-//        if (!isTxtFileHasHeaders()) {
-//            addAndDetectHeaders();
-//        }
-//        final Path txt = Paths.get(this.getAbsolutePath());
-//        final Path csv = Paths.get(this.getAbsolutePath().replace(".txt", "_tmp.csv"));
-//        try (
-//                final Stream<String> lines = Files.lines(txt);
-//                final PrintWriter pw = new PrintWriter(Files.newBufferedWriter(csv, StandardOpenOption.CREATE_NEW))) {
-//                    lines.map((line) -> line.split(txtSeparator)).
-//                    map((line) -> Stream.of(line).collect(Collectors.joining(","))).
-//                    forEach(pw::println);
-//        }
+        if (headers.length > 0) {
+            this.headers = headers;
+            initHeaderPositionsFrom();
+        }
     }
     
-    private String detectSeparator() throws IOException {
-        String result = "";
-        final Path txt = Paths.get(this.getAbsolutePath());
-        final Stream<String> lines = Files.lines(txt);
-        String header = lines.findFirst().orElse(null);
-        if (header != null) {
-            if (header.split("\\t{1,5}").length > 1) {
-                result = "\\t{1,5}";
-            }
-            if (header.split(" {2,5}").length > 1) {
-                result = " {2,5}";
-            }
-            if (header.split("\\,{1,5}").length > 1) {
-                result = "\\,{1,5}";
-            }
-            System.out.print(header);
-        }
-        return result;
-    }
-
-    private void addAndDetectHeaders() throws IOException {
-        ArrayList<String> headers = new ArrayList<String>();
-        BufferedReader brTest = new BufferedReader(new FileReader(this.getAbsoluteFile()));
-        String firstRow = brTest.readLine();
+    private void initHeaderPositionsFrom() {
         int counter = 0;
-        for (String cell : firstRow.split(txtSeparator)) {
-            if (DataHelper.validateURLs(cell)) {
-                headers.add("Website");
-            } else if (DataHelper.validateEmail(cell)) {
-                headers.add("Email");
+        for (String header : this.headers) {
+            if (header == null) {
+                this.headersPositionsFrom.put("UnknownHeader"+counter, counter);
             } else {
-                headers.add("UnknownHeader" + (counter + 1));
+                this.headersPositionsFrom.put(header, counter);
             }
             counter++;
         }
-        this.headers = headers.toArray(new String[headers.size()]);
-    }
-    
-    private boolean isTxtFileHasHeaders() throws IOException {
-        txtSeparator = detectSeparator();
-        BufferedReader brTest = new BufferedReader(new FileReader(this.getAbsoluteFile()));
-        String firstRow = brTest.readLine();
-        for (String cell : firstRow.split(txtSeparator)) {
-            if (LogicSingleton.getLogic().headers.containsKey(cell)) {
-                return true;
-            }
-        }
-        return false;
     }
 }

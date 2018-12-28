@@ -5,7 +5,6 @@
  */
 package filesjoiner;
 
-import com.opencsv.CSVReader;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -60,28 +59,19 @@ public class FilesJoinerLogic {
         }
 
         executorService = Executors.newSingleThreadExecutor();
-        future = executorService.submit(new Runnable() {
-            public void run() {
-                LogicSingleton.setCountToZero();
-                LogicSingleton.processTxtFilesInList();
-                headers = new HashMap<String, Integer>();
-                initHeaders();
-                detectHeaders();
-                for (ExtendedFile file : files) {
-                    normalizeHeaders(file);
-                }
-                scrapeDataFromCsvFiles();
-                if (parent.getCbRemoveDuplicates().isSelected()) {
-                    removeDuplicates();
-                }
-                countItems();
-                saveDataToFile();
-                for (ExtendedFile file : files) {
-                    file.separator = ',';
-                }
+        future = executorService.submit(() -> {
+            LogicSingleton.setCountToZero();
+            files.forEach(file -> file.initFile());
+            initHeaders();
+            normalizeHeaders();
+            scrapeDataFromCsvFiles();
+            if (parent.getCbRemoveDuplicates().isSelected()) {
+                removeDuplicates();
             }
+            countItems();
+            saveDataToFile();
         });
-        
+
         Thread seeker = new Thread() {
             public void run() {
                 parent.getBtnProcessFiles().setEnabled(false);
@@ -99,7 +89,7 @@ public class FilesJoinerLogic {
         Thread producerThread = new Thread() {
             @Override
             public void run() {
-               
+
             }
         };
         producerThread.start();
@@ -130,7 +120,7 @@ public class FilesJoinerLogic {
         HashMap<String, Integer> sortedHeaders = sortHashMapByValues(headers);
         int counter = sortedHeaders.entrySet().size();
         for (Map.Entry<String, Integer> entry : sortedHeaders.entrySet()) {
-            sb.append("\"" + entry.getKey() + "\"");
+            sb.append("\"").append(entry.getKey()).append("\"");
             counter--;
             if (counter != 0) {
                 sb.append(",");
@@ -140,7 +130,7 @@ public class FilesJoinerLogic {
         for (String[] row : resultList) {
             for (String string : row) {
                 String content = StringUtils.isEmpty(string) ? "" : string;
-                sb.append("\"" + content + "\"");
+                sb.append("\"").append(content).append("\"");
                 sb.append(",");
             }
             sb.append("\n");
@@ -148,16 +138,16 @@ public class FilesJoinerLogic {
         try {
             DateFormat sdf = new SimpleDateFormat("yyyyMMdd_HHmmss");
             Date date = new Date();
-            String pathToSave = outputPath.replace(".", "") +File.separator+ "Merged data_"+sdf.format(date)+".csv";
+            String pathToSave = outputPath.replace(".", "") + File.separator + "Merged data_" + sdf.format(date) + ".csv";
             Files.write(Paths.get(pathToSave), sb.toString().getBytes(), StandardOpenOption.WRITE, StandardOpenOption.CREATE);
         } catch (IOException ex) {
             Logger.getLogger(FilesJoinerLogic.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-    
+
     public void setOutputPath(String path) {
         if (outputPath == null) {
-              outputPath = path;
+            outputPath = path;
         }
     }
 
@@ -198,109 +188,37 @@ public class FilesJoinerLogic {
                 maxEntry = entry;
             }
         }
-        resultList = new ArrayList<String[]>();
+    }
+
+    private void normalizeHeaders() {
         for (ExtendedFile file : files) {
-            try {
-                String[] nextRecord;
-                int counter = 0;
-                CSVReader csvReader = file.getCsvReader();
-                while ((nextRecord = csvReader.readNext()) != null) {
-                    if (counter == 0 && file.hasHeader) {
-                        counter = -1;
-                        continue;
-                    }
-                    String[] row = new String[maxEntry.getValue() + 1];
-                    for (int i = 0; i < headers.size(); i++) {
-                        Entry<String, Integer> itemFrom = getKeysByValue(file.headersPositionsFrom, i);
-                        if (itemFrom != null) {
-                            Integer index = 0;
-                            try {
-                                index = file.headersPositionsTo.get(itemFrom.getKey());
-                                row[index] = nextRecord[itemFrom.getValue()];
-                            } catch (Exception ex) {
-                                Logger.getLogger(FilesJoinerLogic.class.getName()).log(Level.SEVERE, null, ex);
-                            }
-                        }
-                    }
-                    resultList.add(row);
-                }
-            } catch (IOException ex) {
-                Logger.getLogger(FilesJoinerLogic.class.getName()).log(Level.SEVERE, null, ex);
-            }
-        }
-    }
-
-    private void detectHeaders() {
-        try {
-            for (ExtendedFile file : files) {
-                String[] nextRecord;
-                CSVReader csvReader = file.getCsvReader();
-                while ((nextRecord = csvReader.readNext()) != null) {
-                    if (nextRecord.length == 1) {
-                        String str = nextRecord[0];
-                        if (str.split("\t").length > 1) {
-                            file.separator = "\t".charAt(0);
-                            file.headers = str.split("\t");
-                        }
-                        if (str.contains("http") || str.contains("www.")) {
-                            file.separator = ",".charAt(0);
-                            file.headers = new String[]{"Website"};
-                            file.hasHeader = false;
-                        }
-                    } else {
-                        file.separator = ",".charAt(0);
-                        file.headers = nextRecord;
-                    }
-                    for (int i = 0; i < file.headers.length; i++) {
-                        if (file.headers[i].toLowerCase().contains("url")) {
-                            file.headers[i] = "Website";
-                        }
-                    }
-                    break;
-                }
-            }
-        } catch (IOException ex) {
-            Logger.getLogger(FilesJoinerLogic.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (NullPointerException ex) {
-            Logger.getLogger(FilesJoinerLogic.class.getName()).log(Level.SEVERE, null, ex);
-        }
-    }
-
-    private void normalizeHeaders(ExtendedFile file) {
-        int counter = 0;
-        if (file.headers == null) {
-            return;
-        }
-        for (String fileHeader : file.headers) {
-            if (fileHeader.equalsIgnoreCase("")) {
-                continue;
-            }
-            file.headersPositionsFrom.put(fileHeader, counter);
-            counter++;
-            Object value = null;
-            for (Map.Entry<String, Integer> entry : headers.entrySet()) {
-                if (fileHeader.replace(" ", "").toLowerCase().contains(entry.getKey().toLowerCase())
-                        || entry.getKey().replace(" ", "").toLowerCase().contains(fileHeader.toLowerCase())) {
-                    value = entry;
-                    file.headersPositionsTo.put(fileHeader, entry.getValue());
-                    break;
-                }
-            }
-
-            if (value == null) {
-                Map.Entry<String, Integer> maxEntry = null;
+            for (Map.Entry<String, Integer> fileHeaderEntry : file.headersPositionsFrom.entrySet()) {
+                Object value = null;
                 for (Map.Entry<String, Integer> entry : headers.entrySet()) {
-                    if (maxEntry == null || entry.getValue().compareTo(maxEntry.getValue()) > 0) {
-                        maxEntry = entry;
+                    if (fileHeaderEntry.getKey().replace(" ", "").toLowerCase().contains(entry.getKey().toLowerCase()) || 
+                            entry.getKey().replace(" ", "").toLowerCase().contains(fileHeaderEntry.getKey().toLowerCase())) {
+                        value = entry;
+                        file.headersPositionsTo.put(fileHeaderEntry.getKey(), entry.getValue());
+                        break;
                     }
                 }
-                file.headersPositionsTo.put(fileHeader, maxEntry.getValue() + 1);
-                headers.put(fileHeader, maxEntry.getValue() + 1);
+
+                if (value == null) {
+                    Map.Entry<String, Integer> maxEntry = null;
+                    for (Map.Entry<String, Integer> entry : headers.entrySet()) {
+                        if (maxEntry == null || entry.getValue().compareTo(maxEntry.getValue()) > 0) {
+                            maxEntry = entry;
+                        }
+                    }
+                    file.headersPositionsTo.put(fileHeaderEntry.getKey(), maxEntry.getValue() + 1);
+                    headers.put(fileHeaderEntry.getKey(), maxEntry.getValue() + 1);
+                }
             }
         }
     }
 
     private void initHeaders() {
+        headers = new HashMap<String, Integer>();
         headers.put("Website", 0);
         headers.put("Email", 1);
         headers.put("First Name", 2);
@@ -320,7 +238,7 @@ public class FilesJoinerLogic {
         headers.put("VerifyStatus", 16);
         headers.put("Company Size", 17);
     }
-    
+
     private void removeDuplicates() {
         ArrayList<String[]> result = new ArrayList<String[]>();
         for (int i = 0; i < resultList.size(); i++) {
@@ -330,8 +248,8 @@ public class FilesJoinerLogic {
         }
         resultList = result;
     }
-    
-    private boolean isContainsSameURL(String[] from, ArrayList<String[]> result){
+
+    private boolean isContainsSameURL(String[] from, ArrayList<String[]> result) {
         boolean flag = false;
         try {
             if (StringUtils.isEmpty(from[0])) {

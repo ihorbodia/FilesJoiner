@@ -5,7 +5,10 @@
  */
 package filesjoiner;
 
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -32,13 +35,7 @@ public class LogicSingleton {
         logic.initFilesList(files);
         logic.outputPath = op;
     }
-    
-    public static void processTxtFilesInList() {
-        for (int i = 0; i < logic.files.size(); i++) {
-            logic.files.get(i).initFile();
-        }
-    }
-    
+      
     public static void setCountToZero() {
         parent.getlblUrlsCountData().setText("0");
     }
