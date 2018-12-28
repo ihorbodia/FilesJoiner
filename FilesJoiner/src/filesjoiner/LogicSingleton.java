@@ -6,7 +6,6 @@
 package filesjoiner;
 
 import java.util.ArrayList;
-import javax.swing.JLabel;
 
 /**
  *
@@ -32,6 +31,12 @@ public class LogicSingleton {
         logic = new FilesJoinerLogic(parent);
         logic.initFilesList(files);
         logic.outputPath = op;
+    }
+    
+    public static void processTxtFilesInList() {
+        for (int i = 0; i < logic.files.size(); i++) {
+            logic.files.get(i).initFile();
+        }
     }
     
     public static void setCountToZero() {

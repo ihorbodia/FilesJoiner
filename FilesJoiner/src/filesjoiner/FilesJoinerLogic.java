@@ -63,6 +63,7 @@ public class FilesJoinerLogic {
         future = executorService.submit(new Runnable() {
             public void run() {
                 LogicSingleton.setCountToZero();
+                LogicSingleton.processTxtFilesInList();
                 headers = new HashMap<String, Integer>();
                 initHeaders();
                 detectHeaders();
