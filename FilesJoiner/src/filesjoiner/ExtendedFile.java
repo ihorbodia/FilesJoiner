@@ -5,26 +5,14 @@
  */
 package filesjoiner;
 
-import com.opencsv.CSVReader;
 import com.univocity.parsers.common.processor.RowListProcessor;
-import com.univocity.parsers.csv.CsvFormat;
 import com.univocity.parsers.csv.CsvParser;
 import com.univocity.parsers.csv.CsvParserSettings;
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.PrintWriter;
-import java.io.Reader;
 import java.io.StringReader;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardOpenOption;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -97,6 +85,8 @@ public class ExtendedFile extends File {
         RowListProcessor rowProcessor = new RowListProcessor();
         settings.setProcessor(rowProcessor);
         settings.setHeaderExtractionEnabled(true);
+        settings.setNullValue("");
+	settings.setEmptyValue("");
 
         CsvParser parser = new CsvParser(settings);
         lines = parser.parseAll(strReader);
@@ -115,6 +105,8 @@ public class ExtendedFile extends File {
         RowListProcessor rowProcessor = new RowListProcessor();
         settings.setProcessor(rowProcessor);
         settings.setHeaderExtractionEnabled(true);
+        settings.setNullValue("");
+	settings.setEmptyValue("");
 
         CsvParser parser = new CsvParser(settings);
         lines = parser.parseAll(this);

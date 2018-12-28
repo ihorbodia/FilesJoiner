@@ -188,6 +188,26 @@ public class FilesJoinerLogic {
                 maxEntry = entry;
             }
         }
+        resultList = new ArrayList<String[]>();
+        for (ExtendedFile file : files) {
+            for (String[] record : file.getLines()) {
+
+                String[] row = new String[maxEntry.getValue() + 1];
+                for (int i = 0; i < headers.size(); i++) {
+                    Entry<String, Integer> itemFrom = getKeysByValue(file.headersPositionsFrom, i);
+                    if (itemFrom != null) {
+                        Integer index = 0;
+                        try {
+                            index = file.headersPositionsTo.get(itemFrom.getKey());
+                            row[index] = record[itemFrom.getValue()];
+                        } catch (Exception ex) {
+                            Logger.getLogger(FilesJoinerLogic.class.getName()).log(Level.SEVERE, null, ex);
+                        }
+                    }
+                }
+                resultList.add(row);
+            }
+        }
     }
 
     private void normalizeHeaders() {
