@@ -8,18 +8,20 @@ package filesjoiner;
 import com.univocity.parsers.common.processor.RowListProcessor;
 import com.univocity.parsers.csv.CsvParser;
 import com.univocity.parsers.csv.CsvParserSettings;
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringReader;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -39,27 +41,78 @@ public class ExtendedFile extends File {
         super(pathname);
         headersPositionsTo = new HashMap<String, Integer>();
         headersPositionsFrom = new HashMap<String, Integer>();
-        hasHeader = true;
     }
     public Map<String, Integer> headersPositionsTo;
     public Map<String, Integer> headersPositionsFrom;
-    public boolean hasHeader;
     public String[] headers;
     
     public List<String[]> getLines() {
         return lines;
     }
 
-    public void initFile() {
-        try {
-            if (getFileExtension().equalsIgnoreCase("csv") || getFileExtension().equalsIgnoreCase("txt")) {
-                initPlainTextFile();
-            } else if (getFileExtension().equalsIgnoreCase("xlsx") || getFileExtension().equalsIgnoreCase("xls")) {
-                initExcelFile();
-            }
-        } catch (IOException ex) {
-            Logger.getLogger(ExtendedFile.class.getName()).log(Level.SEVERE, null, ex);
+    public void initFile() throws IOException {
+        CsvParserSettings settings = new CsvParserSettings();
+        RowListProcessor rowProcessor = new RowListProcessor();
+        settings.setProcessor(rowProcessor);
+        settings.setNullValue("");
+        settings.setEmptyValue("");
+        settings.detectFormatAutomatically('\t', ' ', ',');
+        CsvParser parser = new CsvParser(settings);
+        
+        parser.parseAll(getStream());
+        if (isFileHasHeaders(rowProcessor.getHeaders())) {
+            settings.setHeaderExtractionEnabled(true);
+            this.headers = rowProcessor.getHeaders();
         }
+        else
+        {
+            detectHeaders(parser.parseAll(getStream()).get(0));
+        }
+        lines = parser.parseAll(getStream());
+        initHeaderPositionsFrom();
+    }
+    
+    private InputStream getStream() throws IOException {
+        InputStream objToRead = null;
+         if (getFileExtension().equalsIgnoreCase("xlsx") || getFileExtension().equalsIgnoreCase("xls")) {
+            InputStream inp = new FileInputStream(this);
+            Workbook wb = WorkbookFactory.create(inp);
+            StringReader strReader = new StringReader(echoAsCSV(wb.getSheetAt(0)));
+            objToRead = new ByteArrayInputStream(IOUtils.toString(strReader).getBytes());
+        }
+        else if (getFileExtension().equalsIgnoreCase("csv") || getFileExtension().equalsIgnoreCase("txt")) {
+            objToRead = new FileInputStream(this);
+        }
+         return objToRead;
+    }
+    
+    private boolean isFileHasHeaders(String[] scrapedHeaders) {
+        for (String scrapedHeader : scrapedHeaders) {
+            for (Map.Entry<String, Integer> entry : LogicSingleton.getLogic().headers.entrySet()) {
+                if (entry.getKey().equalsIgnoreCase(scrapedHeader)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+    
+    private void detectHeaders(String[] firstRow) {
+        ArrayList<String> headers = new ArrayList<String>();
+        int counter = 0;
+        for (String cell : firstRow) {
+            if (DataHelper.validateURLs(cell)) {
+                headers.add("Website");
+            } else if (DataHelper.validateEmail(cell)) {
+                headers.add("Email");
+            }
+            else {
+                headers.add("UnknownHeader"+counter);
+                counter++;
+            }
+        }
+        Object[] objHeaders = headers.toArray();
+        this.headers = Arrays.copyOf(objHeaders, objHeaders.length, String[].class);
     }
 
     private String echoAsCSV(Sheet sheet) {
@@ -75,71 +128,15 @@ public class ExtendedFile extends File {
         return result;
     }
 
-    private void initExcelFile() throws IOException {
-        InputStream inp = new FileInputStream(this);
-        Workbook wb = WorkbookFactory.create(inp);
-        StringReader strReader = new StringReader(echoAsCSV(wb.getSheetAt(0)));
-
-        CsvParserSettings settings = new CsvParserSettings();
-        settings.detectFormatAutomatically();
-
-        RowListProcessor rowProcessor = new RowListProcessor();
-        settings.setProcessor(rowProcessor);
-        settings.setHeaderExtractionEnabled(true);
-        settings.setNullValue("");
-	settings.setEmptyValue("");
-
-        CsvParser parser = new CsvParser(settings);
-        lines = parser.parseAll(strReader);
-        String[] headers = rowProcessor.getHeaders();
-        if (headers.length > 0) {
-            this.headers = headers;
-            initHeaderPositionsFrom();
-        }
-        inp.close();
-    }
-
-    private void initPlainTextFile() {
-        CsvParserSettings settings = new CsvParserSettings();
-        settings.detectFormatAutomatically();
-
-        RowListProcessor rowProcessor = new RowListProcessor();
-        settings.setProcessor(rowProcessor);
-        settings.setHeaderExtractionEnabled(true);
-        settings.setNullValue("");
-	settings.setEmptyValue("");
-
-        CsvParser parser = new CsvParser(settings);
-        lines = parser.parseAll(this);
-        String[] headers = rowProcessor.getHeaders();
-        if (headers.length > 0) {
-            this.headers = headers;
-            initHeaderPositionsFrom();
-        }
-    }
-    
     private void initHeaderPositionsFrom() {
         int counter = 0;
         for (String header : this.headers) {
-            if (header == null) {
+            if (StringUtils.isEmpty(header)) {
                 this.headersPositionsFrom.put("UnknownHeader"+counter, counter);
+                counter++;
             } else {
                 this.headersPositionsFrom.put(header, counter);
-            }
-            counter++;
-        }
-    }
-    
-    private void detectHeaders() {
-        ArrayList<String> headers = new ArrayList<String>();
-        int counter = 0;
-        for (String[] line : lines) {
-            for (String cell : line) {
-                if (DataHelper.validateURLs(cell)) {
-                    headers.add("Website");
-                } else if (DataHelper.validateEmail(cell)) {
-                    headers.add("Email");
-                }
+                counter++;
             }
         }
     }

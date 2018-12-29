@@ -45,6 +45,7 @@ public class FilesJoinerLogic {
 
     public FilesJoinerLogic(MainFrameGUI parent) {
         this.parent = parent;
+        initHeaders();
     }
 
     public void initFilesList(ArrayList<ExtendedFile> inputFiles) {
@@ -57,12 +58,17 @@ public class FilesJoinerLogic {
         if (files == null) {
             return;
         }
-
         executorService = Executors.newSingleThreadExecutor();
         future = executorService.submit(() -> {
             LogicSingleton.setCountToZero();
-            files.forEach(file -> file.initFile());
-            initHeaders();
+            
+            files.forEach(file -> {
+                try {
+                    file.initFile();
+                } catch (IOException ex) {
+                    Logger.getLogger(FilesJoinerLogic.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            });
             normalizeHeaders();
             scrapeDataFromCsvFiles();
             if (parent.getCbRemoveDuplicates().isSelected()) {
@@ -85,14 +91,6 @@ public class FilesJoinerLogic {
             }
         };
         seeker.start();
-
-        Thread producerThread = new Thread() {
-            @Override
-            public void run() {
-
-            }
-        };
-        producerThread.start();
     }
 
     private void countItems() {
@@ -138,7 +136,7 @@ public class FilesJoinerLogic {
         try {
             DateFormat sdf = new SimpleDateFormat("yyyyMMdd_HHmmss");
             Date date = new Date();
-            String pathToSave = outputPath.replace(".", "") + File.separator + "Merged data_" + sdf.format(date) + ".csv";
+            String pathToSave = outputPath + File.separator + "Merged data_" + sdf.format(date) + ".csv";
             Files.write(Paths.get(pathToSave), sb.toString().getBytes(), StandardOpenOption.WRITE, StandardOpenOption.CREATE);
         } catch (IOException ex) {
             Logger.getLogger(FilesJoinerLogic.class.getName()).log(Level.SEVERE, null, ex);
@@ -146,9 +144,7 @@ public class FilesJoinerLogic {
     }
 
     public void setOutputPath(String path) {
-        if (outputPath == null) {
             outputPath = path;
-        }
     }
 
     private LinkedHashMap<String, Integer> sortHashMapByValues(
@@ -199,7 +195,9 @@ public class FilesJoinerLogic {
                         Integer index = 0;
                         try {
                             index = file.headersPositionsTo.get(itemFrom.getKey());
-                            row[index] = record[itemFrom.getValue()];
+                            if (record.length > itemFrom.getValue()) {
+                                row[index] = record[itemFrom.getValue()];
+                            }
                         } catch (Exception ex) {
                             Logger.getLogger(FilesJoinerLogic.class.getName()).log(Level.SEVERE, null, ex);
                         }

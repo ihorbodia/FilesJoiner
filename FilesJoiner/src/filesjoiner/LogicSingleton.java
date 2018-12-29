@@ -30,14 +30,12 @@ public class LogicSingleton {
         logic = null;
         logic = new FilesJoinerLogic(parent);
         logic.initFilesList(files);
-        logic.outputPath = op;
+        if (files.size() > 0) {
+            logic.outputPath = files.get(0).getParentFile().getAbsolutePath();
+        }
     }
       
     public static void setCountToZero() {
         parent.getlblUrlsCountData().setText("0");
-    }
-    
-    public static void setOutputPath(String path) {
-        logic.setOutputPath(path);
     }
 }
