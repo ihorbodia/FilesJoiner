@@ -13,6 +13,7 @@ import java.nio.file.StandardOpenOption;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
@@ -26,6 +27,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 
 /**
@@ -126,17 +128,41 @@ public class FilesJoinerLogic {
         }
         sb.append("\n");
         for (String[] row : resultList) {
-            for (String string : row) {
-                String content = StringUtils.isEmpty(string) ? "" : string;
+            for (int i = 0; i < row.length; i++) {
+                String content = StringUtils.isEmpty(row[i]) ? "" : row[i];
                 sb.append("\"").append(content).append("\"");
-                sb.append(",");
+                if (i != (row.length - 1)) {
+                    sb.append(",");
+                }
             }
             sb.append("\n");
         }
         try {
-            DateFormat sdf = new SimpleDateFormat("yyyyMMdd_HHmmss");
+            DateFormat sdf = new SimpleDateFormat("yyyyMMdd");
             Date date = new Date();
-            String pathToSave = outputPath + File.separator + "Merged data_" + sdf.format(date) + ".csv";
+            String names = " " + sdf.format(date) + "_";
+            switch (files.size()) {
+                case 1:
+                    names += files.get(0).getCutterFilename();
+                    break;
+                case 2:
+                    names += files.get(0).getCutterFilename() + "...+" + files.get(1).getCutterFilename();
+                    break;
+                default:
+                    for (int i = 0; i < 3; i++) {
+                        if (i < files.size() && files.get(i) != null) {
+                            names += files.get(i).getCutterFilename();
+                            if (i < 2 && i < files.size()) {
+                                names += "...+";
+                            }
+                        }
+                    }   break;
+            }
+            if ((files.size() - 3) > 0) {
+                names += "...+";
+                names += (files.size() - 3) + "_more";
+            }
+            String pathToSave = outputPath + File.separator + names + ".csv";
             Files.write(Paths.get(pathToSave), sb.toString().getBytes(), StandardOpenOption.WRITE, StandardOpenOption.CREATE);
         } catch (IOException ex) {
             Logger.getLogger(FilesJoinerLogic.class.getName()).log(Level.SEVERE, null, ex);
@@ -203,9 +229,12 @@ public class FilesJoinerLogic {
                         }
                     }
                 }
-                resultList.add(row);
+                String[] newRow = Arrays.copyOf(row, row.length + 1);
+                newRow[row.length] = file.getAbsolutePath();
+                resultList.add(newRow);
             }
         }
+        headers.put("File path", headers.size());
     }
 
     private void normalizeHeaders() {

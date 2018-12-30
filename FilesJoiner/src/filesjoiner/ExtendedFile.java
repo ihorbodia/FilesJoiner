@@ -121,10 +121,17 @@ public class ExtendedFile extends File {
         for (int i = 0; i <= sheet.getLastRowNum(); i++) {
             row = sheet.getRow(i);
             for (int j = 0; j < row.getLastCellNum(); j++) {
-                result += "\"" + row.getCell(j) + "\",";
+                result += "\"" + row.getCell(j).toString().replaceAll("\r", "").replaceAll("\n", "") + "\",";
             }
             result += "\n";
         }
+        return result;
+    }
+    
+    public  String getCutterFilename() {
+        String result = "";
+        String name = FilenameUtils.removeExtension(FilenameUtils.getName(getAbsolutePath()));
+        result = name.substring(0, Math.min(name.length(), 25));
         return result;
     }
 

@@ -26,11 +26,10 @@ public class LogicSingleton {
     }
     
     public static void recreateLogicObject(ArrayList<ExtendedFile> files) {
-        String op = logic.outputPath;
         logic = null;
         logic = new FilesJoinerLogic(parent);
         logic.initFilesList(files);
-        if (files.size() > 0) {
+        if (files != null && files.size() > 0) {
             logic.outputPath = files.get(0).getParentFile().getAbsolutePath();
         }
     }

@@ -19,6 +19,7 @@ public class MainFrameGUI extends javax.swing.JFrame {
      */
     public MainFrameGUI() {
         initComponents();
+        getCbRemoveDuplicates().setSelected(true);
     }
     
     /**
