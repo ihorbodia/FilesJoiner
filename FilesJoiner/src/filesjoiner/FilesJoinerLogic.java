@@ -27,7 +27,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 
 /**
@@ -242,8 +241,8 @@ public class FilesJoinerLogic {
             for (Map.Entry<String, Integer> fileHeaderEntry : file.headersPositionsFrom.entrySet()) {
                 Object value = null;
                 for (Map.Entry<String, Integer> entry : headers.entrySet()) {
-                    if (fileHeaderEntry.getKey().replace(" ", "").toLowerCase().contains(entry.getKey().toLowerCase()) || 
-                            entry.getKey().replace(" ", "").toLowerCase().contains(fileHeaderEntry.getKey().toLowerCase())) {
+                    if (fileHeaderEntry.getKey().replace(" ", "").toLowerCase().contains(entry.getKey().replace(" ", "").toLowerCase()) || 
+                            entry.getKey().replace(" ", "").toLowerCase().contains(fileHeaderEntry.getKey().replace(" ", "").toLowerCase())) {
                         value = entry;
                         file.headersPositionsTo.put(fileHeaderEntry.getKey(), entry.getValue());
                         break;
@@ -268,46 +267,49 @@ public class FilesJoinerLogic {
         headers = new HashMap<String, Integer>();
         headers.put("Website", 0);
         headers.put("Email", 1);
-        headers.put("First Name", 2);
-        headers.put("Last Name", 3);
-        headers.put("Full Name", 4);
-        headers.put("Position", 5);
-        headers.put("Telephone", 6);
-        headers.put("Address", 7);
-        headers.put("City", 8);
-        headers.put("Country", 9);
-        headers.put("Company Name", 10);
-        headers.put("Industry", 11);
-        headers.put("Yearly Revenue", 12);
-        headers.put("Notes", 13);
-        headers.put("Instagram", 14);
-        headers.put("LinkedIn", 15);
-        headers.put("VerifyStatus", 16);
-        headers.put("Company Size", 17);
+//        headers.put("First Name", 2);
+//        headers.put("Last Name", 3);
+//        headers.put("Full Name", 4);
+//        headers.put("Position", 5);
+//        headers.put("Telephone", 6);
+//        headers.put("Address", 7);
+//        headers.put("City", 8);
+//        headers.put("Country", 9);
+//        headers.put("Company Name", 10);
+//        headers.put("Industry", 11);
+//        headers.put("Yearly Revenue", 12);
+//        headers.put("Notes", 13);
+//        headers.put("Instagram", 14);
+//        headers.put("LinkedIn", 15);
+//        headers.put("VerifyStatus", 16);
+//        headers.put("Company Size", 17);
     }
 
     private void removeDuplicates() {
         ArrayList<String[]> result = new ArrayList<String[]>();
         for (int i = 0; i < resultList.size(); i++) {
-            if (!isContainsSameURL(resultList.get(i), result)) {
+            if (!isContainsSameURL(resultList.get(i)[0], result)) {
                 result.add(resultList.get(i));
             }
         }
         resultList = result;
     }
 
-    private boolean isContainsSameURL(String[] from, ArrayList<String[]> result) {
+    private boolean isContainsSameURL(String URL, ArrayList<String[]> result) {
         boolean flag = false;
         try {
-            if (StringUtils.isEmpty(from[0])) {
+            if (URL != null && StringUtils.isEmpty(URL)) {
                 return true;
+            }
+            else if (URL == null) {
+                return false;
             }
             for (String[] strings : result) {
                 for (String string : strings) {
                     if (string == null) {
                         continue;
                     }
-                    if (string.equalsIgnoreCase(from[0])) {
+                    if (string.equalsIgnoreCase(URL)) {
                         flag = true;
                         return flag;
                     }

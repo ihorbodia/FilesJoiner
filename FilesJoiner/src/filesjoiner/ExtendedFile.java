@@ -88,8 +88,10 @@ public class ExtendedFile extends File {
     
     private boolean isFileHasHeaders(String[] scrapedHeaders) {
         for (String scrapedHeader : scrapedHeaders) {
+            String fileHeader =  scrapedHeader.toLowerCase().replace(" ", "");
             for (Map.Entry<String, Integer> entry : LogicSingleton.getLogic().headers.entrySet()) {
-                if (entry.getKey().equalsIgnoreCase(scrapedHeader)) {
+                String defaultHeadaer = entry.getKey().toLowerCase().replace(" ", "");
+                if ((defaultHeadaer.contains(fileHeader) || fileHeader.contains(defaultHeadaer)) && !StringUtils.isBlank(fileHeader)) {
                     return true;
                 }
             }
