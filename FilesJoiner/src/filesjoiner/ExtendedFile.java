@@ -57,6 +57,8 @@ public class ExtendedFile extends File {
         settings.setNullValue("");
         settings.setEmptyValue("");
         settings.detectFormatAutomatically('\t', ' ', ',');
+        settings.setIgnoreLeadingWhitespacesInQuotes(true);
+        settings.setIgnoreTrailingWhitespacesInQuotes(true);
         CsvParser parser = new CsvParser(settings);
         
         parser.parseAll(getStream());

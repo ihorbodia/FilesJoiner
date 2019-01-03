@@ -33,7 +33,7 @@ public class FilesJoiner {
                 } catch (ClassNotFoundException | InstantiationException | IllegalAccessException ex) {
                 }
                 MainFrameGUI gui = new MainFrameGUI();
-                gui.setTitle("File joiner v1.5");
+                gui.setTitle("File joiner v1.6");
                 gui.setResizable(false);
                 gui.setVisible(true);
                 LogicSingleton.initParent(gui);

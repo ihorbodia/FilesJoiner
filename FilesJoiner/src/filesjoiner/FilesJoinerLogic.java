@@ -240,9 +240,10 @@ public class FilesJoinerLogic {
         for (ExtendedFile file : files) {
             for (Map.Entry<String, Integer> fileHeaderEntry : file.headersPositionsFrom.entrySet()) {
                 Object value = null;
+                String fileHeaderEntryItem = fileHeaderEntry.getKey().replace(" ", "").toLowerCase();
                 for (Map.Entry<String, Integer> entry : headers.entrySet()) {
-                    if (fileHeaderEntry.getKey().replace(" ", "").toLowerCase().contains(entry.getKey().replace(" ", "").toLowerCase()) || 
-                            entry.getKey().replace(" ", "").toLowerCase().contains(fileHeaderEntry.getKey().replace(" ", "").toLowerCase())) {
+                    String existsHeaders = entry.getKey().replace(" ", "").toLowerCase();
+                    if (fileHeaderEntryItem.contains(existsHeaders) || existsHeaders.contains(fileHeaderEntryItem) && fileHeaderEntryItem.length() == existsHeaders.length()) {
                         value = entry;
                         file.headersPositionsTo.put(fileHeaderEntry.getKey(), entry.getValue());
                         break;
