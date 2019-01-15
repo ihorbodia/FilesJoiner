@@ -56,7 +56,9 @@ public class ExtendedFile extends File {
         settings.setProcessor(rowProcessor);
         settings.setNullValue("");
         settings.setEmptyValue("");
-        settings.detectFormatAutomatically('\t', ' ', ',');
+        //settings.detectFormatAutomatically('\t', ' ', ',', '\n');
+        settings.setDelimiterDetectionEnabled(true, '\t', ' ', ',', '\n');
+        settings.setLineSeparatorDetectionEnabled(true);
         settings.setIgnoreLeadingWhitespacesInQuotes(true);
         settings.setIgnoreTrailingWhitespacesInQuotes(true);
         CsvParser parser = new CsvParser(settings);
@@ -135,7 +137,10 @@ public class ExtendedFile extends File {
     public  String getCutterFilename() {
         String result = "";
         String name = FilenameUtils.removeExtension(FilenameUtils.getName(getAbsolutePath()));
-        result = name.substring(0, Math.min(name.length(), 25));
+        result = name.substring(0, Math.min(name.length(), 75));
+        if (name.length() > 75) {
+            result += "...";
+        }
         return result;
     }
 

@@ -137,22 +137,20 @@ public class FilesJoinerLogic {
             sb.append("\n");
         }
         try {
-            DateFormat sdf = new SimpleDateFormat("yyyyMMdd");
-            Date date = new Date();
-            String names = " " + sdf.format(date) + "_";
+            String names = "    ";
             switch (files.size()) {
                 case 1:
                     names += files.get(0).getCutterFilename();
                     break;
                 case 2:
-                    names += files.get(0).getCutterFilename() + "...+" + files.get(1).getCutterFilename();
+                    names += files.get(0).getCutterFilename() + "+" + files.get(1).getCutterFilename();
                     break;
                 default:
                     for (int i = 0; i < 3; i++) {
                         if (i < files.size() && files.get(i) != null) {
                             names += files.get(i).getCutterFilename();
                             if (i < 2 && i < files.size()) {
-                                names += "...+";
+                                names += "+";
                             }
                         }
                     }   break;
