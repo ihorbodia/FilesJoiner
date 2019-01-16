@@ -5,17 +5,15 @@
  */
 package filesjoiner;
 
+import filesjoiner.Models.ColumnItem;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -43,6 +41,8 @@ public class FilesJoinerLogic {
     ExecutorService executorService;
     File propertiesFile;
     public Future<?> future;
+    String pathToSave;
+    ArrayList<ColumnItem> columns;
 
     public FilesJoinerLogic(MainFrameGUI parent) {
         this.parent = parent;
@@ -77,6 +77,7 @@ public class FilesJoinerLogic {
             }
             countItems();
             saveDataToFile();
+            removeEmptyColumns();
         });
 
         Thread seeker = new Thread() {
@@ -159,7 +160,7 @@ public class FilesJoinerLogic {
                 names += "...+";
                 names += (files.size() - 3) + "_more";
             }
-            String pathToSave = outputPath + File.separator + names + ".csv";
+            pathToSave = outputPath + File.separator + names + ".csv";
             Files.write(Paths.get(pathToSave), sb.toString().getBytes(), StandardOpenOption.WRITE, StandardOpenOption.CREATE);
         } catch (IOException ex) {
             Logger.getLogger(FilesJoinerLogic.class.getName()).log(Level.SEVERE, null, ex);
@@ -319,4 +320,66 @@ public class FilesJoinerLogic {
         }
         return flag;
     }
+    
+    public void removeEmptyColumns() {
+        ExtendedFile file = null;
+        try {
+            file = new ExtendedFile(pathToSave);
+            file.initFile();
+        } catch (IOException ex) {
+            Logger.getLogger(FilesJoinerLogic.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+        columns = new ArrayList<>();
+        for (int i = 0; i < file.headers.length; i++) {
+            columns.add(new ColumnItem(file.headers[i], i));
+        }
+        
+        for (ColumnItem column : columns) {
+            column.rows = new ArrayList<>();
+            for (String[] line : file.getLines()) {
+                column.rows.add(line[column.Index]);
+            }
+        }
+        checkColumns(file);
+    }
+    
+    public void checkColumns(ExtendedFile file) {
+        boolean allEqual = false;
+        for (ColumnItem column : columns) {
+           allEqual = column.rows.stream().distinct().limit(2).count() <= 1 ;
+            if (!allEqual) {
+                column.isValidColumn = !allEqual;
+            }
+        }
+        StringBuilder sb = new StringBuilder();
+        
+        for (ColumnItem column : columns) {
+            if (column.isValidColumn) {
+                sb.append("\"").append(column.Header).append("\"").append(",");
+            }
+        }
+        
+        sb.append("\n");
+        for (int i = 0; i < file.getLines().size(); i++) {
+            for (ColumnItem column : columns) {
+                if (column.isValidColumn) {
+                    sb.append("\"").append(column.rows.get(i)).append("\"").append(",");
+                }
+            }
+            sb.append("\n");
+        }
+        
+        try {
+            Files.deleteIfExists(Paths.get(pathToSave));
+            Files.write(Paths.get(pathToSave), sb.toString().getBytes(), StandardOpenOption.WRITE, StandardOpenOption.CREATE);
+        } catch (IOException ex) {
+            Logger.getLogger(FilesJoinerLogic.class.getName()).log(Level.SEVERE, null, ex);
+        }
+               
+    }
+    
+    
+    
+    
 }
