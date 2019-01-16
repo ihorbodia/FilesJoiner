@@ -371,19 +371,23 @@ public class FilesJoinerLogic {
         }
         StringBuilder sb = new StringBuilder();
         
+        String headersString = "";
         for (ColumnItem column : columns) {
             if (column.isValidColumn) {
-                sb.append("\"").append(column.Header).append("\"").append(",");
+                headersString += "\"" + column.Header + "\"" + ",";
             }
         }
+        sb.append(StringUtils.removeEnd(headersString, ","));
         
         sb.append("\n");
         for (int i = 0; i < file.getLines().size(); i++) {
+            String regularDataString = "";
             for (ColumnItem column : columns) {
                 if (column.isValidColumn) {
-                    sb.append("\"").append(column.rows.get(i)).append("\"").append(",");
+                    regularDataString += "\"" + column.rows.get(i) + "\"" + ",";
                 }
             }
+            sb.append(StringUtils.removeEnd(regularDataString, ","));
             sb.append("\n");
         }
         
