@@ -90,6 +90,7 @@ public class FilesJoinerLogic {
                     }
                 }
                 parent.getBtnProcessFiles().setEnabled(true);
+                parent.getlblUrlsCountData().setText("Finished");
             }
         };
         seeker.start();
@@ -286,6 +287,7 @@ public class FilesJoinerLogic {
     }
 
     private void removeDuplicates() {
+        parent.getlblUrlsCountData().setText("Removing duplicates...");
         ArrayList<String[]> result = new ArrayList<String[]>();
         for (int i = 0; i < resultList.size(); i++) {
             if (!isContainsSameURL(resultList.get(i)[0], result)) {
@@ -293,6 +295,20 @@ public class FilesJoinerLogic {
             }
         }
         resultList = result;
+    }
+    
+    public String normalizeURL(String URL) {
+        String result = "";
+        int pointIndex = URL.indexOf(".");
+        if (pointIndex > 0) {
+            result = URL.substring(pointIndex + 1);
+        }
+        
+        int backslashIndex = URL.indexOf("/");
+        if (backslashIndex > 0) {
+            result = URL.substring(backslashIndex + 1);
+        }
+        return result;
     }
 
     private boolean isContainsSameURL(String URL, ArrayList<String[]> result) {
@@ -309,7 +325,7 @@ public class FilesJoinerLogic {
                     if (string == null) {
                         continue;
                     }
-                    if (string.equalsIgnoreCase(URL)) {
+                    if (normalizeURL(string).equalsIgnoreCase(normalizeURL(URL))) {
                         flag = true;
                         return flag;
                     }
@@ -322,6 +338,7 @@ public class FilesJoinerLogic {
     }
     
     public void removeEmptyColumns() {
+        parent.getlblUrlsCountData().setText("Removing empty columns...");
         ExtendedFile file = null;
         try {
             file = new ExtendedFile(pathToSave);
