@@ -1,6 +1,7 @@
 <component name="libraryTable">
-  <library name="poi-4.0.0">
+  <library name="opencsv-4.3.2">
     <CLASSES>
+      <root url="jar://$PROJECT_DIR$/../lib/opencsv-4.3.2.jar!/" />
       <root url="jar://$PROJECT_DIR$/../lib/poi-4.0.0.jar!/" />
       <root url="jar://$PROJECT_DIR$/../lib/poi-ooxml-4.0.0.jar!/" />
       <root url="jar://$PROJECT_DIR$/../lib/poi-ooxml-schemas-4.0.1.jar!/" />

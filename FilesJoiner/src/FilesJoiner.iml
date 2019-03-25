@@ -9,7 +9,7 @@
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" name="org.apache.commons:commons-lang3:3.8.1" level="project" />
     <orderEntry type="library" name="org.apache.directory.studio:org.apache.commons.io:2.4" level="project" />
-    <orderEntry type="library" name="poi-4.0.0" level="project" />
     <orderEntry type="library" name="univocity-parsers-2.7.6" level="project" />
+    <orderEntry type="library" name="opencsv-4.3.2" level="project" />
   </component>
 </module>
