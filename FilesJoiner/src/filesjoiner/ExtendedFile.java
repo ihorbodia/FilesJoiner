@@ -8,24 +8,13 @@ package filesjoiner;
 import com.univocity.parsers.common.processor.RowListProcessor;
 import com.univocity.parsers.csv.CsvParser;
 import com.univocity.parsers.csv.CsvParserSettings;
-import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.StringReader;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.ss.usermodel.Workbook;
-import org.apache.poi.ss.usermodel.WorkbookFactory;
+import org.apache.poi.ss.usermodel.*;
+
+import java.io.*;
+import java.util.*;
 
 /**
  *
@@ -39,8 +28,8 @@ public class ExtendedFile extends File {
 
     public ExtendedFile(String pathname) {
         super(pathname);
-        headersPositionsTo = new HashMap<String, Integer>();
-        headersPositionsFrom = new HashMap<String, Integer>();
+        headersPositionsTo = new HashMap<>();
+        headersPositionsFrom = new HashMap<>();
     }
     public Map<String, Integer> headersPositionsTo;
     public Map<String, Integer> headersPositionsFrom;
