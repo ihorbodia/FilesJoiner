@@ -7,7 +7,6 @@ import com.univocity.parsers.common.processor.RowListProcessor;
 import com.univocity.parsers.csv.CsvParser;
 import com.univocity.parsers.csv.CsvParserSettings;
 import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
@@ -23,6 +22,7 @@ import java.util.*;
  */
 public class ExtendedFile extends File {
     private List<String[]> lines;
+
     public String getFileExtension() {
         return FilenameUtils.getExtension(this.getAbsolutePath());
     }
@@ -32,11 +32,11 @@ public class ExtendedFile extends File {
         headersPositionsTo = new HashMap<>();
         headersPositionsFrom = new HashMap<>();
     }
-    public Map<String, Integer> headersPositionsTo;
-    public Map<String, Integer> headersPositionsFrom;
-    public String[] headers;
+    Map<String, Integer> headersPositionsTo;
+    Map<String, Integer> headersPositionsFrom;
+    String[] headers;
     
-    public List<String[]> getLines() {
+    List<String[]> getLines() {
         return lines;
     }
 
@@ -51,9 +51,17 @@ public class ExtendedFile extends File {
         settings.setLineSeparatorDetectionEnabled(true);
         settings.setIgnoreLeadingWhitespacesInQuotes(true);
         settings.setIgnoreTrailingWhitespacesInQuotes(true);
+        settings.setMaxCharsPerColumn(9999999);
         CsvParser parser = new CsvParser(settings);
-        
-        parser.parseAll(getStream());
+
+
+        try {
+            Reader reader = getStream();
+            parser.parseAll(reader);
+        } catch(Exception ex) {
+            System.out.println(ex.getMessage());
+        }
+
         if (isFileHasHeaders(rowProcessor.getHeaders())) {
             settings.setHeaderExtractionEnabled(true);
             this.headers = rowProcessor.getHeaders();
@@ -66,16 +74,24 @@ public class ExtendedFile extends File {
         initHeaderPositionsFrom();
     }
     
-    private InputStream getStream() throws IOException {
-        InputStream objToRead = null;
+    private Reader getStream() throws IOException {
+        Reader objToRead = null;
          if (getFileExtension().equalsIgnoreCase("xlsx") || getFileExtension().equalsIgnoreCase("xls")) {
             InputStream inp = new FileInputStream(this);
             Workbook wb = WorkbookFactory.create(inp);
-            StringReader strReader = new StringReader(echoAsCSV(wb.getSheetAt(0)));
-            objToRead = new ByteArrayInputStream(IOUtils.toString(strReader).getBytes());
+            objToRead = new StringReader(echoAsCSV(wb.getSheetAt(0)));
+            //objToRead = new ByteArrayInputStream(IOUtils.toString(strReader).getBytes());
         }
         else if (getFileExtension().equalsIgnoreCase("csv") || getFileExtension().equalsIgnoreCase("txt")) {
-            objToRead = new FileInputStream(this);
+
+             List<String> readedlines = new ArrayList<>();
+             try (BufferedReader br = new BufferedReader(new FileReader(this))) {
+                 String line;
+                 while ((line = br.readLine()) != null) {
+                     readedlines.add(line);
+                 }
+             }
+            objToRead = new StringReader(String.join("\r\n", readedlines));
         }
          return objToRead;
     }

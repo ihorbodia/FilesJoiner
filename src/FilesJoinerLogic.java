@@ -164,6 +164,7 @@ public class FilesJoinerLogic {
             pathToSave = outputPath + File.separator + names + ".csv";
             Files.write(Paths.get(pathToSave), sb.toString().getBytes(), StandardOpenOption.WRITE, StandardOpenOption.CREATE);
         } catch (IOException ex) {
+            System.out.println(ex);
             Logger.getLogger(FilesJoinerLogic.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
