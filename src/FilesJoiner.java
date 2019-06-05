@@ -36,6 +36,11 @@ public class FilesJoiner {
                 gui.setResizable(false);
                 gui.setVisible(true);
                 LogicSingleton.initParent(gui);
+
+
+
+
+                //LogicSingleton.getLogic().newMethod();
             }
         });
     }

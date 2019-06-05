@@ -110,6 +110,7 @@ public class MainFrameGUI extends javax.swing.JFrame {
         
         System.out.print("Process files action performed");
         LogicSingleton.getLogic().StartRun();
+        //LogicSingleton.getLogic().newMethod();
         LogicSingleton.setCountToZero();
         LogicSingleton.recreateLogicObject(dropPane1.fileList);
     }//GEN-LAST:event_btnProcessFilesActionPerformed

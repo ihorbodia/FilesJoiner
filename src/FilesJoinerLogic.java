@@ -7,20 +7,12 @@
 import Models.ColumnItem;
 import org.apache.commons.lang3.StringUtils;
 
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.Objects;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
@@ -49,6 +41,53 @@ public class FilesJoinerLogic {
         initHeaders();
     }
 
+
+    public void newMethod() {
+        try {
+            String[] headers = null;
+            //String firstFile = "/path/to/firstFile.dat";
+
+            File firstFile = files.get(0);
+            files.remove(0);
+
+            Scanner scanner = new Scanner(firstFile);
+
+            if (scanner.hasNextLine()) {
+                headers = scanner.nextLine().split(",");
+            }
+
+            scanner.close();
+
+            Iterator<ExtendedFile> iterFiles = files.iterator();
+            BufferedWriter writer = new BufferedWriter(new FileWriter(firstFile, true));
+
+            while (iterFiles.hasNext()) {
+                File nextFile = iterFiles.next();
+                BufferedReader reader = new BufferedReader(new FileReader(nextFile));
+
+                String line = null;
+                String[] firstLine = null;
+                if ((line = reader.readLine()) != null)
+                    firstLine = line.split(",");
+
+                if (!Arrays.equals(headers, firstLine))
+                    throw new IOException("Header mis-match between CSV files: '" +
+                            firstFile + "' and '" + nextFile.getAbsolutePath());
+
+                while ((line = reader.readLine()) != null) {
+                    writer.write(line);
+                    writer.newLine();
+                }
+
+                reader.close();
+            }
+            writer.close();
+
+        } catch (IOException ex) {
+            System.out.println(ex.getMessage());
+        }
+    }
+
     public void initFilesList(ArrayList<ExtendedFile> inputFiles) {
         if (inputFiles != null) {
             files = inputFiles;
@@ -64,11 +103,12 @@ public class FilesJoinerLogic {
             LogicSingleton.setCountToZero();
             
             files.forEach(file -> {
-                try {
-                    file.initFile();
-                } catch (IOException ex) {
-                    Logger.getLogger(FilesJoinerLogic.class.getName()).log(Level.SEVERE, null, ex);
-                }
+                file.initFile();
+//                try {
+//                    file.initFile();
+//                } catch (IOException ex) {
+//                    Logger.getLogger(FilesJoinerLogic.class.getName()).log(Level.SEVERE, null, ex);
+//                }
             });
             normalizeHeaders();
             scrapeDataFromCsvFiles();
@@ -341,12 +381,14 @@ public class FilesJoinerLogic {
     public void removeEmptyColumns() {
         parent.getlblUrlsCountData().setText("Removing empty columns...");
         ExtendedFile file = null;
-        try {
-            file = new ExtendedFile(pathToSave);
-            file.initFile();
-        } catch (IOException ex) {
-            Logger.getLogger(FilesJoinerLogic.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        file = new ExtendedFile(pathToSave);
+        file.initFile();
+//        try {
+//            file = new ExtendedFile(pathToSave);
+//            file.initFile();
+//        } catch (IOException ex) {
+//            Logger.getLogger(FilesJoinerLogic.class.getName()).log(Level.SEVERE, null, ex);
+//        }
         
         columns = new ArrayList<>();
         for (int i = 0; i < file.headers.length; i++) {

@@ -3,7 +3,9 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
+import com.univocity.parsers.common.processor.ObjectRowProcessor;
 import com.univocity.parsers.common.processor.RowListProcessor;
+import com.univocity.parsers.common.record.Record;
 import com.univocity.parsers.csv.CsvParser;
 import com.univocity.parsers.csv.CsvParserSettings;
 import org.apache.commons.io.FilenameUtils;
@@ -14,6 +16,7 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
 
 import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 /**
@@ -40,9 +43,13 @@ public class ExtendedFile extends File {
         return lines;
     }
 
-    public void initFile() throws IOException {
+    public Reader getReader(String relativePath) throws UnsupportedEncodingException {
+        return new InputStreamReader(this.getClass().getResourceAsStream(relativePath), StandardCharsets.UTF_8);
+    }
+
+    public void initFile() {
         CsvParserSettings settings = new CsvParserSettings();
-        RowListProcessor rowProcessor = new RowListProcessor();
+        ObjectRowProcessor rowProcessor = new ObjectRowProcessor();
         settings.setProcessor(rowProcessor);
         settings.setNullValue("");
         settings.setEmptyValue("");
@@ -51,9 +58,20 @@ public class ExtendedFile extends File {
         settings.setLineSeparatorDetectionEnabled(true);
         settings.setIgnoreLeadingWhitespacesInQuotes(true);
         settings.setIgnoreTrailingWhitespacesInQuotes(true);
-        settings.setMaxCharsPerColumn(9999999);
         CsvParser parser = new CsvParser(settings);
 
+        try {
+            parser.beginParsing(getReader(this.getAbsolutePath()));
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+
+        Record record;
+        while ((record = parser.parseNextRecord()) != null) {
+            System.out.println(record.getValues());
+        }
+
+        parser.stopParsing();
 
         try {
             Reader reader = getStream();
@@ -68,9 +86,9 @@ public class ExtendedFile extends File {
         }
         else
         {
-            detectHeaders(parser.parseAll(getStream()).get(0));
+            //detectHeaders(parser.parseAll(getStream()).get(0));
         }
-        lines = parser.parseAll(getStream());
+        //lines = parser.parseAll(getStream());
         initHeaderPositionsFrom();
     }
     
