@@ -103,12 +103,11 @@ public class FilesJoinerLogic {
             LogicSingleton.setCountToZero();
             
             files.forEach(file -> {
-                file.initFile();
-//                try {
-//                    file.initFile();
-//                } catch (IOException ex) {
-//                    Logger.getLogger(FilesJoinerLogic.class.getName()).log(Level.SEVERE, null, ex);
-//                }
+                try {
+                    file.initFile();
+                } catch (IOException ex) {
+                    Logger.getLogger(FilesJoinerLogic.class.getName()).log(Level.SEVERE, null, ex);
+                }
             });
             normalizeHeaders();
             scrapeDataFromCsvFiles();
@@ -381,20 +380,18 @@ public class FilesJoinerLogic {
     public void removeEmptyColumns() {
         parent.getlblUrlsCountData().setText("Removing empty columns...");
         ExtendedFile file = null;
-        file = new ExtendedFile(pathToSave);
-        file.initFile();
-//        try {
-//            file = new ExtendedFile(pathToSave);
-//            file.initFile();
-//        } catch (IOException ex) {
-//            Logger.getLogger(FilesJoinerLogic.class.getName()).log(Level.SEVERE, null, ex);
-//        }
-        
-        columns = new ArrayList<>();
-        for (int i = 0; i < file.headers.length; i++) {
-            columns.add(new ColumnItem(file.headers[i], i));
+        try {
+            file = new ExtendedFile(pathToSave);
+            file.initFile();
+
+            columns = new ArrayList<>();
+            for (int i = 0; i < file.headers.length; i++) {
+                columns.add(new ColumnItem(file.headers[i], i));
+            }
+        } catch (IOException ex) {
+            Logger.getLogger(FilesJoinerLogic.class.getName()).log(Level.SEVERE, null, ex);
         }
-        
+
         for (ColumnItem column : columns) {
             column.rows = new ArrayList<>();
             for (String[] line : file.getLines()) {

@@ -43,13 +43,9 @@ public class ExtendedFile extends File {
         return lines;
     }
 
-    public Reader getReader(String relativePath) throws UnsupportedEncodingException {
-        return new InputStreamReader(this.getClass().getResourceAsStream(relativePath), StandardCharsets.UTF_8);
-    }
-
-    public void initFile() {
+    public void initFile() throws IOException {
         CsvParserSettings settings = new CsvParserSettings();
-        ObjectRowProcessor rowProcessor = new ObjectRowProcessor();
+        RowListProcessor rowProcessor = new RowListProcessor();
         settings.setProcessor(rowProcessor);
         settings.setNullValue("");
         settings.setEmptyValue("");
@@ -59,17 +55,6 @@ public class ExtendedFile extends File {
         settings.setIgnoreLeadingWhitespacesInQuotes(true);
         settings.setIgnoreTrailingWhitespacesInQuotes(true);
         CsvParser parser = new CsvParser(settings);
-
-        try {
-            parser.beginParsing(getReader(this.getAbsolutePath()));
-        } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        }
-
-        Record record;
-        while ((record = parser.parseNextRecord()) != null) {
-            System.out.println(record.getValues());
-        }
 
         parser.stopParsing();
 
@@ -86,9 +71,9 @@ public class ExtendedFile extends File {
         }
         else
         {
-            //detectHeaders(parser.parseAll(getStream()).get(0));
+            detectHeaders(parser.parseAll(getStream()).get(0));
         }
-        //lines = parser.parseAll(getStream());
+        lines = parser.parseAll(getStream());
         initHeaderPositionsFrom();
     }
     
