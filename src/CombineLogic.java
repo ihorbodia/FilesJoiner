@@ -1,3 +1,4 @@
+import Models.ColumnItem;
 import com.univocity.parsers.common.processor.BatchedColumnProcessor;
 import com.univocity.parsers.csv.CsvParser;
 import com.univocity.parsers.csv.CsvParserSettings;
@@ -39,28 +40,43 @@ public class CombineLogic {
     void createAndPopulateOutputFile() {
         File f = inputFiles.get(0);
         File parent = f.getParentFile();
-        File outputFile = new File(parent.getAbsolutePath() + File.separator + " merged data "+ FilenameUtils.getName(parent.getAbsolutePath())+".csv");
+        File outputFile = new File(parent.getAbsolutePath() + File.separator + " merged data "+ FilenameUtils.getName(parent.getAbsolutePath())+".txt");
+
+        StringBuilder headerRow = new StringBuilder();
+        for (int i = 0; i < columnsFiles.size(); i++) {
+            if (columnsFiles.size() == (i+1)) {
+                headerRow.append(columnsFiles.get(i).getHeader());
+            } else {
+                headerRow.append(columnsFiles.get(i).getHeader()).append(",");
+            }
+        }
 
         try {
             outputFile.createNewFile();
+            appendStringToFile(headerRow.toString(), outputFile);
             Path path = Paths.get(columnsFiles.get(0).getAbsolutePath());
             long lineCount = Files.lines(path).count();
 
             for (int i = 0; i < lineCount; i++) {
                 StringBuilder stringBuilder = new StringBuilder();
-                for (File file : columnsFiles) {
-                    try (Stream<String> lines = Files.lines(Paths.get(file.getAbsolutePath()))) {
-                        String line = lines.skip(i).findFirst().get();
-
-                        stringBuilder.append(line + ",");
+                for (int j = 0; j < columnsFiles.size(); j++) {
+                    if (columnsFiles.size() == (j+1)) {
+                        try (Stream<String> lines = Files.lines(Paths.get(columnsFiles.get(j).getAbsolutePath()))) {
+                            String line = lines.skip(i).findFirst().get();
+                            stringBuilder.append("\"").append(line).append("\"");
+                        }
+                    } else {
+                        try (Stream<String> lines = Files.lines(Paths.get(columnsFiles.get(j).getAbsolutePath()))) {
+                            String line = lines.skip(i).findFirst().get();
+                            stringBuilder.append("\"").append(line).append("\"").append(",");
+                        }
                     }
+
                 }
-                ArrayList<String> data = new ArrayList<>();
-                data.add(stringBuilder.toString());
-                appendDataToFile(data, outputFile);
+                appendStringToFile(stringBuilder.toString(), outputFile);
             }
         } catch(IOException ex) {
-            System.out.println(ex);
+            System.out.println(ex.getMessage());
         }
     }
 
@@ -68,19 +84,23 @@ public class CombineLogic {
         return (s == null) ? null : s.replaceAll(".$", "");
     }
 
+    private ArrayList<String> getEmptyData(int count) {
+        ArrayList<String> emptyData = new ArrayList<>();
+        for (int i = 0; i < count; i++) {
+            emptyData.add("");
+        }
+        return emptyData;
+    }
+
     private CsvParser getLogicParser() {
         CsvParserSettings settings = new CsvParserSettings();
         settings.setNullValue("");
         settings.setEmptyValue("");
-        //settings.detectFormatAutomatically('\t', ' ', ',', '\n');
-        settings.setDelimiterDetectionEnabled(true, '\t', ' ', ',', '\n');
+        settings.setDelimiterDetectionEnabled(true, '\t', ',', '\n');
         settings.setLineSeparatorDetectionEnabled(true);
-        settings.setIgnoreLeadingWhitespacesInQuotes(true);
-        settings.setIgnoreTrailingWhitespacesInQuotes(true);
-        settings.setIgnoreLeadingWhitespaces(true);
-        settings.setMaxCharsPerColumn(500000);
+        settings.setMaxCharsPerColumn(1000000);
         settings.setHeaderExtractionEnabled(true);
-        BatchedColumnProcessor batchedColumnProcessor = new BatchedColumnProcessor(1) {
+        BatchedColumnProcessor batchedColumnProcessor = new BatchedColumnProcessor(100) {
 
             @Override
             public void batchProcessed(int rowsInThisBatch) {
@@ -90,11 +110,9 @@ public class CombineLogic {
                     for (int i = 0; i < columnsFiles.size(); i++) {
                         File f = columnsFiles.get(i);
                         if (i >= columnValues.size()) {
-                            ArrayList<String> emptyData = new ArrayList<>();
-                            emptyData.add("");
-                            appendDataToFile(emptyData, f);
+                            appendDataToTempFile(getEmptyData(columnValues.size()), f);
                         } else {
-                            appendDataToFile(columnValues.get(i), f);
+                            appendDataToTempFile(columnValues.get(i), f);
                         }
                     }
                 } catch (IOException e) {
@@ -111,12 +129,10 @@ public class CombineLogic {
         CsvParserSettings settings = new CsvParserSettings();
         settings.setNullValue("");
         settings.setEmptyValue("");
-        //settings.detectFormatAutomatically('\t', ' ', ',', '\n');
         settings.setDelimiterDetectionEnabled(true, '\t', ' ', ',', '\n');
         settings.setLineSeparatorDetectionEnabled(true);
         settings.setIgnoreLeadingWhitespacesInQuotes(true);
         settings.setIgnoreTrailingWhitespacesInQuotes(true);
-        settings.setIgnoreLeadingWhitespaces(true);
         settings.setMaxCharsPerColumn(500000);
         BatchedColumnProcessor batchedColumnProcessor = new BatchedColumnProcessor(100) {
             boolean isHeaderExtracted = false;
@@ -133,12 +149,27 @@ public class CombineLogic {
         return new CsvParser(settings);
     }
 
+    private void appendDataToTempFile(List<String> strings, File file) throws IOException {
+        FileWriter fw = new FileWriter(file, true);
+
+        for (String string : strings) {
+            fw.write(string.replace("\"", "\"\"") + "\r\n");
+        }
+        fw.close();
+    }
+
     private void appendDataToFile(List<String> strings, File file) throws IOException {
         FileWriter fw = new FileWriter(file, true);
 
         for (String string : strings) {
-            fw.write(string + "\n");
+            fw.write(string + "\r\n");
         }
+        fw.close();
+    }
+
+    private void appendStringToFile(String string, File file) throws IOException {
+        FileWriter fw = new FileWriter(file, true);
+        fw.write(string + "\r\n");
         fw.close();
     }
 
@@ -153,7 +184,7 @@ public class CombineLogic {
     private HeaderFileObject createNewFile(String name) {
         HeaderFileObject resultFile = null;
         try {
-            resultFile = new HeaderFileObject(temporaryFolder.getAbsolutePath() + File.separator + name + ".txt");
+            resultFile = new HeaderFileObject(temporaryFolder.getAbsolutePath() + File.separator + name + ".csv");
             resultFile.setHeader(name);
             resultFile.deleteOnExit();
             resultFile.createNewFile();
