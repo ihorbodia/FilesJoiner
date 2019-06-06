@@ -1,0 +1,186 @@
+import com.univocity.parsers.common.processor.BatchedColumnProcessor;
+import com.univocity.parsers.csv.CsvParser;
+import com.univocity.parsers.csv.CsvParserSettings;
+import org.apache.commons.io.FilenameUtils;
+
+import java.io.*;
+import java.net.URISyntaxException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.*;
+import java.util.stream.Stream;
+
+public class CombineLogic {
+
+    private ArrayList<ExtendedFile> inputFiles;
+    private List<HeaderFileObject> columnsFiles;
+    private File temporaryFolder;
+
+    CombineLogic(ArrayList<ExtendedFile> inputFiles) {
+        this.inputFiles = inputFiles;
+        columnsFiles = new ArrayList<>();
+        try {
+            temporaryFolder = new File(new File(CombineLogic.class.getProtectionDomain().getCodeSource().getLocation().toURI()).getAbsoluteFile().getParent() + File.separator + "temp");
+            temporaryFolder.deleteOnExit();
+            temporaryFolder.mkdir();
+        } catch (URISyntaxException e) {
+            System.out.println("Cannot remove temporary folder");
+        }
+    }
+
+    void cleanResources() {
+        columnsFiles.forEach(x -> x.delete());
+        columnsFiles.clear();
+        temporaryFolder.delete();
+    }
+
+    void createAndPopulateOutputFile() {
+        File f = inputFiles.get(0);
+        File parent = f.getParentFile();
+        File outputFile = new File(parent.getAbsolutePath() + File.separator + " merged data "+ FilenameUtils.getName(parent.getAbsolutePath())+".csv");
+
+        try {
+            outputFile.createNewFile();
+            Path path = Paths.get(columnsFiles.get(0).getAbsolutePath());
+            long lineCount = Files.lines(path).count();
+
+            for (int i = 0; i < lineCount; i++) {
+                StringBuilder stringBuilder = new StringBuilder();
+                for (File file : columnsFiles) {
+                    try (Stream<String> lines = Files.lines(Paths.get(file.getAbsolutePath()))) {
+                        String line = lines.skip(i).findFirst().get();
+
+                        stringBuilder.append(line + ",");
+                    }
+                }
+                ArrayList<String> data = new ArrayList<>();
+                data.add(stringBuilder.toString());
+                appendDataToFile(data, outputFile);
+            }
+        } catch(IOException ex) {
+            System.out.println(ex);
+        }
+    }
+
+    public static String removeLastCharRegex(String s) {
+        return (s == null) ? null : s.replaceAll(".$", "");
+    }
+
+    private CsvParser getLogicParser() {
+        CsvParserSettings settings = new CsvParserSettings();
+        settings.setNullValue("");
+        settings.setEmptyValue("");
+        //settings.detectFormatAutomatically('\t', ' ', ',', '\n');
+        settings.setDelimiterDetectionEnabled(true, '\t', ' ', ',', '\n');
+        settings.setLineSeparatorDetectionEnabled(true);
+        settings.setIgnoreLeadingWhitespacesInQuotes(true);
+        settings.setIgnoreTrailingWhitespacesInQuotes(true);
+        settings.setIgnoreLeadingWhitespaces(true);
+        settings.setMaxCharsPerColumn(500000);
+        settings.setHeaderExtractionEnabled(true);
+        BatchedColumnProcessor batchedColumnProcessor = new BatchedColumnProcessor(1) {
+
+            @Override
+            public void batchProcessed(int rowsInThisBatch) {
+                List<List<String>> columnValues = getColumnValuesAsList();
+                System.out.println("Batch " + getBatchesProcessed() + ":");
+                try {
+                    for (int i = 0; i < columnsFiles.size(); i++) {
+                        File f = columnsFiles.get(i);
+                        if (i >= columnValues.size()) {
+                            ArrayList<String> emptyData = new ArrayList<>();
+                            emptyData.add("");
+                            appendDataToFile(emptyData, f);
+                        } else {
+                            appendDataToFile(columnValues.get(i), f);
+                        }
+                    }
+                } catch (IOException e) {
+                    System.out.println("ERROR");
+                }
+            }
+        };
+
+        settings.setProcessor(batchedColumnProcessor);
+        return new CsvParser(settings);
+    }
+
+    private CsvParser getHeaderParser() {
+        CsvParserSettings settings = new CsvParserSettings();
+        settings.setNullValue("");
+        settings.setEmptyValue("");
+        //settings.detectFormatAutomatically('\t', ' ', ',', '\n');
+        settings.setDelimiterDetectionEnabled(true, '\t', ' ', ',', '\n');
+        settings.setLineSeparatorDetectionEnabled(true);
+        settings.setIgnoreLeadingWhitespacesInQuotes(true);
+        settings.setIgnoreTrailingWhitespacesInQuotes(true);
+        settings.setIgnoreLeadingWhitespaces(true);
+        settings.setMaxCharsPerColumn(500000);
+        BatchedColumnProcessor batchedColumnProcessor = new BatchedColumnProcessor(100) {
+            boolean isHeaderExtracted = false;
+            @Override
+            public void batchProcessed(int rowsInThisBatch) {
+                if (!isHeaderExtracted) {
+                    extractHeaders(getHeaders());
+                    isHeaderExtracted = true;
+                }
+            }
+        };
+
+        settings.setProcessor(batchedColumnProcessor);
+        return new CsvParser(settings);
+    }
+
+    private void appendDataToFile(List<String> strings, File file) throws IOException {
+        FileWriter fw = new FileWriter(file, true);
+
+        for (String string : strings) {
+            fw.write(string + "\n");
+        }
+        fw.close();
+    }
+
+    private void extractHeaders(String[] headers) {
+        for (String header : headers) {
+            if(columnsFiles.stream().noneMatch(item -> item.getHeader().equalsIgnoreCase(header))) {
+                columnsFiles.add(createNewFile(header));
+            }
+        }
+    }
+
+    private HeaderFileObject createNewFile(String name) {
+        HeaderFileObject resultFile = null;
+        try {
+            resultFile = new HeaderFileObject(temporaryFolder.getAbsolutePath() + File.separator + name + ".txt");
+            resultFile.setHeader(name);
+            resultFile.deleteOnExit();
+            resultFile.createNewFile();
+        } catch (IOException e) {
+            System.out.println(e);
+        }
+        return resultFile;
+    }
+
+    private Reader getReader(File file) {
+        Reader reader = null;
+        try {
+            reader = new InputStreamReader(new FileInputStream(file), StandardCharsets.UTF_8);
+        } catch (FileNotFoundException e) {
+            System.out.println(e);
+        }
+        return reader;
+    }
+
+    void processFiles() {
+        Thread worker = new Thread(() -> {
+            inputFiles.forEach(file -> getHeaderParser().parse(file));
+            inputFiles.forEach(file -> getLogicParser().parse(getReader(file)));
+            createAndPopulateOutputFile();
+            cleanResources();
+        });
+        worker.start();
+
+    }
+}

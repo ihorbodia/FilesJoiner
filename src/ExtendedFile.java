@@ -56,8 +56,6 @@ public class ExtendedFile extends File {
         settings.setIgnoreTrailingWhitespacesInQuotes(true);
         CsvParser parser = new CsvParser(settings);
 
-        parser.stopParsing();
-
         try {
             Reader reader = getStream();
             parser.parseAll(reader);
