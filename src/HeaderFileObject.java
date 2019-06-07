@@ -1,13 +1,10 @@
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.LineIterator;
-
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 
 public class HeaderFileObject extends File {
 
     private String header = null;
-    private LineIterator lineIterator;
+    private BufferedReader bufferedReader;
+    private long rowsCount;
     public HeaderFileObject(String pathname) {
         super(pathname);
     }
@@ -20,12 +17,32 @@ public class HeaderFileObject extends File {
         this.header = header;
     }
 
-    public LineIterator getLineIterator() throws IOException {
-        lineIterator = FileUtils.lineIterator(this, "UTF-8");
-        return lineIterator;
+
+    public BufferedReader getBufferedReader() throws FileNotFoundException {
+        if (bufferedReader == null) {
+            bufferedReader = new BufferedReader(new FileReader(this));
+        }
+        return bufferedReader;
     }
 
-    public void setLineIterator(LineIterator lineIterator) {
-        this.lineIterator = lineIterator;
+    public long getRowsCount() {
+        try {
+            if (this.exists()) {
+                FileReader fr = new FileReader(this);
+                LineNumberReader lnr = new LineNumberReader(fr);
+                int linenumber = 0;
+                while (lnr.readLine() != null) {
+                    linenumber++;
+                }
+                lnr.close();
+                rowsCount = linenumber;
+            } else {
+                System.out.println("File does not exists!");
+            }
+
+        } catch (IOException e) {
+            System.out.println(e.getMessage());
+        }
+        return rowsCount;
     }
 }

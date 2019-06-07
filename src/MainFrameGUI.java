@@ -32,15 +32,12 @@ public class MainFrameGUI extends javax.swing.JFrame {
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
-        this.addWindowListener(new WindowAdapter() {
-            @Override
-            public void windowClosing(WindowEvent e) {
-                if (combineLogic != null) {
-                    combineLogic.cleanResources();
-                }
-                System.exit(0);
-            }
-        });
+//        this.addWindowListener(new WindowAdapter() {
+//            @Override
+//            public void windowClosing(WindowEvent e) {
+//                System.exit(0);
+//            }
+//        });
 
         btnProcessFiles = new javax.swing.JButton();
         lblUrlsCount = new javax.swing.JLabel();
@@ -119,12 +116,7 @@ public class MainFrameGUI extends javax.swing.JFrame {
     
     private void btnProcessFilesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnProcessFilesActionPerformed
         // TODO add your handling code here:
-        
-//        System.out.print("Process files action performed");
-//        LogicSingleton.getLogic().StartRun();
-//        //LogicSingleton.getLogic().newMethod();
-//        LogicSingleton.setCountToZero();
-//        LogicSingleton.recreateLogicObject(dropPane1.fileList);
+
         combineLogic = new CombineLogic(dropPane1.fileList);
         combineLogic.processFiles();
     }//GEN-LAST:event_btnProcessFilesActionPerformed

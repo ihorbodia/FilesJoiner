@@ -37,11 +37,6 @@ public class FilesJoiner {
                 gui.setVisible(true);
 
                 LogicSingleton.initParent(gui);
-
-
-
-
-                //LogicSingleton.getLogic().newMethod();
             }
         });
     }
