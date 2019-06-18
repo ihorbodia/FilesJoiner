@@ -217,6 +217,7 @@ class CombineLogic {
     void processFiles() {
         Thread worker = new Thread(() -> {
             this.mainFrameGUI.getlblUrlsCountData().setText("Processing");
+            this.mainFrameGUI.getCbRemoveDuplicates().setEnabled(false);
             inputFiles.forEach(file -> getHeaderParser().parse(file));
             inputFiles.forEach(file -> {
                 Reader reader = getReader(file);
@@ -230,6 +231,7 @@ class CombineLogic {
             getRowsCount();
             createAndPopulateOutputFile();
             this.mainFrameGUI.getlblUrlsCountData().setText("Finished");
+            this.mainFrameGUI.getCbRemoveDuplicates().setEnabled(true);
         });
         worker.start();
     }
