@@ -56,7 +56,7 @@ public class MainFrameGUI extends javax.swing.JFrame {
             }
         });
 
-        lblUrlsCount.setText("URLs count:");
+        lblUrlsCount.setText("Status:");
 
         dropPane1.setName(""); // NOI18N
 
@@ -117,12 +117,10 @@ public class MainFrameGUI extends javax.swing.JFrame {
     private void btnProcessFilesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnProcessFilesActionPerformed
         // TODO add your handling code here:
 
-        combineLogic = new CombineLogic(dropPane1.fileList);
+        combineLogic = new CombineLogic(dropPane1.fileList, this);
         combineLogic.processFiles();
     }//GEN-LAST:event_btnProcessFilesActionPerformed
 
-
-    
     public JLabel getlblUrlsCountData() {
         if (lblUrlsCountData != null) {
             return lblUrlsCountData;

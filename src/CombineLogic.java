@@ -15,8 +15,10 @@ class CombineLogic {
     private File temporaryFolder;
     private File outputFile;
     private long itemsCount = 0;
+    private MainFrameGUI mainFrameGUI;
 
-    CombineLogic(ArrayList<ExtendedFile> inputFiles) {
+    CombineLogic(ArrayList<ExtendedFile> inputFiles, MainFrameGUI mainFrameGUI) {
+        this.mainFrameGUI = mainFrameGUI;
         this.inputFiles = inputFiles;
         columnsFiles = new ArrayList<>();
         try {
@@ -79,6 +81,22 @@ class CombineLogic {
             emptyData.add("");
         }
         return emptyData;
+    }
+
+    public void stripDuplicatesFromFile(String filename) throws IOException {
+        BufferedReader reader = new BufferedReader(new FileReader(filename));
+        Set<String> lines = new HashSet<String>(10000); // maybe should be bigger
+        String line;
+        while ((line = reader.readLine()) != null) {
+            lines.add(line);
+        }
+        reader.close();
+        BufferedWriter writer = new BufferedWriter(new FileWriter(filename));
+        for (String unique : lines) {
+            writer.write(unique);
+            writer.newLine();
+        }
+        writer.close();
     }
 
     private CsvParser getLogicParser() {
@@ -198,6 +216,7 @@ class CombineLogic {
 
     void processFiles() {
         Thread worker = new Thread(() -> {
+            this.mainFrameGUI.getlblUrlsCountData().setText("Processing");
             inputFiles.forEach(file -> getHeaderParser().parse(file));
             inputFiles.forEach(file -> {
                 Reader reader = getReader(file);
@@ -210,6 +229,7 @@ class CombineLogic {
             });
             getRowsCount();
             createAndPopulateOutputFile();
+            this.mainFrameGUI.getlblUrlsCountData().setText("Finished");
         });
         worker.start();
     }
