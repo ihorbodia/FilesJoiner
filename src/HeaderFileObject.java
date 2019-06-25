@@ -41,7 +41,7 @@ public class HeaderFileObject extends File {
             }
 
         } catch (IOException e) {
-            System.out.println(e.getMessage());
+            System.out.println(e.getStackTrace());
         }
         return rowsCount;
     }

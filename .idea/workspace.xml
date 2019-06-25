@@ -7,9 +7,15 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="3c34edc8-77f4-4b5e-826f-fc8d79016c92" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/.idea/dictionaries/ibodia.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/CombineLogic.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/CombineLogic.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/MainFrameGUI.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/MainFrameGUI.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/DropPanel.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/DropPanel.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/ExtendedFile.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/ExtendedFile.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/FilesJoiner.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/FilesJoiner.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/FilesJoinerLogic.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/FilesJoinerLogic.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/HeaderFileObject.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/HeaderFileObject.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/LogicSingleton.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/LogicSingleton.java" afterDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/out/" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -18,40 +24,47 @@
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
+  <component name="CoverageDataManager">
+    <SUITE FILE_PATH="coverage/FilesJoiner$Main.ic" NAME="Main Coverage Results" MODIFIED="1561393718302" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" />
+  </component>
   <component name="FUSProjectUsageTrigger">
     <session id="-1009118259">
       <usages-collector id="statistics.lifecycle.project">
         <counts>
-          <entry key="project.closed" value="4" />
+          <entry key="project.closed" value="8" />
+          <entry key="project.open.time.0" value="1" />
           <entry key="project.open.time.1" value="1" />
-          <entry key="project.open.time.14" value="1" />
-          <entry key="project.open.time.18" value="1" />
+          <entry key="project.open.time.14" value="2" />
+          <entry key="project.open.time.17" value="1" />
+          <entry key="project.open.time.18" value="2" />
           <entry key="project.open.time.2" value="1" />
-          <entry key="project.opened" value="4" />
+          <entry key="project.open.time.22" value="1" />
+          <entry key="project.open.time.32" value="1" />
+          <entry key="project.opened" value="10" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.extensions.open">
         <counts>
-          <entry key="class" value="6" />
+          <entry key="class" value="18" />
           <entry key="form" value="2" />
-          <entry key="java" value="32" />
+          <entry key="java" value="40" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.open">
         <counts>
-          <entry key="CLASS" value="6" />
+          <entry key="CLASS" value="18" />
           <entry key="GUI_DESIGNER_FORM" value="2" />
-          <entry key="JAVA" value="32" />
+          <entry key="JAVA" value="40" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.extensions.edit">
         <counts>
-          <entry key="java" value="2301" />
+          <entry key="java" value="3695" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.edit">
         <counts>
-          <entry key="JAVA" value="2301" />
+          <entry key="JAVA" value="3695" />
         </counts>
       </usages-collector>
     </session>
@@ -61,8 +74,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/FilesJoiner.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="527">
-              <caret line="39" selection-start-line="39" selection-end-line="39" />
+            <state relative-caret-position="255">
+              <caret line="23" column="21" selection-start-line="23" selection-start-column="21" selection-end-line="23" selection-end-column="21" />
             </state>
           </provider>
         </entry>
@@ -70,8 +83,8 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/CombineLogic.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="377">
-              <caret line="206" column="41" lean-forward="true" selection-start-line="206" selection-start-column="41" selection-end-line="206" selection-end-column="41" />
+            <state relative-caret-position="234">
+              <caret line="166" column="35" lean-forward="true" selection-start-line="166" selection-start-column="35" selection-end-line="166" selection-end-column="35" />
               <folding>
                 <element signature="imports" expanded="true" />
               </folding>
@@ -80,37 +93,25 @@
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/FilesJoinerLogic.java">
+        <entry file="file://$PROJECT_DIR$/src/ExtendedFile.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1836">
-              <caret line="126" column="42" selection-start-line="126" selection-start-column="42" selection-end-line="126" selection-end-column="42" />
+            <state relative-caret-position="17">
+              <caret line="1" column="17" selection-start-line="1" selection-start-column="17" selection-end-line="1" selection-end-column="17" />
               <folding>
                 <element signature="imports" expanded="true" />
-                <element signature="e#3605#4082#0" expanded="true" />
-                <element signature="e#4081#4082#0" expanded="true" />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/LogicSingleton.java">
+        <entry file="file://$PROJECT_DIR$/src/DropPanel.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="323">
-              <caret line="21" column="21" selection-start-line="21" selection-start-column="21" selection-end-line="21" selection-end-column="21" />
+            <state relative-caret-position="1564">
+              <caret line="111" selection-start-line="111" selection-end-line="111" />
               <folding>
-                <element signature="e#842#843#0" expanded="true" />
-                <element signature="e#899#900#0" expanded="true" />
+                <element signature="imports" expanded="true" />
               </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/HeaderFileObject.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="306">
-              <caret line="24" column="30" selection-start-line="24" selection-start-column="30" selection-end-line="24" selection-end-column="30" />
             </state>
           </provider>
         </entry>
@@ -148,19 +149,36 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>lines =</find>
-      <find>append</find>
-      <find>createAndPopulateOutputFileWithIndexedReader</find>
-      <find>columnsFiles</find>
-      <find>inputFiles.get(0)</find>
-      <find>.delete</find>
       <find>proce</find>
       <find>itemsCount</find>
       <find>itemsCount =</find>
       <find>delete</find>
-      <find>getReader</find>
       <find>lblUrlsCount</find>
       <find>logic</find>
+      <find>this.inputFiles</find>
+      <find>files</find>
+      <find>csv</find>
+      <find>echo</find>
+      <find>echoAsCSV</find>
+      <find>getHeaderParser</find>
+      <find>createAnd</find>
+      <find>catch</find>
+      <find>System.out.println(e.getMessage());</find>
+      <find>getMessage</find>
+      <find>getRowsCount</find>
+      <find>headerRow</find>
+      <find>initHeaderRow</find>
+      <find>append</find>
+      <find>appendStringToFile</find>
+      <find>getStream</find>
+      <find>CombineLogic</find>
+      <find>stripDuplicatesFromFile</find>
+      <find>echoas</find>
+      <find>getLogicParser</find>
+      <find>getEmptyDataIfNull</find>
+      <find>getLogic</find>
+      <find>xlsx</find>
+      <find>getReader</find>
     </findStrings>
   </component>
   <component name="Git.Settings">
@@ -174,22 +192,22 @@
         <option value="$PROJECT_DIR$/src/Main.java" />
         <option value="$PROJECT_DIR$/src/Models/ColumnItem.java" />
         <option value="$PROJECT_DIR$/src/DropPane.java" />
-        <option value="$PROJECT_DIR$/src/DropPanel.java" />
-        <option value="$PROJECT_DIR$/src/ExtendedFile.java" />
-        <option value="$PROJECT_DIR$/src/FilesJoiner.java" />
-        <option value="$PROJECT_DIR$/src/HeaderFileObject.java" />
-        <option value="$PROJECT_DIR$/src/LogicSingleton.java" />
         <option value="$PROJECT_DIR$/src/MainFrameGUI.java" />
+        <option value="$PROJECT_DIR$/src/HeaderFileObject.java" />
         <option value="$PROJECT_DIR$/src/FilesJoinerLogic.java" />
+        <option value="$PROJECT_DIR$/src/LogicSingleton.java" />
+        <option value="$PROJECT_DIR$/src/DropPanel.java" />
+        <option value="$PROJECT_DIR$/src/FilesJoiner.java" />
+        <option value="$PROJECT_DIR$/src/ExtendedFile.java" />
         <option value="$PROJECT_DIR$/src/CombineLogic.java" />
       </list>
     </option>
   </component>
   <component name="ProjectFrameBounds" extendedState="6">
-    <option name="x" value="-8" />
-    <option name="y" value="-8" />
-    <option name="width" value="1936" />
-    <option name="height" value="1056" />
+    <option name="x" value="122" />
+    <option name="y" value="-23" />
+    <option name="width" value="1452" />
+    <option name="height" value="865" />
   </component>
   <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
   <component name="ProjectView">
@@ -197,15 +215,23 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="AndroidView" />
-      <pane id="PackagesPane" />
-      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
             <path>
               <item name="FilesJoiner" type="b2602c69:ProjectViewProjectNode" />
               <item name="FilesJoiner" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="FilesJoiner" type="b2602c69:ProjectViewProjectNode" />
+              <item name="FilesJoiner" type="462c0819:PsiDirectoryNode" />
+              <item name="out" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="FilesJoiner" type="b2602c69:ProjectViewProjectNode" />
+              <item name="FilesJoiner" type="462c0819:PsiDirectoryNode" />
+              <item name="out" type="462c0819:PsiDirectoryNode" />
+              <item name="production" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
               <item name="FilesJoiner" type="b2602c69:ProjectViewProjectNode" />
@@ -228,14 +254,17 @@
           <select />
         </subPane>
       </pane>
+      <pane id="PackagesPane" />
+      <pane id="Scope" />
+      <pane id="AndroidView" />
     </panes>
   </component>
   <component name="PropertiesComponent">
     <property name="Downloaded.Files.Path.Enabled" value="false" />
     <property name="Repository.Attach.JavaDocs" value="false" />
     <property name="Repository.Attach.Sources" value="false" />
-    <property name="com.android.tools.idea.instantapp.provision.ProvisionBeforeRunTaskProvider.myTimeStamp" value="1559924061899" />
-    <property name="project.structure.last.edited" value="Artifacts" />
+    <property name="com.android.tools.idea.instantapp.provision.ProvisionBeforeRunTaskProvider.myTimeStamp" value="1561422086236" />
+    <property name="project.structure.last.edited" value="Libraries" />
     <property name="project.structure.proportion" value="0.15" />
     <property name="project.structure.side.proportion" value="0.3264368" />
   </component>
@@ -284,7 +313,7 @@
     <frame x="-8" y="-8" width="1936" height="1056" extended-state="6" />
     <editor active="true" />
     <layout>
-      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.26332623" />
+      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.20149253" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Capture Tool" order="2" />
       <window_info id="Image Layers" order="3" />
@@ -292,16 +321,16 @@
       <window_info id="UI Designer" order="5" />
       <window_info id="Favorites" order="6" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
-      <window_info anchor="bottom" id="Find" order="1" />
-      <window_info anchor="bottom" id="Run" order="2" />
-      <window_info anchor="bottom" id="Debug" order="3" weight="0.28031147" />
+      <window_info anchor="bottom" id="Find" order="1" weight="0.32925472" />
+      <window_info anchor="bottom" id="Run" order="2" weight="0.32925472" />
+      <window_info active="true" anchor="bottom" id="Debug" order="3" visible="true" weight="0.30144605" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
       <window_info anchor="bottom" id="TODO" order="6" />
       <window_info anchor="bottom" id="Terminal" order="7" />
       <window_info anchor="bottom" id="Event Log" order="8" side_tool="true" />
       <window_info anchor="bottom" id="Version Control" order="9" show_stripe_button="false" />
-      <window_info anchor="bottom" id="Messages" order="10" visible="true" weight="0.32925472" />
+      <window_info anchor="bottom" id="Messages" order="10" weight="0.32925472" />
       <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
       <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
@@ -319,12 +348,6 @@
     <breakpoint-manager>
       <breakpoints>
         <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/ExtendedFile.java</url>
-          <line>64</line>
-          <properties />
-          <option name="timeStamp" value="14" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/FilesJoinerLogic.java</url>
           <line>74</line>
           <properties />
@@ -336,23 +359,36 @@
           <properties />
           <option name="timeStamp" value="21" />
         </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/FilesJoinerLogic.java</url>
-          <line>79</line>
-          <properties />
-          <option name="timeStamp" value="22" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/ExtendedFile.java</url>
-          <line>43</line>
-          <properties />
-          <option name="timeStamp" value="25" />
-        </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>
   </component>
   <component name="debuggerHistoryManager">
     <expressions id="evaluateExpression">
+      <expression>
+        <expression-string>getColumnValuesAsList()</expression-string>
+        <language-id>JAVA</language-id>
+        <evaluation-mode>EXPRESSION</evaluation-mode>
+      </expression>
+      <expression>
+        <expression-string>headerRow.append(item.getHeader()).append(&quot;,&quot;)</expression-string>
+        <language-id>JAVA</language-id>
+        <evaluation-mode>EXPRESSION</evaluation-mode>
+      </expression>
+      <expression>
+        <expression-string>item.getHeader()</expression-string>
+        <language-id>JAVA</language-id>
+        <evaluation-mode>EXPRESSION</evaluation-mode>
+      </expression>
+      <expression>
+        <expression-string>columnsFiles.indexOf(item) == (columnsFiles.size() -1)</expression-string>
+        <language-id>JAVA</language-id>
+        <evaluation-mode>EXPRESSION</evaluation-mode>
+      </expression>
+      <expression>
+        <expression-string>outputFile.exists()</expression-string>
+        <language-id>JAVA</language-id>
+        <evaluation-mode>EXPRESSION</evaluation-mode>
+      </expression>
       <expression>
         <expression-string>String.join(&quot;\r\n&quot;, readedlines)</expression-string>
         <language-id>JAVA</language-id>
@@ -382,26 +418,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/DropPanel.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="323">
-          <caret line="26" column="93" selection-start-line="26" selection-start-column="93" selection-end-line="26" selection-end-column="93" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/ExtendedFile.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="199">
-          <caret line="79" column="99" selection-start-line="79" selection-start-column="99" selection-end-line="79" selection-end-column="99" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="jar://$MAVEN_REPOSITORY$/com/jramoyo/indexed-file-reader-java6/1.0/indexed-file-reader-java6-1.0.jar!/com/jramoyo/io/IndexedFileReader.class">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="190">
@@ -423,13 +439,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="122">
           <caret line="388" column="31" lean-forward="true" selection-start-line="388" selection-start-column="31" selection-end-line="388" selection-end-column="31" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://$MAVEN_REPOSITORY$/com/univocity/univocity-parsers/2.8.2/univocity-parsers-2.8.2.jar!/com/univocity/parsers/common/Internal.class">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="421">
-          <caret line="50" selection-start-line="50" selection-end-line="50" />
         </state>
       </provider>
     </entry>
@@ -461,20 +470,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="jar://$MAVEN_REPOSITORY$/com/univocity/univocity-parsers/2.8.2/univocity-parsers-2.8.2.jar!/com/univocity/parsers/common/processor/core/AbstractBatchedColumnProcessor.class">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="207">
-          <caret line="45" selection-start-line="45" selection-end-line="45" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://$MAVEN_REPOSITORY$/com/univocity/univocity-parsers/2.8.2/univocity-parsers-2.8.2.jar!/com/univocity/parsers/common/AbstractParser.class">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="224">
-          <caret line="373" selection-start-line="373" selection-end-line="373" />
-        </state>
-      </provider>
-    </entry>
     <entry file="jar://C:/Program Files (x86)/Java/jdk1.8.0_131/src.zip!/java/lang/Thread.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="207">
@@ -485,40 +480,100 @@
     <entry file="file://$PROJECT_DIR$/src/MainFrameGUI.form">
       <provider selected="true" editor-type-id="ui-designer" />
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/FilesJoiner.java">
+    <entry file="file://$PROJECT_DIR$/src/HeaderFileObject.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="527">
-          <caret line="39" selection-start-line="39" selection-end-line="39" />
+        <state relative-caret-position="340">
+          <caret line="26" selection-start-line="26" selection-end-line="26" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://C:/Program Files (x86)/Java/jdk1.8.0_131/src.zip!/java/io/OutputStreamWriter.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="384">
+          <caret line="227" column="16" selection-start-line="227" selection-start-column="16" selection-end-line="227" selection-end-column="16" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://C:/Program Files (x86)/Java/jdk1.8.0_131/src.zip!/java/io/FileWriter.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="343">
+          <caret line="107" column="5" lean-forward="true" selection-start-line="107" selection-start-column="5" selection-end-line="107" selection-end-column="5" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://C:/Program Files (x86)/Java/jdk1.8.0_131/src.zip!/java/io/FileOutputStream.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="199">
+          <caret line="267" column="50" lean-forward="true" selection-start-line="267" selection-start-column="50" selection-end-line="267" selection-end-column="50" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/FilesJoinerLogic.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1836">
-          <caret line="126" column="42" selection-start-line="126" selection-start-column="42" selection-end-line="126" selection-end-column="42" />
-          <folding>
-            <element signature="imports" expanded="true" />
-            <element signature="e#3605#4082#0" expanded="true" />
-            <element signature="e#4081#4082#0" expanded="true" />
-          </folding>
+        <state relative-caret-position="283">
+          <caret line="92" column="33" lean-forward="true" selection-end-line="446" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/LogicSingleton.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="323">
-          <caret line="21" column="21" selection-start-line="21" selection-start-column="21" selection-end-line="21" selection-end-column="21" />
+        <state relative-caret-position="272">
+          <caret line="16" column="59" lean-forward="true" selection-start-line="16" selection-start-column="59" selection-end-line="16" selection-end-column="59" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://$MAVEN_REPOSITORY$/org/apache/poi/poi/4.0.0/poi-4.0.0.jar!/org/apache/poi/hssf/usermodel/HSSFWorkbook.class">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="192">
+          <caret line="560" selection-start-line="560" selection-end-line="560" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://$MAVEN_REPOSITORY$/com/univocity/univocity-parsers/2.8.2/univocity-parsers-2.8.2.jar!/com/univocity/parsers/common/processor/core/AbstractBatchedColumnProcessor.class">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="177">
+          <caret line="32" selection-start-line="32" selection-end-line="32" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://$MAVEN_REPOSITORY$/com/univocity/univocity-parsers/2.8.2/univocity-parsers-2.8.2.jar!/com/univocity/parsers/common/Internal.class">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="204">
+          <caret line="16" selection-start-line="16" selection-end-line="16" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://$MAVEN_REPOSITORY$/com/univocity/univocity-parsers/2.8.2/univocity-parsers-2.8.2.jar!/com/univocity/parsers/common/AbstractParser.class">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="337">
+          <caret line="111" selection-start-line="111" selection-end-line="111" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://C:/Program Files (x86)/Java/jdk1.8.0_131/src.zip!/java/util/List.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="201">
+          <caret line="543" column="6" selection-start-line="543" selection-start-column="6" selection-end-line="543" selection-end-column="6" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/ExtendedFile.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="17">
+          <caret line="1" column="17" selection-start-line="1" selection-start-column="17" selection-end-line="1" selection-end-column="17" />
           <folding>
-            <element signature="e#842#843#0" expanded="true" />
-            <element signature="e#899#900#0" expanded="true" />
+            <element signature="imports" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/HeaderFileObject.java">
+    <entry file="file://$PROJECT_DIR$/src/DropPanel.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="306">
-          <caret line="24" column="30" selection-start-line="24" selection-start-column="30" selection-end-line="24" selection-end-column="30" />
+        <state relative-caret-position="1564">
+          <caret line="111" selection-start-line="111" selection-end-line="111" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
@@ -540,10 +595,17 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/src/FilesJoiner.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="255">
+          <caret line="23" column="21" selection-start-line="23" selection-start-column="21" selection-end-line="23" selection-end-column="21" />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/src/CombineLogic.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="377">
-          <caret line="206" column="41" lean-forward="true" selection-start-line="206" selection-start-column="41" selection-end-line="206" selection-end-column="41" />
+        <state relative-caret-position="234">
+          <caret line="166" column="35" lean-forward="true" selection-start-line="166" selection-start-column="35" selection-end-line="166" selection-end-column="35" />
           <folding>
             <element signature="imports" expanded="true" />
           </folding>

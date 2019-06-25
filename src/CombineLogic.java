@@ -3,6 +3,10 @@ import com.univocity.parsers.csv.CsvParser;
 import com.univocity.parsers.csv.CsvParserSettings;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.ss.usermodel.WorkbookFactory;
 import java.io.*;
 import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
@@ -17,6 +21,8 @@ class CombineLogic {
     private long itemsCount = 0;
     private MainFrameGUI mainFrameGUI;
 
+    private String headerRow;
+
     CombineLogic(ArrayList<ExtendedFile> inputFiles, MainFrameGUI mainFrameGUI) {
         this.mainFrameGUI = mainFrameGUI;
         this.inputFiles = inputFiles;
@@ -29,34 +35,41 @@ class CombineLogic {
         }
     }
 
-    private void createAndPopulateOutputFile() {
+    private synchronized void createOutputFile() {
         File f = inputFiles.stream().findFirst().get();
         File parent = f.getParentFile();
         try {
             outputFile = new File(parent.getAbsolutePath() + File.separator + " merged data "+ FilenameUtils.getName(parent.getAbsolutePath())+".csv");
             if (outputFile.exists()) {
                 outputFile.delete();
-                outputFile.createNewFile();
             }
+            outputFile.createNewFile();
         } catch (IOException ex) {
             System.out.println(ex.getMessage());
         }
+    }
 
+    private synchronized void initHeaderRow() {
         StringBuilder headerRow = new StringBuilder();
         for (HeaderFileObject item : columnsFiles) {
-            if(columnsFiles.indexOf(item) == (columnsFiles.size() -1)) {
+            if (columnsFiles.indexOf(item) == (columnsFiles.size() - 1)) {
                 headerRow.append(item.getHeader());
             } else {
                 headerRow.append(item.getHeader()).append(",");
             }
         }
+        this.headerRow = headerRow.toString();
+    }
 
+    private synchronized void populateOutputFile() {
+        if(!this.mainFrameGUI.getCbRemoveDuplicates().isSelected()) {
+            appendStringToFile(this.headerRow, outputFile);
+        }
         try {
-            appendStringToFile(headerRow.toString(), outputFile);
             for (int i = 0; i < itemsCount; i++) {
                 StringBuilder stringBuilder = new StringBuilder();
                 for (HeaderFileObject headerFileObject : columnsFiles) {
-                    if(columnsFiles.indexOf(headerFileObject) == (columnsFiles.size() -1)) {
+                    if (columnsFiles.indexOf(headerFileObject) == (columnsFiles.size() - 1)) {
                         String data = headerFileObject.getBufferedReader().readLine();
                         stringBuilder.append("\"").append(data).append("\"");
                     } else {
@@ -69,8 +82,8 @@ class CombineLogic {
             for (HeaderFileObject headerFileObject : columnsFiles) {
                 headerFileObject.getBufferedReader().close();
             }
-            FileUtils.forceDelete(temporaryFolder);
-        } catch(IOException ex) {
+        } catch (IOException ex) {
+            System.out.println(Arrays.toString(ex.getStackTrace()));
             System.out.println(ex.getMessage());
         }
     }
@@ -83,16 +96,31 @@ class CombineLogic {
         return emptyData;
     }
 
-    public void stripDuplicatesFromFile(String filename) throws IOException {
-        BufferedReader reader = new BufferedReader(new FileReader(filename));
-        Set<String> lines = new HashSet<String>(10000); // maybe should be bigger
+    private List<String> getEmptyDataIfNull(List<String> list) {
+        for (int i = 0; i < list.size(); i++) {
+            if (list.get(i) == null) {
+                list.set(i, "");
+            }
+        }
+        return list;
+    }
+
+    private void stripDuplicatesFromFile() throws IOException, OutOfMemoryError {
+        BufferedReader reader = new BufferedReader(new FileReader(outputFile));
+        Set<String> lines = new HashSet<>(5000000);
         String line;
         while ((line = reader.readLine()) != null) {
             lines.add(line);
         }
         reader.close();
-        BufferedWriter writer = new BufferedWriter(new FileWriter(filename));
+        BufferedWriter writer = new BufferedWriter(new FileWriter(outputFile));
+        boolean isHeaderAdded = false;
         for (String unique : lines) {
+            if (!isHeaderAdded) {
+                writer.write(this.headerRow);
+                writer.newLine();
+                isHeaderAdded = true;
+            }
             writer.write(unique);
             writer.newLine();
         }
@@ -103,7 +131,7 @@ class CombineLogic {
         CsvParserSettings settings = new CsvParserSettings();
         settings.setNullValue("");
         settings.setEmptyValue("");
-        settings.setDelimiterDetectionEnabled(true, '\t', ' ', ',', '\n');
+        settings.setDelimiterDetectionEnabled(true, '\t', ',', ';','\n');
         settings.setLineSeparatorDetectionEnabled(true);
         settings.setIgnoreLeadingWhitespacesInQuotes(true);
         settings.setIgnoreTrailingWhitespacesInQuotes(true);
@@ -113,18 +141,18 @@ class CombineLogic {
 
             @Override
             public void batchProcessed(int rowsInThisBatch) {
-                List<List<String>> columnValues = getColumnValuesAsList();
-                System.out.println("Batch " + getBatchesProcessed() + ":");
                 try {
+                    List<List<String>> columnValues = getColumnValuesAsList();
+                    System.out.println("Batch " + getBatchesProcessed() + ":");
                     for (int i = 0; i < columnsFiles.size(); i++) {
                         File f = columnsFiles.get(i);
                         if (i >= columnValues.size()) {
                             appendDataToTempFile(getEmptyData(columnValues.size()), f);
                         } else {
-                            appendDataToTempFile(columnValues.get(i), f);
+                            appendDataToTempFile(getEmptyDataIfNull(columnValues.get(i)), f);
                         }
                     }
-                } catch (IOException e) {
+                } catch (Exception e) {
                     System.out.println(e.getMessage());
                 }
             }
@@ -137,7 +165,7 @@ class CombineLogic {
         CsvParserSettings settings = new CsvParserSettings();
         settings.setNullValue("");
         settings.setEmptyValue("");
-        settings.setDelimiterDetectionEnabled(true, '\t', ' ', ',', '\n');
+        settings.setDelimiterDetectionEnabled(true, '\t', ';', ',', '\n');
         settings.setLineSeparatorDetectionEnabled(true);
         settings.setIgnoreLeadingWhitespacesInQuotes(true);
         settings.setIgnoreTrailingWhitespacesInQuotes(true);
@@ -158,6 +186,7 @@ class CombineLogic {
     }
 
     private void getRowsCount() {
+        itemsCount = 0;
         for (HeaderFileObject file : columnsFiles) {
             long fileRows = file.getRowsCount();
             if (itemsCount < fileRows) {
@@ -166,22 +195,29 @@ class CombineLogic {
         }
     }
 
-    private void appendDataToTempFile(List<String> strings, File file) throws IOException {
-        FileWriter fw = new FileWriter(file, true);
-
-        for (String string : strings) {
-            fw.write(string.replace("\"", "\"\"") + "\r\n");
+    private synchronized void appendDataToTempFile(List<String> strings, File file) {
+        try (FileWriter fw = new FileWriter(file, true);
+             BufferedWriter bw = new BufferedWriter(fw);
+             PrintWriter out = new PrintWriter(bw)) {
+            for (String string : strings) {
+                out.println(string.replace("\"", "\"\""));
+            }
+        } catch (IOException e) {
+            System.out.println("Error: " + e.getMessage());
         }
-        fw.close();
     }
 
-    private void appendStringToFile(String string, File file) throws IOException {
-        FileWriter fw = new FileWriter(file, true);
-        fw.write(string + "\r\n");
-        fw.close();
+    private synchronized void appendStringToFile(String string, File file) {
+        try (FileWriter fw = new FileWriter(file, true);
+             BufferedWriter bw = new BufferedWriter(fw);
+             PrintWriter out = new PrintWriter(bw)) {
+            out.println(string);
+        } catch (IOException e) {
+            System.out.println("Error: " + e.getMessage());
+        }
     }
 
-    private void extractHeaders(String[] headers) {
+    private synchronized void extractHeaders(String[] headers) {
         for (String header : headers) {
             if(columnsFiles.stream().noneMatch(item -> item.getHeader().equalsIgnoreCase(header))) {
                 columnsFiles.add(createNewFile(header));
@@ -199,39 +235,87 @@ class CombineLogic {
             }
             resultFile.setHeader(name);
         } catch (IOException e) {
-            System.out.println(e);
+            System.out.println(Arrays.toString(e.getStackTrace()));
         }
         return resultFile;
     }
 
-    private Reader getReader(File file) {
+    private Reader getReader(ExtendedFile file) {
         Reader reader = null;
-        try {
-            reader = new InputStreamReader(new FileInputStream(file), StandardCharsets.UTF_8);
-        } catch (FileNotFoundException e) {
-            System.out.println(e);
+        if (file.getFileExtension().equalsIgnoreCase("xlsx") || file.getFileExtension().equalsIgnoreCase("xls")) {
+            try {
+                InputStream inp = new FileInputStream(file);
+                Workbook wb = WorkbookFactory.create(inp);
+                reader = new StringReader(echoAsCSV(wb.getSheetAt(0)));
+            } catch (IOException e) {
+                System.out.println(Arrays.toString(e.getStackTrace()));
+            }
+        } else {
+            try {
+                reader = new InputStreamReader(new FileInputStream(file), StandardCharsets.UTF_8);
+            } catch (FileNotFoundException e) {
+                System.out.println(Arrays.toString(e.getStackTrace()));
+            }
         }
         return reader;
+    }
+
+    private String echoAsCSV(Sheet sheet) {
+        StringBuilder result = new StringBuilder();
+        Row row;
+        for (int i = 0; i <= sheet.getLastRowNum(); i++) {
+            row = sheet.getRow(i);
+            for (int j = 0; j < row.getLastCellNum(); j++) {
+                result.append("\"").append(row.getCell(j, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK).toString().replaceAll("\r", "").replaceAll("\n", "")).append("\",");
+            }
+            if(result.toString().endsWith(","))
+            {
+                result = new StringBuilder(result.substring(0, result.length() - 1));
+            }
+            result.append("\n");
+        }
+        return result.toString();
     }
 
     void processFiles() {
         Thread worker = new Thread(() -> {
             this.mainFrameGUI.getlblUrlsCountData().setText("Processing");
             this.mainFrameGUI.getCbRemoveDuplicates().setEnabled(false);
-            inputFiles.forEach(file -> getHeaderParser().parse(file));
-            inputFiles.forEach(file -> {
-                Reader reader = getReader(file);
-                getLogicParser().parse(reader);
-                try {
-                    reader.close();
-                } catch (IOException e) {
-                    System.out.println(e.getMessage());
+            this.mainFrameGUI.getBtnProcessFiles().setEnabled(false);
+            try {
+                inputFiles.forEach(file -> {
+                    Reader reader = getReader(file);
+                    getHeaderParser().parse(reader);
+                    try {
+                        reader.close();
+                    } catch (IOException e) {
+                        System.out.println(Arrays.toString(e.getStackTrace()));
+                    }
+                });
+                inputFiles.forEach(file -> {
+                    Reader reader = getReader(file);
+                    getLogicParser().parse(reader);
+                    try {
+                        reader.close();
+                    } catch (IOException e) {
+                        System.out.println(Arrays.toString(e.getStackTrace()));
+                    }
+                });
+                getRowsCount();
+                createOutputFile();
+                initHeaderRow();
+
+                populateOutputFile();
+                if(this.mainFrameGUI.getCbRemoveDuplicates().isSelected()) {
+                    stripDuplicatesFromFile();
                 }
-            });
-            getRowsCount();
-            createAndPopulateOutputFile();
-            this.mainFrameGUI.getlblUrlsCountData().setText("Finished");
+                FileUtils.forceDelete(temporaryFolder);
+                this.mainFrameGUI.getlblUrlsCountData().setText("Finished: " + (itemsCount + 1) + " items processed.");
+            } catch (Exception ex) {
+                this.mainFrameGUI.getlblUrlsCountData().setText("Finished with error: " + ex.getMessage());
+            }
             this.mainFrameGUI.getCbRemoveDuplicates().setEnabled(true);
+            this.mainFrameGUI.getBtnProcessFiles().setEnabled(true);
         });
         worker.start();
     }

@@ -69,7 +69,6 @@ public class DropPanel extends JPanel {
                         fileList = new ArrayList(arr.get(0));
                         fileList = getFiles(fileList);
                         if (fileList.size() > 0) {
-                            LogicSingleton.setCountToZero();
                             table.clearSelection();
                             Point point = dtde.getLocation();
                             int row = table.rowAtPoint(point);
@@ -91,7 +90,6 @@ public class DropPanel extends JPanel {
                                     }
                                 }
                             }
-                            LogicSingleton.getLogic().initFilesList(fileListToTransfer);
                         }
                     } catch (IOException ex) {
                         Logger.getLogger(DropPanel.class.getName()).log(Level.SEVERE, null, ex);
@@ -111,7 +109,6 @@ public class DropPanel extends JPanel {
         ArrayList<File> allFiles = new ArrayList<File>();
         String[] exts = {"xlsx", "xls", "csv", "txt"};
         for (File file : files) {
-            LogicSingleton.getLogic().setOutputPath(file.getParentFile().getAbsolutePath());
             if (file.isDirectory()) {
                 allFiles.addAll(FileUtils.listFiles(file, exts, true));
             }
