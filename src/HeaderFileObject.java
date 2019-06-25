@@ -1,31 +1,31 @@
 import java.io.*;
 
-public class HeaderFileObject extends File {
+class HeaderFileObject extends File {
 
     private String header = null;
     private BufferedReader bufferedReader;
     private long rowsCount;
-    public HeaderFileObject(String pathname) {
+    HeaderFileObject(String pathname) {
         super(pathname);
     }
 
-    public String getHeader() {
+    String getHeader() {
         return header;
     }
 
-    public void setHeader(String header) {
+    void setHeader(String header) {
         this.header = header;
     }
 
 
-    public BufferedReader getBufferedReader() throws FileNotFoundException {
+    BufferedReader getBufferedReader() throws FileNotFoundException {
         if (bufferedReader == null) {
             bufferedReader = new BufferedReader(new FileReader(this));
         }
         return bufferedReader;
     }
 
-    public long getRowsCount() {
+    long getRowsCount() {
         try {
             if (this.exists()) {
                 FileReader fr = new FileReader(this);

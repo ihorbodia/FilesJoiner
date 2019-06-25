@@ -1,6 +1,9 @@
+import com.univocity.parsers.common.AbstractParser;
 import com.univocity.parsers.common.processor.BatchedColumnProcessor;
 import com.univocity.parsers.csv.CsvParser;
 import com.univocity.parsers.csv.CsvParserSettings;
+import com.univocity.parsers.tsv.TsvParser;
+import com.univocity.parsers.tsv.TsvParserSettings;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.poi.ss.usermodel.Row;
@@ -88,22 +91,7 @@ class CombineLogic {
         }
     }
 
-    private ArrayList<String> getEmptyData(int count) {
-        ArrayList<String> emptyData = new ArrayList<>();
-        for (int i = 0; i < count - 1; i++) {
-            emptyData.add("");
-        }
-        return emptyData;
-    }
 
-    private List<String> getEmptyDataIfNull(List<String> list) {
-        for (int i = 0; i < list.size(); i++) {
-            if (list.get(i) == null) {
-                list.set(i, "");
-            }
-        }
-        return list;
-    }
 
     private void stripDuplicatesFromFile() throws IOException, OutOfMemoryError {
         BufferedReader reader = new BufferedReader(new FileReader(outputFile));
@@ -127,49 +115,25 @@ class CombineLogic {
         writer.close();
     }
 
-    private CsvParser getLogicParser() {
-        CsvParserSettings settings = new CsvParserSettings();
-        settings.setNullValue("");
-        settings.setEmptyValue("");
-        settings.setDelimiterDetectionEnabled(true, '\t', ',', ';','\n');
-        settings.setLineSeparatorDetectionEnabled(true);
-        settings.setIgnoreLeadingWhitespacesInQuotes(true);
-        settings.setIgnoreTrailingWhitespacesInQuotes(true);
-        settings.setMaxCharsPerColumn(500000);
-        settings.setHeaderExtractionEnabled(true);
-        BatchedColumnProcessor batchedColumnProcessor = new BatchedColumnProcessor(100) {
+    private TsvParser getTsvParser() {
+        TsvParserSettings settings = new TsvParserSettings();
+        settings.getFormat().setLineSeparator("\r\n");
+        settings.setProcessor(DataHelper.getBatchedColumnProcessor(columnsFiles));
+        return new TsvParser(settings);
+    }
 
-            @Override
-            public void batchProcessed(int rowsInThisBatch) {
-                try {
-                    List<List<String>> columnValues = getColumnValuesAsList();
-                    System.out.println("Batch " + getBatchesProcessed() + ":");
-                    for (int i = 0; i < columnsFiles.size(); i++) {
-                        File f = columnsFiles.get(i);
-                        if (i >= columnValues.size()) {
-                            appendDataToTempFile(getEmptyData(columnValues.size()), f);
-                        } else {
-                            appendDataToTempFile(getEmptyDataIfNull(columnValues.get(i)), f);
-                        }
-                    }
-                } catch (Exception e) {
-                    System.out.println(e.getMessage());
-                }
-            }
-        };
-        settings.setProcessor(batchedColumnProcessor);
+    private AbstractParser getLogicParser(String extension) {
+        if (extension.equalsIgnoreCase("txt")) {
+            return getTsvParser();
+        }
+        CsvParserSettings settings = DataHelper.getCsvParserSettings();
+        settings.setHeaderExtractionEnabled(true);
+        settings.setProcessor(DataHelper.getBatchedColumnProcessor(columnsFiles));
         return new CsvParser(settings);
     }
 
     private CsvParser getHeaderParser() {
-        CsvParserSettings settings = new CsvParserSettings();
-        settings.setNullValue("");
-        settings.setEmptyValue("");
-        settings.setDelimiterDetectionEnabled(true, '\t', ';', ',', '\n');
-        settings.setLineSeparatorDetectionEnabled(true);
-        settings.setIgnoreLeadingWhitespacesInQuotes(true);
-        settings.setIgnoreTrailingWhitespacesInQuotes(true);
-        settings.setMaxCharsPerColumn(500000);
+        CsvParserSettings settings = DataHelper.getCsvParserSettings();
         BatchedColumnProcessor batchedColumnProcessor = new BatchedColumnProcessor(100) {
             boolean isHeaderExtracted = false;
             @Override
@@ -192,18 +156,6 @@ class CombineLogic {
             if (itemsCount < fileRows) {
                 itemsCount = fileRows;
             }
-        }
-    }
-
-    private synchronized void appendDataToTempFile(List<String> strings, File file) {
-        try (FileWriter fw = new FileWriter(file, true);
-             BufferedWriter bw = new BufferedWriter(fw);
-             PrintWriter out = new PrintWriter(bw)) {
-            for (String string : strings) {
-                out.println(string.replace("\"", "\"\""));
-            }
-        } catch (IOException e) {
-            System.out.println("Error: " + e.getMessage());
         }
     }
 
@@ -250,7 +202,8 @@ class CombineLogic {
             } catch (IOException e) {
                 System.out.println(Arrays.toString(e.getStackTrace()));
             }
-        } else {
+        }
+        else {
             try {
                 reader = new InputStreamReader(new FileInputStream(file), StandardCharsets.UTF_8);
             } catch (FileNotFoundException e) {
@@ -294,7 +247,7 @@ class CombineLogic {
                 });
                 inputFiles.forEach(file -> {
                     Reader reader = getReader(file);
-                    getLogicParser().parse(reader);
+                    getLogicParser(file.getFileExtension()).parse(reader);
                     try {
                         reader.close();
                     } catch (IOException e) {

@@ -107,7 +107,7 @@ public class DropPanel extends JPanel {
 
     public ArrayList<ExtendedFile> getFiles(ArrayList<ExtendedFile> files){
         ArrayList<File> allFiles = new ArrayList<File>();
-        String[] exts = {"xlsx", "xls", "csv", "txt"};
+        String[] exts = {"xlsx", "xls", "csv"};
         for (File file : files) {
             if (file.isDirectory()) {
                 allFiles.addAll(FileUtils.listFiles(file, exts, true));
@@ -120,7 +120,6 @@ public class DropPanel extends JPanel {
         for (File file : allFiles) {
             if (FilenameUtils.getExtension(file.getAbsolutePath()).equalsIgnoreCase("xlsx") ||
                     FilenameUtils.getExtension(file.getAbsolutePath()).equalsIgnoreCase("xls") ||
-                    FilenameUtils.getExtension(file.getAbsolutePath()).equalsIgnoreCase("txt") ||
                     FilenameUtils.getExtension(file.getAbsolutePath()).equalsIgnoreCase("csv")) {
                 result.add(new ExtendedFile(file.getAbsolutePath()));
             }
