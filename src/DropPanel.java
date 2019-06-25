@@ -19,14 +19,14 @@ import java.util.Arrays;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class DropPanel extends JPanel {
+class DropPanel extends JPanel {
 
     private JTable table;
     private JScrollPane scroll;
     ArrayList<ExtendedFile> fileList = null;
     private DefaultTableModel tm = new DefaultTableModel(new String[]{"File", "File Type", "Size(Kb)"}, 0);
 
-    public DropPanel() {
+    DropPanel() {
         table = new JTable();
         table.setShowGrid(true);
         table.setShowHorizontalLines(true);
@@ -105,7 +105,7 @@ public class DropPanel extends JPanel {
         add(scroll, BorderLayout.CENTER);
     }
 
-    public ArrayList<ExtendedFile> getFiles(ArrayList<ExtendedFile> files){
+    private ArrayList<ExtendedFile> getFiles(ArrayList<ExtendedFile> files){
         ArrayList<File> allFiles = new ArrayList<File>();
         String[] exts = {"xlsx", "xls", "csv"};
         for (File file : files) {
