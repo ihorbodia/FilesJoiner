@@ -91,8 +91,6 @@ class CombineLogic {
         }
     }
 
-
-
     private void stripDuplicatesFromFile() throws IOException, OutOfMemoryError {
         BufferedReader reader = new BufferedReader(new FileReader(outputFile));
         Set<String> lines = new HashSet<>(5000000);
@@ -179,6 +177,7 @@ class CombineLogic {
 
     private HeaderFileObject createNewFile(String name) {
         HeaderFileObject resultFile = null;
+        name = name.replaceAll(":", "꞉");
         try {
             resultFile = new HeaderFileObject(temporaryFolder.getAbsolutePath() + File.separator + name + ".csv");
             if (resultFile.exists()) {
