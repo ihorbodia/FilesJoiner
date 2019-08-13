@@ -6,6 +6,7 @@ import com.univocity.parsers.tsv.TsvParser;
 import com.univocity.parsers.tsv.TsvParserSettings;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -61,7 +62,7 @@ class CombineLogic {
                 headerRow.append(item.getHeader()).append(",");
             }
         }
-        this.headerRow = headerRow.toString();
+        this.headerRow = headerRow.toString().replaceAll("꞉", ":");
     }
 
     private synchronized void populateOutputFile() {
@@ -72,11 +73,13 @@ class CombineLogic {
             for (int i = 0; i < itemsCount; i++) {
                 StringBuilder stringBuilder = new StringBuilder();
                 for (HeaderFileObject headerFileObject : columnsFiles) {
+                    String data = headerFileObject.getBufferedReader().readLine();
+                    if(StringUtils.isEmpty(data)) {
+                        data = "";
+                    }
                     if (columnsFiles.indexOf(headerFileObject) == (columnsFiles.size() - 1)) {
-                        String data = headerFileObject.getBufferedReader().readLine();
                         stringBuilder.append("\"").append(data).append("\"");
                     } else {
-                        String data = headerFileObject.getBufferedReader().readLine();
                         stringBuilder.append("\"").append(data).append("\"").append(",");
                     }
                 }
@@ -169,15 +172,15 @@ class CombineLogic {
 
     private synchronized void extractHeaders(String[] headers) {
         for (String header : headers) {
-            if(columnsFiles.stream().noneMatch(item -> item.getHeader().equalsIgnoreCase(header))) {
-                columnsFiles.add(createNewFile(header));
+            String headerName = header.replaceAll(":", "꞉");
+            if(columnsFiles.stream().noneMatch(item -> item.getHeader().equalsIgnoreCase(headerName))) {
+                columnsFiles.add(createNewFile(headerName));
             }
         }
     }
 
     private HeaderFileObject createNewFile(String name) {
         HeaderFileObject resultFile = null;
-        name = name.replaceAll(":", "꞉");
         try {
             resultFile = new HeaderFileObject(temporaryFolder.getAbsolutePath() + File.separator + name + ".csv");
             if (resultFile.exists()) {
