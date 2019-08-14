@@ -2,6 +2,8 @@
 import com.univocity.parsers.common.processor.BatchedColumnProcessor;
 import com.univocity.parsers.csv.CsvParserSettings;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -70,6 +72,23 @@ public class DataHelper {
                 result.append("\"\",");
             }
             result.append(data);
+        }
+        return result.toString();
+    }
+
+    public static String echoAsCSV(Sheet sheet) {
+        StringBuilder result = new StringBuilder();
+        Row row;
+        for (int i = 0; i <= sheet.getLastRowNum(); i++) {
+            row = sheet.getRow(i);
+            for (int j = 0; j < row.getLastCellNum(); j++) {
+                result.append("\"").append(row.getCell(j, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK).toString().replaceAll("\r", "").replaceAll("\n", "")).append("\",");
+            }
+            if(result.toString().endsWith(","))
+            {
+                result = new StringBuilder(result.substring(0, result.length() - 1));
+            }
+            result.append("\n");
         }
         return result.toString();
     }

@@ -20,8 +20,8 @@ class CombineLogic {
 
     private ArrayList<ExtendedFile> inputFiles;
     private List<HeaderFileObject> columnsFiles;
-    private List<HeaderFileObject> columnsFilesStorage;
-    private List<List<HeaderFileObject>> columnsFilesList;
+    //private List<HeaderFileObject> columnsFilesStorage;
+    //private List<List<HeaderFileObject>> columnsFilesList;
     private File temporaryFolder;
     private File outputFile;
     private long itemsCount = 0;
@@ -33,8 +33,8 @@ class CombineLogic {
         this.mainFrameGUI = mainFrameGUI;
         this.inputFiles = inputFiles;
         columnsFiles = new ArrayList<>();
-        columnsFilesStorage = new ArrayList<>();
-        columnsFilesList = new ArrayList<>();
+        //columnsFilesStorage = new ArrayList<>();
+        //columnsFilesList = new ArrayList<>();
         try {
             temporaryFolder = new File(new File(CombineLogic.class.getProtectionDomain().getCodeSource().getLocation().toURI()).getAbsoluteFile().getParent() + File.separator + "temp");
             temporaryFolder.mkdir();
@@ -59,8 +59,8 @@ class CombineLogic {
 
     private synchronized void initHeaderRow() {
         StringBuilder headerRow = new StringBuilder();
-        for (HeaderFileObject item : columnsFilesStorage) {
-            if (columnsFilesStorage.indexOf(item) == (columnsFilesStorage.size() - 1)) {
+        for (HeaderFileObject item : columnsFiles) {
+            if (columnsFiles.indexOf(item) == (columnsFiles.size() - 1)) {
                 headerRow.append(item.getHeader());
             } else {
                 headerRow.append(item.getHeader()).append(",");
@@ -75,24 +75,20 @@ class CombineLogic {
         }
         try {
             for (int i = 0; i < itemsCount; i++) {
-                int startCounter = 0;
-                int prevCounter = 0;
-                for (List<HeaderFileObject> headerFileObjects : columnsFilesList) {
-                    prevCounter = startCounter;
-                    startCounter =+ headerFileObjects.size();
-                    StringBuilder stringBuilder = new StringBuilder();
-                    for (HeaderFileObject headerFileObject : headerFileObjects) {
-                        String data = headerFileObject.getBufferedReader().readLine();
-                        if (data == null) {
-                            break;
-                        }
-                        stringBuilder.append("\"").append(data).append("\"").append(",");
+                String resultString = null;
+                StringBuilder stringBuilder = new StringBuilder();
+                for (HeaderFileObject headerFileObject : columnsFiles) {
+                    String data = headerFileObject.getBufferedReader().readLine();
+                    if (data != null) {
+                        resultString = stringBuilder.append("\"").append(data).append("\"").append(",").toString();
+                    } else {
+                        resultString = "";
                     }
-                    String dataRow = DataHelper.normalizeDataString(prevCounter, stringBuilder.toString());
-                    appendStringToFile(dataRow, outputFile);
                 }
+                //String dataRow = DataHelper.normalizeDataString(prevCounter, resultString);
+                appendStringToFile(resultString, outputFile);
             }
-            for (HeaderFileObject headerFileObject : columnsFilesStorage) {
+            for (HeaderFileObject headerFileObject : columnsFiles) {
                 headerFileObject.getBufferedReader().close();
             }
         } catch (IOException ex) {
@@ -159,7 +155,7 @@ class CombineLogic {
 
     private void getRowsCount() {
         itemsCount = 0;
-        for (HeaderFileObject file : columnsFilesStorage) {
+        for (HeaderFileObject file : columnsFiles) {
             long fileRows = file.getRowsCount();
             if (itemsCount < fileRows) {
                 itemsCount = fileRows;
@@ -186,7 +182,6 @@ class CombineLogic {
             if(columnsFiles.stream().noneMatch(item -> item.getHeader().equalsIgnoreCase(headerName))) {
                 HeaderFileObject headerFileObject = createNewFile(headerName);
                 columnsFiles.add(headerFileObject);
-                columnsFilesStorage.add(headerFileObject);
             }
         }
     }
@@ -212,7 +207,7 @@ class CombineLogic {
             try {
                 InputStream inp = new FileInputStream(file);
                 Workbook wb = WorkbookFactory.create(inp);
-                reader = new StringReader(echoAsCSV(wb.getSheetAt(0)));
+                reader = new StringReader(DataHelper.echoAsCSV(wb.getSheetAt(0)));
             } catch (IOException e) {
                 System.out.println(Arrays.toString(e.getStackTrace()));
             }
@@ -227,23 +222,6 @@ class CombineLogic {
         return reader;
     }
 
-    private String echoAsCSV(Sheet sheet) {
-        StringBuilder result = new StringBuilder();
-        Row row;
-        for (int i = 0; i <= sheet.getLastRowNum(); i++) {
-            row = sheet.getRow(i);
-            for (int j = 0; j < row.getLastCellNum(); j++) {
-                result.append("\"").append(row.getCell(j, Row.MissingCellPolicy.CREATE_NULL_AS_BLANK).toString().replaceAll("\r", "").replaceAll("\n", "")).append("\",");
-            }
-            if(result.toString().endsWith(","))
-            {
-                result = new StringBuilder(result.substring(0, result.length() - 1));
-            }
-            result.append("\n");
-        }
-        return result.toString();
-    }
-
     void processFiles() {
         Thread worker = new Thread(() -> {
             this.mainFrameGUI.getlblUrlsCountData().setText("Processing");
@@ -253,17 +231,20 @@ class CombineLogic {
                 inputFiles.forEach(file -> {
                     Reader reader = getReader(file);
                     getHeaderParser().parse(reader);
-                    reader = getReader(file);
+                    try {
+                        reader.close();
+                    } catch (IOException e) {
+                        System.out.println(Arrays.toString(e.getStackTrace()));
+                    }
+                });
+                inputFiles.forEach(file -> {
+                    Reader reader = getReader(file);
                     getLogicParser(file.getFileExtension()).parse(reader);
                     try {
                         reader.close();
                     } catch (IOException e) {
                         System.out.println(Arrays.toString(e.getStackTrace()));
                     }
-                    if (columnsFiles.size() > 0) {
-                        columnsFilesList.add(new ArrayList<>(columnsFiles));
-                    }
-                    columnsFiles.clear();
                 });
                 getRowsCount();
                 createOutputFile();
