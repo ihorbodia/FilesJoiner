@@ -1,6 +1,7 @@
 
 import com.univocity.parsers.common.processor.BatchedColumnProcessor;
 import com.univocity.parsers.csv.CsvParserSettings;
+import org.apache.commons.lang3.StringUtils;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -62,16 +63,50 @@ public class DataHelper {
         };
     }
 
+    public static String normalizeDataString(int beforeColumnCount, String data) {
+        StringBuilder result = new StringBuilder();
+        if (!StringUtils.isEmpty(data)) {
+            for (int i = 0; i < beforeColumnCount; i++) {
+                result.append("\"\",");
+            }
+            result.append(data);
+        }
+        return result.toString();
+    }
+
     private static void appendDataToTempFile(List<String> strings, File file) {
         try (FileWriter fw = new FileWriter(file, true);
              BufferedWriter bw = new BufferedWriter(fw);
              PrintWriter out = new PrintWriter(bw)) {
             for (String string : strings) {
-                out.println(string.replace("\"", "\"\""));
+                out.println(normalizeDataString(string));
             }
         } catch (IOException e) {
             System.out.println("Error: " + e.getMessage());
         }
+    }
+
+    private static String removeAllQuotes(String value) {
+        return value.replaceAll("\"", "");
+    }
+
+    public static String normalizeDataString(String dataRow) {
+        String result = "";
+        if (isContainsExtraChars(dataRow)) {
+            result = dataRow.replaceAll(",\"\"\"", "\"")
+                            .replaceAll("\"\"\",", "\"")
+                            .replaceAll(",\"\"", "\"")
+                            .replaceAll("\"\",", "\"");
+        } else {
+            result = dataRow.replaceAll(",\"\"\"", "\"\"")
+                            .replaceAll("\"", "\"\"");
+        }
+
+        return result;
+    }
+
+    private static boolean isContainsExtraChars(String value) {
+        return StringUtils.isEmpty(value.replaceAll("\n", "").replaceAll("\r", ""));
     }
 
     private static ArrayList<String> getEmptyData(int count) {

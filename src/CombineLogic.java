@@ -20,6 +20,8 @@ class CombineLogic {
 
     private ArrayList<ExtendedFile> inputFiles;
     private List<HeaderFileObject> columnsFiles;
+    private List<HeaderFileObject> columnsFilesStorage;
+    private List<List<HeaderFileObject>> columnsFilesList;
     private File temporaryFolder;
     private File outputFile;
     private long itemsCount = 0;
@@ -31,6 +33,8 @@ class CombineLogic {
         this.mainFrameGUI = mainFrameGUI;
         this.inputFiles = inputFiles;
         columnsFiles = new ArrayList<>();
+        columnsFilesStorage = new ArrayList<>();
+        columnsFilesList = new ArrayList<>();
         try {
             temporaryFolder = new File(new File(CombineLogic.class.getProtectionDomain().getCodeSource().getLocation().toURI()).getAbsoluteFile().getParent() + File.separator + "temp");
             temporaryFolder.mkdir();
@@ -55,8 +59,8 @@ class CombineLogic {
 
     private synchronized void initHeaderRow() {
         StringBuilder headerRow = new StringBuilder();
-        for (HeaderFileObject item : columnsFiles) {
-            if (columnsFiles.indexOf(item) == (columnsFiles.size() - 1)) {
+        for (HeaderFileObject item : columnsFilesStorage) {
+            if (columnsFilesStorage.indexOf(item) == (columnsFilesStorage.size() - 1)) {
                 headerRow.append(item.getHeader());
             } else {
                 headerRow.append(item.getHeader()).append(",");
@@ -71,21 +75,24 @@ class CombineLogic {
         }
         try {
             for (int i = 0; i < itemsCount; i++) {
-                StringBuilder stringBuilder = new StringBuilder();
-                for (HeaderFileObject headerFileObject : columnsFiles) {
-                    String data = headerFileObject.getBufferedReader().readLine();
-                    if(StringUtils.isEmpty(data)) {
-                        data = "";
-                    }
-                    if (columnsFiles.indexOf(headerFileObject) == (columnsFiles.size() - 1)) {
-                        stringBuilder.append("\"").append(data).append("\"");
-                    } else {
+                int startCounter = 0;
+                int prevCounter = 0;
+                for (List<HeaderFileObject> headerFileObjects : columnsFilesList) {
+                    prevCounter = startCounter;
+                    startCounter =+ headerFileObjects.size();
+                    StringBuilder stringBuilder = new StringBuilder();
+                    for (HeaderFileObject headerFileObject : headerFileObjects) {
+                        String data = headerFileObject.getBufferedReader().readLine();
+                        if (data == null) {
+                            break;
+                        }
                         stringBuilder.append("\"").append(data).append("\"").append(",");
                     }
+                    String dataRow = DataHelper.normalizeDataString(prevCounter, stringBuilder.toString());
+                    appendStringToFile(dataRow, outputFile);
                 }
-                appendStringToFile(stringBuilder.toString(), outputFile);
             }
-            for (HeaderFileObject headerFileObject : columnsFiles) {
+            for (HeaderFileObject headerFileObject : columnsFilesStorage) {
                 headerFileObject.getBufferedReader().close();
             }
         } catch (IOException ex) {
@@ -152,7 +159,7 @@ class CombineLogic {
 
     private void getRowsCount() {
         itemsCount = 0;
-        for (HeaderFileObject file : columnsFiles) {
+        for (HeaderFileObject file : columnsFilesStorage) {
             long fileRows = file.getRowsCount();
             if (itemsCount < fileRows) {
                 itemsCount = fileRows;
@@ -161,6 +168,9 @@ class CombineLogic {
     }
 
     private synchronized void appendStringToFile(String string, File file) {
+        if (StringUtils.isEmpty(string)) {
+            return;
+        }
         try (FileWriter fw = new FileWriter(file, true);
              BufferedWriter bw = new BufferedWriter(fw);
              PrintWriter out = new PrintWriter(bw)) {
@@ -174,7 +184,9 @@ class CombineLogic {
         for (String header : headers) {
             String headerName = header.replaceAll(":", "꞉");
             if(columnsFiles.stream().noneMatch(item -> item.getHeader().equalsIgnoreCase(headerName))) {
-                columnsFiles.add(createNewFile(headerName));
+                HeaderFileObject headerFileObject = createNewFile(headerName);
+                columnsFiles.add(headerFileObject);
+                columnsFilesStorage.add(headerFileObject);
             }
         }
     }
@@ -241,20 +253,17 @@ class CombineLogic {
                 inputFiles.forEach(file -> {
                     Reader reader = getReader(file);
                     getHeaderParser().parse(reader);
-                    try {
-                        reader.close();
-                    } catch (IOException e) {
-                        System.out.println(Arrays.toString(e.getStackTrace()));
-                    }
-                });
-                inputFiles.forEach(file -> {
-                    Reader reader = getReader(file);
+                    reader = getReader(file);
                     getLogicParser(file.getFileExtension()).parse(reader);
                     try {
                         reader.close();
                     } catch (IOException e) {
                         System.out.println(Arrays.toString(e.getStackTrace()));
                     }
+                    if (columnsFiles.size() > 0) {
+                        columnsFilesList.add(new ArrayList<>(columnsFiles));
+                    }
+                    columnsFiles.clear();
                 });
                 getRowsCount();
                 createOutputFile();
