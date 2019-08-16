@@ -3,10 +3,11 @@ import com.univocity.parsers.common.processor.BatchedColumnProcessor;
 import com.univocity.parsers.csv.CsvParserSettings;
 
 import java.io.*;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class DataHelper {
 
@@ -45,16 +46,23 @@ public class DataHelper {
             @Override
             public void batchProcessed(int rowsInThisBatch) {
                 try {
-                    List<List<String>> columnValues = getColumnValuesAsList();
-                    System.out.println("Batch " + getBatchesProcessed() + ":");
-                    for (int i = 0; i < columnsFiles.size(); i++) {
-                        File f = columnsFiles.get(i);
-                        if (i >= columnValues.size()) {
-                            appendDataToTempFile(getEmptyData(columnValues.size()), f);
-                        } else {
-                            appendDataToTempFile(getEmptyDataIfNull(columnValues.get(i)), f);
+                    Map<String, List<String>> columnValues = getColumnValuesAsMapOfNames();
+
+                    HashSet<HeaderFileObject> unmatchedItems = new HashSet<>();
+                    columnValues.forEach((header, columnData) -> {
+                        Optional<HeaderFileObject> item = columnsFiles.stream().filter(file -> file.getHeader().equalsIgnoreCase(header)).findFirst();
+                        item.ifPresent(headerFileObject -> appendDataToTempFile(columnData, headerFileObject));
+
+                        for (HeaderFileObject headerFileObject : columnsFiles) {
+                            if (!columnValues.containsKey(headerFileObject.getHeader())) {
+                                unmatchedItems.add(headerFileObject);
+                            }
                         }
-                    }
+                        System.out.println("end");
+                    });
+                    unmatchedItems.forEach(unmatchedItem -> {
+                        appendDataToTempFile(getEmptyDataList(rowsInThisBatch), unmatchedItem);
+                    });
                 } catch (Exception e) {
                     System.out.println(e.getMessage());
                 }
@@ -62,7 +70,7 @@ public class DataHelper {
         };
     }
 
-    private static void appendDataToTempFile(List<String> strings, File file) {
+    private static void appendDataToTempFile(List<String> strings, HeaderFileObject file) {
         try (FileWriter fw = new FileWriter(file, true);
              BufferedWriter bw = new BufferedWriter(fw);
              PrintWriter out = new PrintWriter(bw)) {
@@ -74,9 +82,17 @@ public class DataHelper {
         }
     }
 
-    private static ArrayList<String> getEmptyData(int count) {
+    public static ArrayList<String> getEmptyData(int count) {
         ArrayList<String> emptyData = new ArrayList<>();
         for (int i = 0; i < count - 1; i++) {
+            emptyData.add("");
+        }
+        return emptyData;
+    }
+
+    public static ArrayList<String> getEmptyDataList(int count) {
+        ArrayList<String> emptyData = new ArrayList<>();
+        for (int i = 0; i < count; i++) {
             emptyData.add("");
         }
         return emptyData;

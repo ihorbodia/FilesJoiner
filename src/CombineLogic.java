@@ -152,10 +152,7 @@ class CombineLogic {
     private void getRowsCount() {
         itemsCount = 0;
         for (HeaderFileObject file : columnsFiles) {
-            long fileRows = file.getRowsCount();
-            if (itemsCount < fileRows) {
-                itemsCount = fileRows;
-            }
+            itemsCount =+ file.getRowsCount();
         }
     }
 
