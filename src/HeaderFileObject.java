@@ -25,7 +25,7 @@ class HeaderFileObject extends File {
         return bufferedReader;
     }
 
-    long getRowsCount() {
+    public long getRowsCount() {
         try {
             if (this.exists()) {
                 FileReader fr = new FileReader(this);

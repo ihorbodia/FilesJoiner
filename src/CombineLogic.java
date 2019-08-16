@@ -1,43 +1,38 @@
-import com.univocity.parsers.common.AbstractParser;
-import com.univocity.parsers.common.processor.BatchedColumnProcessor;
-import com.univocity.parsers.csv.CsvParser;
-import com.univocity.parsers.csv.CsvParserSettings;
-import com.univocity.parsers.tsv.TsvParser;
-import com.univocity.parsers.tsv.TsvParserSettings;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.io.LineIterator;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.ss.usermodel.Workbook;
-import org.apache.poi.ss.usermodel.WorkbookFactory;
 import java.io.*;
 import java.net.URISyntaxException;
-import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.*;
 
 class CombineLogic {
 
     private ArrayList<ExtendedFile> inputFiles;
     private List<HeaderFileObject> columnsFiles;
-    //private List<HeaderFileObject> columnsFilesStorage;
-    //private List<List<HeaderFileObject>> columnsFilesList;
+    private List<HeaderFileObject> commonColumnsFiles;
     private File temporaryFolder;
+    private File commonDataFolder;
     private File outputFile;
     private long itemsCount = 0;
     private MainFrameGUI mainFrameGUI;
 
     private String headerRow;
+    private List<String> headerRows;
 
     CombineLogic(ArrayList<ExtendedFile> inputFiles, MainFrameGUI mainFrameGUI) {
         this.mainFrameGUI = mainFrameGUI;
         this.inputFiles = inputFiles;
         columnsFiles = new ArrayList<>();
-        //columnsFilesStorage = new ArrayList<>();
-        //columnsFilesList = new ArrayList<>();
+        headerRows = new ArrayList<>();
+        commonColumnsFiles = new ArrayList<>();
         try {
             temporaryFolder = new File(new File(CombineLogic.class.getProtectionDomain().getCodeSource().getLocation().toURI()).getAbsoluteFile().getParent() + File.separator + "temp");
+            commonDataFolder = new File(new File(CombineLogic.class.getProtectionDomain().getCodeSource().getLocation().toURI()).getAbsoluteFile().getParent() + File.separator + "temp"+File.separator+"commonData");
             temporaryFolder.mkdir();
+            commonDataFolder.mkdir();
         } catch (URISyntaxException e) {
             System.out.println("Cannot remove temporary folder");
         }
@@ -59,42 +54,95 @@ class CombineLogic {
 
     private synchronized void initHeaderRow() {
         StringBuilder headerRow = new StringBuilder();
-        for (HeaderFileObject item : columnsFiles) {
-            if (columnsFiles.indexOf(item) == (columnsFiles.size() - 1)) {
-                headerRow.append(item.getHeader());
-            } else {
-                headerRow.append(item.getHeader()).append(",");
-            }
-        }
+        inputFiles.forEach(file -> {
+            file.columnFiles.forEach(columnFile -> {
+                if(!headerRows.contains(columnFile.getHeader().toLowerCase())) {
+                    headerRow.append(columnFile.getHeader()).append(",");
+                    headerRows.add(columnFile.getHeader().toLowerCase());
+                }
+            });
+        });
         this.headerRow = headerRow.toString().replaceAll("꞉", ":");
     }
 
-    private synchronized void populateOutputFile() {
-        if(!this.mainFrameGUI.getCbRemoveDuplicates().isSelected()) {
-            appendStringToFile(this.headerRow, outputFile);
-        }
+    private HeaderFileObject createNewCommonFile(String headerName) {
+        HeaderFileObject resultFile = null;
         try {
-            for (int i = 0; i < itemsCount; i++) {
-                String resultString = null;
-                StringBuilder stringBuilder = new StringBuilder();
-                for (HeaderFileObject headerFileObject : columnsFiles) {
-                    String data = headerFileObject.getBufferedReader().readLine();
-                    if (data != null) {
-                        resultString = stringBuilder.append("\"").append(data).append("\"").append(",").toString();
-                    } else {
-                        resultString = "";
+            resultFile = new HeaderFileObject(commonDataFolder + File.separator + headerName + ".csv");
+            if (resultFile.exists()) {
+                resultFile.delete();
+                resultFile.createNewFile();
+            }
+            resultFile.setHeader(headerName);
+        } catch (IOException e) {
+            System.out.println(Arrays.toString(e.getStackTrace()));
+        }
+        return resultFile;
+    }
+
+    private synchronized void mergeData() {
+        try {
+            headerRows.forEach(header -> {
+                commonColumnsFiles.add(createNewCommonFile(header));
+            });
+            commonColumnsFiles.forEach(commonDataFile -> {
+                long recordsCount = 0;
+                for (ExtendedFile inputFile : inputFiles) {
+                    Optional<HeaderFileObject> item = inputFile.columnFiles.stream()
+                            .filter(columnFile -> columnFile.getHeader().equalsIgnoreCase(commonDataFile.getHeader()))
+                            .findFirst();
+                    try {
+                        if (item.isPresent()) {
+                            recordsCount = item.get().getRowsCount();
+                            LineIterator it = null;
+                            it = FileUtils.lineIterator(item.get(), "UTF-8");
+                            while (it.hasNext()) {
+                                String line = it.nextLine();
+                                appendStringToFile(line, commonDataFile);
+                            }
+                        } else {
+                            for (int i = 0; i < recordsCount; i++) {
+                                appendStringToFile(" ", commonDataFile);
+                            }
+                        }
+                    } catch (IOException e) {
+                        System.out.println(Arrays.toString(e.getStackTrace()));
+                        System.out.println(e.getMessage());
                     }
                 }
-                //String dataRow = DataHelper.normalizeDataString(prevCounter, resultString);
-                appendStringToFile(resultString, outputFile);
-            }
-            for (HeaderFileObject headerFileObject : columnsFiles) {
-                headerFileObject.getBufferedReader().close();
-            }
-        } catch (IOException ex) {
-            System.out.println(Arrays.toString(ex.getStackTrace()));
-            System.out.println(ex.getMessage());
+            });
+        } catch (Exception e) {
+            System.out.println(Arrays.toString(e.getStackTrace()));
+            System.out.println(e.getMessage());
         }
+    }
+
+    private synchronized void populateOutputFile() {
+//        if(!this.mainFrameGUI.getCbRemoveDuplicates().isSelected()) {
+//            appendStringToFile(this.headerRow, outputFile);
+//        }
+//        try {
+//            for (int i = 0; i < itemsCount; i++) {
+//                String resultString = null;
+//                StringBuilder stringBuilder = new StringBuilder();
+//                for (HeaderFileObject headerFileObject : columnsFiles) {
+//                    String data = headerFileObject.getBufferedReader().readLine();
+//                    if (data != null) {
+//                        resultString = stringBuilder.append("\"").append(data).append("\"").append(",").toString();
+//                    } else {
+//                        resultString = "";
+//                    }
+//                }
+//                //String dataRow = DataHelper.normalizeDataString(prevCounter, resultString);
+//                appendStringToFile(resultString, outputFile);
+//            }
+//            for (HeaderFileObject headerFileObject : columnsFiles) {
+//                headerFileObject.getBufferedReader().close();
+//            }
+//        } catch (IOException ex) {
+//            System.out.println(Arrays.toString(ex.getStackTrace()));
+//            System.out.println(ex.getMessage());
+//        }
     }
 
     private void stripDuplicatesFromFile() throws IOException, OutOfMemoryError {
@@ -119,40 +167,6 @@ class CombineLogic {
         writer.close();
     }
 
-    private TsvParser getTsvParser() {
-        TsvParserSettings settings = new TsvParserSettings();
-        settings.getFormat().setLineSeparator("\r\n");
-        settings.setProcessor(DataHelper.getBatchedColumnProcessor(columnsFiles));
-        return new TsvParser(settings);
-    }
-
-    private AbstractParser getLogicParser(String extension) {
-        if (extension.equalsIgnoreCase("txt")) {
-            return getTsvParser();
-        }
-        CsvParserSettings settings = DataHelper.getCsvParserSettings();
-        settings.setHeaderExtractionEnabled(true);
-        settings.setProcessor(DataHelper.getBatchedColumnProcessor(columnsFiles));
-        return new CsvParser(settings);
-    }
-
-    private CsvParser getHeaderParser() {
-        CsvParserSettings settings = DataHelper.getCsvParserSettings();
-        BatchedColumnProcessor batchedColumnProcessor = new BatchedColumnProcessor(100) {
-            boolean isHeaderExtracted = false;
-            @Override
-            public void batchProcessed(int rowsInThisBatch) {
-                if (!isHeaderExtracted) {
-                    extractHeaders(getHeaders());
-                    isHeaderExtracted = true;
-                }
-            }
-        };
-
-        settings.setProcessor(batchedColumnProcessor);
-        return new CsvParser(settings);
-    }
-
     private void getRowsCount() {
         itemsCount = 0;
         for (HeaderFileObject file : columnsFiles) {
@@ -163,7 +177,7 @@ class CombineLogic {
         }
     }
 
-    private synchronized void appendStringToFile(String string, File file) {
+    private synchronized void appendStringToFile(String string, HeaderFileObject file) {
         if (StringUtils.isEmpty(string)) {
             return;
         }
@@ -176,52 +190,6 @@ class CombineLogic {
         }
     }
 
-    private synchronized void extractHeaders(String[] headers) {
-        for (String header : headers) {
-            String headerName = header.replaceAll(":", "꞉");
-            if(columnsFiles.stream().noneMatch(item -> item.getHeader().equalsIgnoreCase(headerName))) {
-                HeaderFileObject headerFileObject = createNewFile(headerName);
-                columnsFiles.add(headerFileObject);
-            }
-        }
-    }
-
-    private HeaderFileObject createNewFile(String name) {
-        HeaderFileObject resultFile = null;
-        try {
-            resultFile = new HeaderFileObject(temporaryFolder.getAbsolutePath() + File.separator + name + ".csv");
-            if (resultFile.exists()) {
-                resultFile.delete();
-                resultFile.createNewFile();
-            }
-            resultFile.setHeader(name);
-        } catch (IOException e) {
-            System.out.println(Arrays.toString(e.getStackTrace()));
-        }
-        return resultFile;
-    }
-
-    private Reader getReader(ExtendedFile file) {
-        Reader reader = null;
-        if (file.getFileExtension().equalsIgnoreCase("xlsx") || file.getFileExtension().equalsIgnoreCase("xls")) {
-            try {
-                InputStream inp = new FileInputStream(file);
-                Workbook wb = WorkbookFactory.create(inp);
-                reader = new StringReader(DataHelper.echoAsCSV(wb.getSheetAt(0)));
-            } catch (IOException e) {
-                System.out.println(Arrays.toString(e.getStackTrace()));
-            }
-        }
-        else {
-            try {
-                reader = new InputStreamReader(new FileInputStream(file), StandardCharsets.UTF_8);
-            } catch (FileNotFoundException e) {
-                System.out.println(Arrays.toString(e.getStackTrace()));
-            }
-        }
-        return reader;
-    }
-
     void processFiles() {
         Thread worker = new Thread(() -> {
             this.mainFrameGUI.getlblUrlsCountData().setText("Processing");
@@ -229,31 +197,24 @@ class CombineLogic {
             this.mainFrameGUI.getBtnProcessFiles().setEnabled(false);
             try {
                 inputFiles.forEach(file -> {
-                    Reader reader = getReader(file);
-                    getHeaderParser().parse(reader);
-                    try {
-                        reader.close();
-                    } catch (IOException e) {
-                        System.out.println(Arrays.toString(e.getStackTrace()));
-                    }
-                });
-                inputFiles.forEach(file -> {
-                    Reader reader = getReader(file);
-                    getLogicParser(file.getFileExtension()).parse(reader);
-                    try {
-                        reader.close();
-                    } catch (IOException e) {
-                        System.out.println(Arrays.toString(e.getStackTrace()));
-                    }
+                   file.initColumnFiles(temporaryFolder);
                 });
                 getRowsCount();
                 createOutputFile();
                 initHeaderRow();
 
+                mergeData();
                 populateOutputFile();
                 if(this.mainFrameGUI.getCbRemoveDuplicates().isSelected()) {
                     stripDuplicatesFromFile();
                 }
+                inputFiles.forEach(file -> {
+                    try {
+                        file.removeTemporaryFolder();
+                    } catch (IOException e) {
+                        this.mainFrameGUI.getlblUrlsCountData().setText("Finished with error: " + e.getMessage());
+                    }
+                });
                 FileUtils.forceDelete(temporaryFolder);
                 this.mainFrameGUI.getlblUrlsCountData().setText("Finished: " + (itemsCount + 1) + " items processed.");
             } catch (Exception ex) {

@@ -1,6 +1,8 @@
 
 import com.univocity.parsers.common.processor.BatchedColumnProcessor;
 import com.univocity.parsers.csv.CsvParserSettings;
+import com.univocity.parsers.tsv.TsvParser;
+import com.univocity.parsers.tsv.TsvParserSettings;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
@@ -28,6 +30,13 @@ public class DataHelper {
     public static boolean validateURLs(String url) {
         Matcher matcher = VALID_WEBSITE_ADDRESS_REGEX.matcher(url);
         return matcher.find();
+    }
+
+    public static TsvParser getTsvParser(List<HeaderFileObject> columnsFiles) {
+        TsvParserSettings settings = new TsvParserSettings();
+        settings.getFormat().setLineSeparator("\r\n");
+        settings.setProcessor(DataHelper.getBatchedColumnProcessor(columnsFiles));
+        return new TsvParser(settings);
     }
 
     static CsvParserSettings getCsvParserSettings() {
