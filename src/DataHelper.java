@@ -1,4 +1,5 @@
 
+import com.sun.org.apache.xml.internal.security.keys.content.KeyValue;
 import com.univocity.parsers.common.processor.BatchedColumnProcessor;
 import com.univocity.parsers.csv.CsvParserSettings;
 
@@ -36,6 +37,9 @@ public class DataHelper {
         settings.setLineSeparatorDetectionEnabled(true);
         settings.setIgnoreLeadingWhitespacesInQuotes(true);
         settings.setIgnoreTrailingWhitespacesInQuotes(true);
+        settings.setKeepEscapeSequences(true);
+        settings.setParseUnescapedQuotes(true);
+        settings.setAutoConfigurationEnabled(true);
         settings.setMaxCharsPerColumn(500000);
         return settings;
     }
@@ -50,15 +54,27 @@ public class DataHelper {
 
                     HashSet<HeaderFileObject> unmatchedItems = new HashSet<>();
                     columnValues.forEach((header, columnData) -> {
-                        Optional<HeaderFileObject> item = columnsFiles.stream().filter(file -> file.getHeader().equalsIgnoreCase(header)).findFirst();
+                        String inputHeader = header.replaceAll(":", "").replaceAll("꞉", "");
+
+                        Optional<HeaderFileObject> item = columnsFiles.stream().filter(file -> file.getHeader().equalsIgnoreCase(inputHeader)).findFirst();
                         item.ifPresent(headerFileObject -> appendDataToTempFile(columnData, headerFileObject));
 
-                        for (HeaderFileObject headerFileObject : columnsFiles) {
-                            if (!columnValues.containsKey(headerFileObject.getHeader())) {
-                                unmatchedItems.add(headerFileObject);
-                            }
+                        Optional<HeaderFileObject> headerFileObject =
+                                columnsFiles.stream()
+                                        .filter(columnFile -> columnFile.getHeader().replaceAll(":", "").replaceAll("꞉", "")
+                                                            .equalsIgnoreCase(inputHeader))
+                                        .findFirst();
+                        if (!headerFileObject.isPresent()) {
+                            unmatchedItems.add(headerFileObject.get());
                         }
-                        System.out.println("end");
+
+//                        for (HeaderFileObject headerFileObject : columnsFiles) {
+//                            columnValues.forEach((key, value) -> {
+//                                if (!key.replaceAll(":", "꞉").equalsIgnoreCase(headerFileObject.getHeader())) {
+//                                    unmatchedItems.add(headerFileObject);
+//                                }
+//                            });
+//                        }
                     });
                     unmatchedItems.forEach(unmatchedItem -> {
                         appendDataToTempFile(getEmptyDataList(rowsInThisBatch), unmatchedItem);

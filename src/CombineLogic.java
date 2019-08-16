@@ -61,7 +61,7 @@ class CombineLogic {
                 headerRow.append(item.getHeader()).append(",");
             }
         }
-        this.headerRow = headerRow.toString();
+        this.headerRow = headerRow.toString().replaceAll("꞉", ":");
     }
 
     private synchronized void populateOutputFile() {
@@ -90,8 +90,6 @@ class CombineLogic {
             System.out.println(ex.getMessage());
         }
     }
-
-
 
     private void stripDuplicatesFromFile() throws IOException, OutOfMemoryError {
         BufferedReader reader = new BufferedReader(new FileReader(outputFile));
@@ -168,8 +166,9 @@ class CombineLogic {
 
     private synchronized void extractHeaders(String[] headers) {
         for (String header : headers) {
-            if(columnsFiles.stream().noneMatch(item -> item.getHeader().equalsIgnoreCase(header))) {
-                columnsFiles.add(createNewFile(header));
+            String headerName = header.replaceAll(":", "꞉");
+            if(columnsFiles.stream().noneMatch(item -> item.getHeader().equalsIgnoreCase(headerName))) {
+                columnsFiles.add(createNewFile(headerName));
             }
         }
     }
