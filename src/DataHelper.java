@@ -1,14 +1,12 @@
 
-import com.sun.org.apache.xml.internal.security.keys.content.KeyValue;
 import com.univocity.parsers.common.processor.BatchedColumnProcessor;
 import com.univocity.parsers.csv.CsvParserSettings;
+import org.apache.commons.lang3.StringUtils;
 
 import java.io.*;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class DataHelper {
 
@@ -111,6 +109,34 @@ public class DataHelper {
             }
         }
         return list;
+    }
+
+    static String generateNameForFile(List<ExtendedFile> headerFileObjects) {
+        StringBuilder sb = new StringBuilder();
+
+        if (headerFileObjects.size() == 1) {
+            sb.append(headerFileObjects.get(0).getHeader().replaceAll(":", "꞉"));
+        }
+
+        if (headerFileObjects.size() == 2) {
+            sb.append(headerFileObjects.get(0).getHeader().replaceAll(":", "꞉")).append("+")
+              .append(headerFileObjects.get(1).getHeader().replaceAll(":", "꞉"));
+        }
+
+        if (headerFileObjects.size() == 3) {
+            sb.append(headerFileObjects.get(0).getHeader().replaceAll(":", "꞉")).append("+")
+              .append(headerFileObjects.get(1).getHeader().replaceAll(":", "꞉")).append("+")
+              .append(headerFileObjects.get(2).getHeader().replaceAll(":", "꞉"));
+        }
+
+        if (headerFileObjects.size() > 4) {
+            sb.append(headerFileObjects.get(0).getHeader().replaceAll(":", "꞉")).append("+")
+              .append(headerFileObjects.get(1).getHeader().replaceAll(":", "꞉")).append("+")
+              .append(headerFileObjects.get(2).getHeader().replaceAll(":", "꞉"))
+              .append("... and more");
+        }
+
+        return sb.toString();
     }
 }
 

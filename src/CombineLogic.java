@@ -42,7 +42,7 @@ class CombineLogic {
         File f = inputFiles.stream().findFirst().get();
         File parent = f.getParentFile();
         try {
-            outputFile = new File(parent.getAbsolutePath() + File.separator + " merged data "+ FilenameUtils.getName(parent.getAbsolutePath())+".csv");
+            outputFile = new File(parent.getAbsolutePath() + File.separator + " " + DataHelper.generateNameForFile(inputFiles)+".csv");
             if (outputFile.exists()) {
                 outputFile.delete();
             }

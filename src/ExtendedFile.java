@@ -10,4 +10,8 @@ class ExtendedFile extends File {
     String getFileExtension() {
         return FilenameUtils.getExtension(this.getAbsolutePath());
     }
+
+    String getHeader() {
+        return FilenameUtils.getBaseName(this.getAbsolutePath());
+    }
 }
