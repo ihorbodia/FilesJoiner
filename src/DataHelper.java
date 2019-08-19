@@ -52,29 +52,19 @@ public class DataHelper {
                 try {
                     Map<String, List<String>> columnValues = getColumnValuesAsMapOfNames();
 
-                    HashSet<HeaderFileObject> unmatchedItems = new HashSet<>();
+                    HashSet<HeaderFileObject> unmatchedItems = new HashSet<>(columnsFiles);
                     columnValues.forEach((header, columnData) -> {
-                        String inputHeader = header.replaceAll(":", "").replaceAll("꞉", "");
+                        String inputHeader = header.replaceAll(":", "꞉");
+                        HeaderFileObject item = null;
 
-                        Optional<HeaderFileObject> item = columnsFiles.stream().filter(file -> file.getHeader().equalsIgnoreCase(inputHeader)).findFirst();
-                        item.ifPresent(headerFileObject -> appendDataToTempFile(columnData, headerFileObject));
-
-                        Optional<HeaderFileObject> headerFileObject =
-                                columnsFiles.stream()
-                                        .filter(columnFile -> columnFile.getHeader().replaceAll(":", "").replaceAll("꞉", "")
-                                                            .equalsIgnoreCase(inputHeader))
-                                        .findFirst();
-                        if (!headerFileObject.isPresent()) {
-                            unmatchedItems.add(headerFileObject.get());
+                        for (HeaderFileObject headerFileObject : columnsFiles) {
+                            if (headerFileObject.getHeader().equalsIgnoreCase(inputHeader)) {
+                                unmatchedItems.remove(headerFileObject);
+                                item = headerFileObject;
+                                break;
+                            }
                         }
-
-//                        for (HeaderFileObject headerFileObject : columnsFiles) {
-//                            columnValues.forEach((key, value) -> {
-//                                if (!key.replaceAll(":", "꞉").equalsIgnoreCase(headerFileObject.getHeader())) {
-//                                    unmatchedItems.add(headerFileObject);
-//                                }
-//                            });
-//                        }
+                        appendDataToTempFile(columnData, item);
                     });
                     unmatchedItems.forEach(unmatchedItem -> {
                         appendDataToTempFile(getEmptyDataList(rowsInThisBatch), unmatchedItem);
