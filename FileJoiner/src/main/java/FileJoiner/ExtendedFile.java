@@ -1,3 +1,5 @@
+package FileJoiner;
+
 import com.univocity.parsers.common.AbstractParser;
 import com.univocity.parsers.common.processor.BatchedColumnProcessor;
 import com.univocity.parsers.csv.CsvParser;

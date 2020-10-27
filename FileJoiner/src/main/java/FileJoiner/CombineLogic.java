@@ -1,3 +1,8 @@
+package FileJoiner;
+
+import FileJoiner.ExtendedFile;
+import FileJoiner.HeaderFileObject;
+import FileJoiner.MainFrameGUI;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.LineIterator;

@@ -1,3 +1,5 @@
+package FileJoiner;
+
 import java.io.*;
 
 class HeaderFileObject extends File {
