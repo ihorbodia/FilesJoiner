@@ -22,22 +22,19 @@ public class FilesJoiner {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        EventQueue.invokeLater(new Runnable() {
-            @Override
-            public void run() {
+        EventQueue.invokeLater(() -> {
+            try {
                 try {
-                    try {
-                        UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-                    } catch (UnsupportedLookAndFeelException ex) {
-                        Logger.getLogger(FilesJoiner.class.getName()).log(Level.SEVERE, null, ex);
-                    }
-                } catch (ClassNotFoundException | InstantiationException | IllegalAccessException ex) {
+                    UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+                } catch (UnsupportedLookAndFeelException ex) {
+                    Logger.getLogger(FilesJoiner.class.getName()).log(Level.SEVERE, null, ex);
                 }
-                MainFrameGUI gui = new MainFrameGUI();
-                gui.setTitle("File joiner v2.0");
-                gui.setResizable(false);
-                gui.setVisible(true);
+            } catch (ClassNotFoundException | InstantiationException | IllegalAccessException ex) {
             }
+            MainFrameGUI gui = new MainFrameGUI();
+            gui.setTitle("File joiner v2.0");
+            gui.setResizable(false);
+            gui.setVisible(true);
         });
     }
 }

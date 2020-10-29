@@ -1,16 +1,11 @@
 package FileJoiner;
 
-import FileJoiner.ExtendedFile;
-import FileJoiner.HeaderFileObject;
-import FileJoiner.MainFrameGUI;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.LineIterator;
 import org.apache.commons.lang3.StringUtils;
 import java.io.*;
 import java.net.URISyntaxException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.*;
 
 class CombineLogic {
