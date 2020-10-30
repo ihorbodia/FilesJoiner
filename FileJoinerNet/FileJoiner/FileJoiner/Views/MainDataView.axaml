@@ -1,16 +1,31 @@
 ﻿<UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="FileJoiner.Views.MainDataView">
-	<Border DragDrop.AllowDrop="True">
-		<DataGrid Name="mainDataGrid">
-			<DataGrid.Columns>
-				<DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="8*" />
-				<DataGridTextColumn Header="Type" Binding="{Binding Type}" Width="1*" />
-				<DataGridTextColumn Header="Size" Binding="{Binding Size}" Width="1*" />
-			</DataGrid.Columns>
-		</DataGrid>
-	</Border>
+	
+	<DockPanel>
+		<DockPanel DockPanel.Dock="Bottom" 
+				   Height="50">
+				<StackPanel Margin="5" Orientation="Horizontal" VerticalAlignment="Center">
+					<TextBlock>Status:</TextBlock>
+					<TextBlock>12345</TextBlock>
+				</StackPanel>
+			<StackPanel Orientation="Horizontal" 
+						HorizontalAlignment="Right">
+				<CheckBox>Remove duplicates</CheckBox>
+				<Button Width="80"
+						Margin="5"
+						Height="30">Process files</Button>
+			</StackPanel>
+		</DockPanel>
+		<Border DragDrop.AllowDrop="True">
+			<DataGrid Name="mainDataGrid" DragDrop.AllowDrop="True">
+				<DataGrid.Columns>
+					<DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="8*" />
+					<DataGridTextColumn Header="Type" Binding="{Binding Type}" Width="1*" />
+					<DataGridTextColumn Header="Size (KB)" Binding="{Binding Size}" Width="1*" />
+				</DataGrid.Columns>
+			</DataGrid>
+		</Border>
+	</DockPanel>
 </UserControl>
