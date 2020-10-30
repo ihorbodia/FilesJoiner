@@ -12,8 +12,9 @@ namespace FileJoiner.Models
             Size = File.Length / 1000;
         }
         public FileInfo File { get; private set; }
-        public string Name { get; set; }
-        public string Type { get; set; }
-        public long Size { get; set; }
+
+        public string Name { get; private set; }
+        public string Type { get; private set; }
+        public long Size { get; private set; }
     }
 }

@@ -8,11 +8,11 @@ using System.Collections.Generic;
 
 namespace FileJoiner.Views
 {
-    public class MainDataGrid : UserControl
+    public class MainDataView : UserControl
     {
         DataGrid _DataGrid;
-        
-        public MainDataGrid()
+
+        public MainDataView()
         {
             this.InitializeComponent();
 
