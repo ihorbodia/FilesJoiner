@@ -13,13 +13,16 @@
 			<StackPanel Orientation="Horizontal" 
 						HorizontalAlignment="Right">
 				<CheckBox>Remove duplicates</CheckBox>
-				<Button Width="80"
+				<Button Command="{Binding ProcessFiles}"
+						Content="Process files"
+						Width="80"
 						Margin="5"
-						Height="30">Process files</Button>
+						Height="30">
+				</Button>
 			</StackPanel>
 		</DockPanel>
 		<Border DragDrop.AllowDrop="True">
-			<DataGrid Name="mainDataGrid" DragDrop.AllowDrop="True">
+			<DataGrid Name="mainDataGrid" Items="{Binding DataGridItems}" DragDrop.AllowDrop="True">
 				<DataGrid.Columns>
 					<DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="8*" />
 					<DataGridTextColumn Header="Type" Binding="{Binding Type}" Width="1*" />

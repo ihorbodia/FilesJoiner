@@ -1,37 +1,39 @@
-﻿using Avalonia;
-using Avalonia.Collections;
-using Avalonia.Controls;
+﻿using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Markup.Xaml;
-using FileJoiner.Models;
-using System.Collections.Generic;
+using FileJoiner.ViewModels;
+using System;
 
 namespace FileJoiner.Views
 {
     public class MainDataView : UserControl
     {
-        DataGrid _DataGrid;
-
+        //public MainDataViewModel _viewModel = DataContext as MainDataViewModel;
+        
         public MainDataView()
         {
             this.InitializeComponent();
 
-            _DataGrid = this.FindControl<DataGrid>("mainDataGrid");
+            DataGrid _DataGrid = this.FindControl<DataGrid>("mainDataGrid");
             _DataGrid.IsReadOnly = true;
-
-            AddHandler(DragDrop.DropEvent, Drop);
+            _DataGrid.AddHandler(DragDrop.DropEvent, Drop);
         }
 
+        //protected override void OnDataContextChanged(EventArgs e)
+        //{
+        //    if (_model != null)
+        //        _model.View = null;
+        //    _model = DataContext as MainDataViewModel;
+        //    if (_model != null)
+        //        _model.View = this;
+
+        //    base.OnDataContextChanged(e);
+        //}
 
         private void Drop(object sender, DragEventArgs e)
         {
             var files = e.Data.GetFileNames();
-            var extendedFiles = new List<ExtendedFile>();
-            foreach (var file in files)
-            {
-                extendedFiles.Add(new ExtendedFile(file));
-            }
-            _DataGrid.Items = new DataGridCollectionView(extendedFiles);
+            //_viewModel.DataGridFilesDragged(files);
         }
 
         private void InitializeComponent()

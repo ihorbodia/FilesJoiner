@@ -2,7 +2,7 @@
 using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
 
-namespace FileJoiner
+namespace FileJoiner.Views
 {
     public class MainWindow : Window
     {

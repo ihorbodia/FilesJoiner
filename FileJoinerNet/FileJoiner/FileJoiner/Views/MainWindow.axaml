@@ -1,13 +1,11 @@
 ﻿<Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-		xmlns:views="clr-namespace:FileJoiner.Views"
-        x:Class="FileJoiner.MainWindow"
+        x:Class="FileJoiner.Views.MainWindow"
 		MaxHeight="500"
 		MinHeight="500"
 		MaxWidth="700"
 		MinWidth="700"
-        Title="FileJoiner">
-
-	<views:MainDataView/>
+        Title="FileJoiner"
+		Content="{Binding Content}">
 </Window>
