@@ -1,8 +1,9 @@
 ﻿using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
-using FileJoiner.ViewModels;
 using FileJoiner.Views;
+using FileJoiner.ViewModels;
+
 
 namespace FileJoiner
 {
@@ -17,9 +18,9 @@ namespace FileJoiner
         {
             if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
             {
-                desktop.MainWindow = new MainWindow()
+                desktop.MainWindow = new MainWindow
                 {
-                    DataContext = new MainWindowViewModel()
+                    DataContext = new MainWindowViewModel(),
                 };
             }
 
