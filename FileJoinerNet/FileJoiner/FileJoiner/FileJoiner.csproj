@@ -1,13 +1,13 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
     <TargetFramework>netcoreapp3.1</TargetFramework>
   </PropertyGroup>
   <ItemGroup>
-    <None Remove="Assets\avalonia-logo.ico" />
+    <None Remove="Assets\document.png" />
   </ItemGroup>
   <ItemGroup>
-    <AvaloniaResource Include="Assets\avalonia-logo.ico">
+    <AvaloniaResource Include="Assets\document.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </AvaloniaResource>
   </ItemGroup>

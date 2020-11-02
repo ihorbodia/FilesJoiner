@@ -1,11 +1,23 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using ReactiveUI;
+using System;
 
 namespace FileJoiner.ViewModels
 {
-    public class MainWindowViewModel : ViewModelBase
+    class MainWindowViewModel : ViewModelBase
     {
-        public string Greeting => "Welcome to Avalonia!";
+        ViewModelBase content;
+
+        public MainWindowViewModel()
+        {
+            Content = MainDataViewModel = new MainDataViewModel();
+        }
+
+        public ViewModelBase Content
+        {
+            get => content;
+            private set => this.RaiseAndSetIfChanged(ref content, value);
+        }
+
+        public MainDataViewModel MainDataViewModel { get; }
     }
 }
