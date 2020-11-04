@@ -5,6 +5,15 @@ using System.Collections.Generic;
 using System.Linq;
 using Avalonia.Collections;
 using IronXL;
+using System.IO;
+using System.Text;
+using System.Net;
+using System.Globalization;
+using CsvHelper;
+using CsvHelper.Configuration;
+using System.Data;
+using FileJoiner.Logic;
+using System.Diagnostics;
 
 namespace FileJoiner.ViewModels
 {
@@ -13,10 +22,12 @@ namespace FileJoiner.ViewModels
         #region Private properties
         string status;
         DataGridCollectionView dataGridItems;
+        FileDataReader fileDataReader;
         #endregion
 
         public MainDataViewModel()
         {
+            fileDataReader = new FileDataReader();
         }
 
         #region Public properties
@@ -50,32 +61,39 @@ namespace FileJoiner.ViewModels
 
         public void ProcessFiles()
         {
-            List<WorkBook> wbs = new List<WorkBook>();
             foreach (ExtendedFile file in DataGridItems)
             {
-                wbs.Add(WorkBook.Load(file.File.FullName));
+                file.DataTable = fileDataReader.ReadFileContent(file);
             }
 
-            var test = wbs.First();
-            var defaultWorksheet = test.DefaultWorkSheet;
-
-            foreach (var item in defaultWorksheet.Columns)
+            foreach (ExtendedFile file in DataGridItems)
             {
-                Console.WriteLine(item);
+                var dataTable = file.DataTable;
+
+                Debug.WriteLine(file.Name);
+                foreach (DataColumn column in dataTable.Columns)
+                {
+                    Debug.Write(column.ColumnName);
+                    Debug.Write(" ");
+                }
+                Debug.WriteLine(" ");
+                Debug.WriteLine(dataTable.Rows.Count);
+                Debug.WriteLine(" ");
             }
-            var header = defaultWorksheet.GetRow(0);
-            var data = defaultWorksheet.GetRow(1);
-            Console.WriteLine(test);
+            
         }
 
         bool FileHasRightExtension(ExtendedFile file)
         {
             var result =
-                file.File.Extension.Contains(".csv") ||
-                file.File.Extension.Contains(".txt") ||
-                file.File.Extension.Contains(".xlsx");
+                file.Type.Contains("csv") ||
+                file.Type.Contains("tsv") ||
+                file.Type.Contains("txt") ||
+                file.Type.Contains("xlsx");
 
             return result;
         }
+
+        
     }
 }
