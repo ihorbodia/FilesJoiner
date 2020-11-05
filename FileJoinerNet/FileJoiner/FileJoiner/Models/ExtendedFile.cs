@@ -1,5 +1,4 @@
-﻿using IronXL;
-using System.Data;
+﻿using System.Data;
 using System.IO;
 
 namespace FileJoiner.Models
@@ -18,5 +17,6 @@ namespace FileJoiner.Models
         public string Name { get; private set; }
         public string Type { get; private set; }
         public long Size { get; private set; }
+        public bool Processed { get; set; }
     }
 }

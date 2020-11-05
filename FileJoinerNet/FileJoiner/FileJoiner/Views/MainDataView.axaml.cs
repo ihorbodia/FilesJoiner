@@ -1,9 +1,11 @@
 ﻿using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Markup.Xaml;
+using Avalonia.Media;
 using Avalonia.ReactiveUI;
 using FileJoiner.ViewModels;
 using System;
+using System.Drawing;
 
 namespace FileJoiner.Views
 {
@@ -18,6 +20,8 @@ namespace FileJoiner.Views
             DataGrid _DataGrid = this.FindControl<DataGrid>("mainDataGrid");
             _DataGrid.IsReadOnly = true;
             _DataGrid.AddHandler(DragDrop.DropEvent, Drop);
+
+            var items = _DataGrid.Items;
         }
 
         protected override void OnDataContextChanged(EventArgs e)

@@ -1,5 +1,4 @@
 ﻿using CsvHelper;
-using CsvHelper.Configuration;
 using FileJoiner.Models;
 using IronXL;
 using System;
@@ -33,68 +32,76 @@ namespace FileJoiner.Logic
         public DataTable ReadFileContent(ExtendedFile file)
         {
             DataTable result = null;
-            if (file.Type.Equals(TXT))
-            {
-                result = ReadDataFromTextFile(file);
-            }
-            else if (file.Type.Equals(TSV))
-            {
-                result = ReadDataFromTextFile(file);
-            }
-            else if (file.Type.Equals(CSV))
+            if (isTextFile(file))
             {
                 try
                 {
-                    using (var reader = new StreamReader(file.File.FullName))
-                    using (var csv = new CsvReader(reader, CultureInfo.InvariantCulture))
-                    {
-                        csv.Configuration.LineBreakInQuotedFieldIsBadData = false;
-                        csv.Configuration.IgnoreQuotes = true;
-                        var dt = new DataTable();
-                        using (var dr = new CsvDataReader(csv))
-                        {
-                            dt.Load(dr);
-                        }
-                        DataSet dataSet = new DataSet();
-                        dataSet.Tables.Add(dt);
-                        result = dt;
-                    }
+                    result = ReadDataFromTextFile(file);
                 }
                 catch (Exception ex)
                 {
-                    result = ReadDataFromTextFile(file);
+                    Debug.Write(ex.Message);
+                    //result = ReadDataFromTextFileManually(file);
+                    file.Processed = false;
+                    return result;
                 }
             }
-            //else if (file.Type.Equals(XLS))
-            //{
-            //    result = WorkBook.LoadExcel(file.File.FullName);
-            //}
-            //else if (file.Type.Equals(XLSX))
-            //{
-            //    result = WorkBook.LoadExcel(file.File.FullName);
-            //}
+            else if (isExcelWorksheet(file))
+            {
+                var wb = WorkBook.LoadExcel(file.File.FullName);
+                result = wb.DefaultWorkSheet.ToDataTable(true);
+            }
+            file.Processed = true;
+
+            foreach (DataColumn item in result.Columns)
+            {
+                item.ColumnName = item.ColumnName.Replace("\"", "");
+            }
             return result;
+        }
+
+        bool isExcelWorksheet(ExtendedFile file) => file.Type.Equals(XLS) || file.Type.Equals(XLSX);
+        bool isTextFile(ExtendedFile file) => file.Type.Equals(TXT) || file.Type.Equals(CSV) || file.Type.Equals(TSV);
+
+        DataTable ReadDataFromTextFileManually(ExtendedFile file)
+        {
+            var lines = File.ReadAllLines(file.File.FullName);
+            var delimiter = getDelimiterByHeader(lines.First());
+            var fileRows = lines.Select(x => x.Split(delimiter)).ToList();
+            var columns = fileRows.First().Select(x => new DataColumn(x)).ToArray();
+            DataTable table = new DataTable(file.Name);
+            table.Columns.AddRange(columns);
+
+            foreach (var fileRow in fileRows)
+            {
+                var newTableRow = table.NewRow();
+                for (int i = 0; i < table.Columns.Count; i++)
+                {
+                    newTableRow[i] = fileRow[i];
+                }
+                table.Rows.Add(newTableRow);
+            }
+            return table;
         }
 
         DataTable ReadDataFromTextFile(ExtendedFile file)
         {
-            var lines = File.ReadAllLines(file.File.FullName);
-            var delimiter = getDelimiterByHeader(lines.First());
-            var items = lines.Select(x => x.Split(delimiter)).ToList();
-            var columns = items.First().Select(x => new DataColumn(x)).ToArray();
-            DataTable table = new DataTable(file.Name);
-            table.Columns.AddRange(columns);
+            string header = File.ReadLines(file.File.FullName).First();
 
-            foreach (var row in items)
+            using (var reader = new StreamReader(file.File.FullName))
+            using (var csv = new CsvReader(reader, CultureInfo.InvariantCulture))
             {
-                var dataRow = table.NewRow();
-                for (int i = 0; i < table.Columns.Count; i++)
+                csv.Configuration.LineBreakInQuotedFieldIsBadData = false;
+                csv.Configuration.Delimiter = getDelimiterByHeader(header);
+                //csv.Configuration.MissingFieldFound = null;
+                csv.Configuration.IgnoreQuotes = true;
+                var dt = new DataTable();
+                using (var dr = new CsvDataReader(csv))
                 {
-                    dataRow[i] = row[i];
+                    dt.Load(dr);
                 }
-                table.Rows.Add(dataRow);
+                return dt;
             }
-            return table;
         }
 
         string getDelimiterByHeader(string header)
@@ -112,6 +119,7 @@ namespace FileJoiner.Logic
                 }
             }
 
+            Debug.Write("Delimiter: " + delimiter);
             return delimiter;
         }
     }

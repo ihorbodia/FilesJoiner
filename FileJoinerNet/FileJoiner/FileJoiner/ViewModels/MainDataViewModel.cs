@@ -4,16 +4,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Avalonia.Collections;
-using IronXL;
-using System.IO;
-using System.Text;
-using System.Net;
-using System.Globalization;
-using CsvHelper;
-using CsvHelper.Configuration;
 using System.Data;
 using FileJoiner.Logic;
 using System.Diagnostics;
+using System.Collections.ObjectModel;
+using IronXL;
 
 namespace FileJoiner.ViewModels
 {
@@ -23,6 +18,7 @@ namespace FileJoiner.ViewModels
         string status;
         DataGridCollectionView dataGridItems;
         FileDataReader fileDataReader;
+        ObservableCollection<ExtendedFile> _items;
         #endregion
 
         public MainDataViewModel()
@@ -31,12 +27,18 @@ namespace FileJoiner.ViewModels
         }
 
         #region Public properties
-        public DataGridCollectionView DataGridItems 
+        //public DataGridCollectionView DataGridItems 
+        //{
+        //    get => dataGridItems;
+        //    set => this.RaiseAndSetIfChanged(ref dataGridItems, value);
+        //}
+
+        public ObservableCollection<ExtendedFile> Items 
         {
-            get => dataGridItems;
-            set => this.RaiseAndSetIfChanged(ref dataGridItems, value);
+            get => _items;
+            set => this.RaiseAndSetIfChanged(ref _items, value);
         }
-        
+
         public string Status
         {
             get => status;
@@ -56,31 +58,26 @@ namespace FileJoiner.ViewModels
                     
                 }
             }
-            DataGridItems = new DataGridCollectionView(extendedFiles);
+            Items = new ObservableCollection<ExtendedFile>(extendedFiles);
         }
 
         public void ProcessFiles()
         {
-            foreach (ExtendedFile file in DataGridItems)
+            foreach (ExtendedFile file in Items)
             {
                 file.DataTable = fileDataReader.ReadFileContent(file);
             }
 
-            foreach (ExtendedFile file in DataGridItems)
-            {
-                var dataTable = file.DataTable;
+            var fileComposer = new FileComposer();
+            fileComposer.GetCommonHeaders(Items);
+            var dataTable = fileComposer.ComposeFiles(Items);
 
-                Debug.WriteLine(file.Name);
-                foreach (DataColumn column in dataTable.Columns)
-                {
-                    Debug.Write(column.ColumnName);
-                    Debug.Write(" ");
-                }
-                Debug.WriteLine(" ");
-                Debug.WriteLine(dataTable.Rows.Count);
-                Debug.WriteLine(" ");
-            }
-            
+            WorkBook wb = new WorkBook();
+            wb.LoadWorkSheet(dataTable);
+            wb.SaveAsCsv("result_data.csv", ",");
+
+            var buffer = new ObservableCollection<ExtendedFile>(Items);
+            Items = new ObservableCollection<ExtendedFile>(buffer);
         }
 
         bool FileHasRightExtension(ExtendedFile file)
@@ -93,7 +90,5 @@ namespace FileJoiner.ViewModels
 
             return result;
         }
-
-        
     }
 }
