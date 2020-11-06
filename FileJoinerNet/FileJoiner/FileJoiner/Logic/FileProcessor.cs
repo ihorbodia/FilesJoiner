@@ -6,10 +6,10 @@ using System.Linq;
 
 namespace FileJoiner.Logic
 {
-    public class FileComposer
+    public class FileProcessor
     {
         List<string> headers;
-        public FileComposer()
+        public FileProcessor()
         {
             headers = new List<string>();
         }

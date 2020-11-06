@@ -1,10 +1,10 @@
 ﻿using CsvHelper;
+using FileJoiner.Helpers;
 using FileJoiner.Models;
 using IronXL;
 using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -13,23 +13,32 @@ namespace FileJoiner.Logic
 {
     public class FileDataReader
     {
-        const string TXT = "txt";
-        const string TSV = "tsv";
-        const string CSV = "csv";
-        const string XLS = "xls";
-        const string XLSX = "xlsx";
-
-        List<string> delimiters;
-
-        public FileDataReader()
+        public void ReadFilesContent(IEnumerable<ExtendedFile> files)
         {
-            delimiters = new List<string>()
+            foreach (var file in files)
             {
-                "\",\"", "\t", "|", ";", ","
-            };
+                DataTable result = null;
+                try
+                {
+                    if (isTextFile(file))
+                    {
+                        result = ReadDataFromTextFile(file);
+                    }
+                    else if (isExcelWorksheet(file))
+                    {
+                        var wb = WorkBook.LoadExcel(file.File.FullName);
+                        result = wb.DefaultWorkSheet.ToDataTable(true);
+                    }
+                    file.Processed = true;
+                    file.DataTable = result;
+                }
+                catch (Exception)
+                {
+                    file.Processed = false;
+                }
+            }
         }
-
-        public DataTable ReadFileContent(ExtendedFile file)
+        public DataTable ReadFileContentToDataTable(ExtendedFile file)
         {
             DataTable result = null;
             if (isTextFile(file))
@@ -40,8 +49,6 @@ namespace FileJoiner.Logic
                 }
                 catch (Exception ex)
                 {
-                    Debug.Write(ex.Message);
-                    //result = ReadDataFromTextFileManually(file);
                     file.Processed = false;
                     return result;
                 }
@@ -53,15 +60,20 @@ namespace FileJoiner.Logic
             }
             file.Processed = true;
 
-            foreach (DataColumn item in result.Columns)
-            {
-                item.ColumnName = item.ColumnName.Replace("\"", "");
-            }
+            RemoveQuotesFromHeaderIfExists(result);
             return result;
         }
 
-        bool isExcelWorksheet(ExtendedFile file) => file.Type.Equals(XLS) || file.Type.Equals(XLSX);
-        bool isTextFile(ExtendedFile file) => file.Type.Equals(TXT) || file.Type.Equals(CSV) || file.Type.Equals(TSV);
+        void RemoveQuotesFromHeaderIfExists(DataTable dataTable)
+        {
+            foreach (DataColumn column in dataTable.Columns)
+            {
+                column.ColumnName = column.ColumnName.Replace("\"", "");
+            }
+        }
+
+        bool isExcelWorksheet(ExtendedFile file) => file.Type.Equals(FileTypes.XLS) || file.Type.Equals(FileTypes.XLSX);
+        bool isTextFile(ExtendedFile file) => file.Type.Equals(FileTypes.TXT) || file.Type.Equals(FileTypes.CSV) || file.Type.Equals(FileTypes.TSV);
 
         DataTable ReadDataFromTextFileManually(ExtendedFile file)
         {
@@ -93,33 +105,32 @@ namespace FileJoiner.Logic
             {
                 csv.Configuration.LineBreakInQuotedFieldIsBadData = false;
                 csv.Configuration.Delimiter = getDelimiterByHeader(header);
-                //csv.Configuration.MissingFieldFound = null;
+                csv.Configuration.MissingFieldFound = null;
                 csv.Configuration.IgnoreQuotes = true;
                 var dt = new DataTable();
                 using (var dr = new CsvDataReader(csv))
                 {
                     dt.Load(dr);
                 }
+                RemoveQuotesFromHeaderIfExists(dt);
                 return dt;
             }
         }
 
-        string getDelimiterByHeader(string header)
+        string getDelimiterByHeader(string headerRow)
         {
             int wordsCount = 0;
-            string delimiter = "";
+            string delimiter = string.Empty;
 
-            foreach (var item in delimiters)
+            foreach (var possibleDelimiter in Delimiters.List)
             {
-                int currentWordsCount = header.Split(item).Length;
+                int currentWordsCount = headerRow.Split(possibleDelimiter).Length;
                 if (currentWordsCount > wordsCount)
                 {
                     wordsCount = currentWordsCount;
-                    delimiter = item;
+                    delimiter = possibleDelimiter;
                 }
             }
-
-            Debug.Write("Delimiter: " + delimiter);
             return delimiter;
         }
     }

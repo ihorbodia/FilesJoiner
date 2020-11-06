@@ -1,4 +1,4 @@
-﻿using FileJoiner.Logic;
+﻿using FileJoiner.Helpers;
 using System.Data;
 using System.Linq;
 
@@ -14,11 +14,12 @@ namespace FileJoiner.Models
         public string OriginalHeader { get; }
         public string NewHeader { get; private set; }
 
-        void InitNewHeader ()
+        void InitNewHeader()
         {
             foreach (var headers in ColumnNames.SuggestedHeaders)
             {
-                var headerExists = headers.Value.Any(header => OriginalHeader.Contains(header, System.StringComparison.InvariantCultureIgnoreCase));
+                var headerExists = headers.Value
+                    .Any(header => OriginalHeader.Contains(header, System.StringComparison.InvariantCultureIgnoreCase));
                 if (headerExists)
                 {
                     NewHeader = headers.Key;

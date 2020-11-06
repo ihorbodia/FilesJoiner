@@ -1,14 +1,10 @@
 ﻿using FileJoiner.Models;
 using ReactiveUI;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using Avalonia.Collections;
-using System.Data;
 using FileJoiner.Logic;
-using System.Diagnostics;
 using System.Collections.ObjectModel;
 using IronXL;
+using System.Linq;
 
 namespace FileJoiner.ViewModels
 {
@@ -16,23 +12,12 @@ namespace FileJoiner.ViewModels
     {
         #region Private properties
         string status;
-        DataGridCollectionView dataGridItems;
         FileDataReader fileDataReader;
+        FileProcessor fileProcessor;
         ObservableCollection<ExtendedFile> _items;
         #endregion
 
-        public MainDataViewModel()
-        {
-            fileDataReader = new FileDataReader();
-        }
-
         #region Public properties
-        //public DataGridCollectionView DataGridItems 
-        //{
-        //    get => dataGridItems;
-        //    set => this.RaiseAndSetIfChanged(ref dataGridItems, value);
-        //}
-
         public ObservableCollection<ExtendedFile> Items 
         {
             get => _items;
@@ -63,14 +48,13 @@ namespace FileJoiner.ViewModels
 
         public void ProcessFiles()
         {
-            foreach (ExtendedFile file in Items)
-            {
-                file.DataTable = fileDataReader.ReadFileContent(file);
-            }
+            fileProcessor = new FileProcessor();
+            fileDataReader = new FileDataReader();
 
-            var fileComposer = new FileComposer();
-            fileComposer.GetCommonHeaders(Items);
-            var dataTable = fileComposer.ComposeFiles(Items);
+            fileDataReader.ReadFilesContent(Items);
+            fileProcessor.GetCommonHeaders(Items);
+
+            var dataTable = fileProcessor.ComposeFiles(Items);
 
             WorkBook wb = new WorkBook();
             wb.LoadWorkSheet(dataTable);
