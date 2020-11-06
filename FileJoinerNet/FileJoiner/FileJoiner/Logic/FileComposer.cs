@@ -3,7 +3,6 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
-using System.Windows.Documents;
 
 namespace FileJoiner.Logic
 {
@@ -20,14 +19,14 @@ namespace FileJoiner.Logic
             {
                 foreach (DataColumn column in file.DataTable.Columns)
                 {
-                    //TODO: Use ColumnNames clas here
-                    // ...
-                    
+                    var fileHeader = new Header(column);
+                    file.Headers.Add(fileHeader);
+
                     var headerExists = headers.
-                        Any(header => header.Equals(column.ColumnName, StringComparison.InvariantCultureIgnoreCase));
+                        Any(header => header.Equals(fileHeader.NewHeader, StringComparison.InvariantCultureIgnoreCase));
                     if (!headerExists)
                     {
-                        headers.Add(column.ColumnName.ToLowerInvariant());
+                        headers.Add(fileHeader.NewHeader);
                     }
                 }
             }
@@ -50,10 +49,10 @@ namespace FileJoiner.Logic
                 foreach (DataRow fileDataRow in file.DataTable.Rows)
                 {
                     var newRow = dataTable.NewRow();
-                    foreach (DataColumn column in file.DataTable.Columns)
+                    foreach (Header header in file.Headers)
                     {
-                        var dtColumn = dataTable.Columns[column.ColumnName].ColumnName;
-                        newRow.SetField(dtColumn, fileDataRow.Field<string>(column.ColumnName));
+                        var dtColumn = dataTable.Columns[header.NewHeader].ColumnName;
+                        newRow.SetField(dtColumn, fileDataRow.Field<string>(header.OriginalHeader));
                     }
                     dataTable.Rows.Add(newRow);
                 }
