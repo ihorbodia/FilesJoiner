@@ -3,13 +3,8 @@ using ReactiveUI;
 using System.Collections.Generic;
 using FileJoiner.Logic;
 using System.Collections.ObjectModel;
-using IronXL;
-using System.Linq;
 using System.Threading.Tasks;
 using System.Diagnostics;
-using System.IO;
-using System;
-using System.Data;
 using FileJoiner.Helpers;
 
 namespace FileJoiner.ViewModels
@@ -20,20 +15,28 @@ namespace FileJoiner.ViewModels
         string status;
         FileDataReader fileDataReader;
         FileProcessor fileProcessor;
-        ObservableCollection<ExtendedFile> _items;
+        ObservableCollection<ExtendedFile> items;
+        bool canExecute;
         #endregion
-
+        public MainDataViewModel()
+        {
+            Status = "Drag and drop files on header";
+        }
         #region Public properties
         public ObservableCollection<ExtendedFile> Items 
         {
-            get => _items;
-            set => this.RaiseAndSetIfChanged(ref _items, value);
+            get => items;
+            set => this.RaiseAndSetIfChanged(ref items, value);
         }
-
         public string Status
         {
             get => status;
             set => this.RaiseAndSetIfChanged(ref status, value);
+        }
+        public bool CanExecute
+        {
+            get => canExecute;
+            set => this.RaiseAndSetIfChanged(ref canExecute, value);
         }
         #endregion
 
@@ -46,7 +49,8 @@ namespace FileJoiner.ViewModels
                 if (FileHasRightExtension(extendedFile))
                 {
                     extendedFiles.Add(extendedFile);
-                    
+                    CanExecute = true;
+                    Status = "Ready for start";
                 }
             }
             Items = new ObservableCollection<ExtendedFile>(extendedFiles);
@@ -54,21 +58,25 @@ namespace FileJoiner.ViewModels
 
         public void ProcessFiles()
         {
-            //var worker = Task.Run(() => Process())
-            //    .ContinueWith((parameter) =>
-            //    {
-            //        var buffer = new ObservableCollection<ExtendedFile>(Items);
-            //        Items = new ObservableCollection<ExtendedFile>(buffer);
-            //    });
-            Process();
-            var buffer = new ObservableCollection<ExtendedFile>(Items);
-            Items = new ObservableCollection<ExtendedFile>(buffer);
+            Task.Factory.StartNew(() =>
+            {
+                CanExecute = false;
+                Status = "Processing";
+                Process();
+            })
+            .ContinueWith((parameter) =>
+            {
+                var buffer = new ObservableCollection<ExtendedFile>(Items);
+                Items = new ObservableCollection<ExtendedFile>(buffer);
+                CanExecute = true;
+                Status = "Finished";
+            });
         }
 
         void Process()
         {
-            fileProcessor = new FileProcessor();
             fileDataReader = new FileDataReader();
+            fileProcessor = new FileProcessor();
 
             fileDataReader.ReadFilesContent(Items);
             fileProcessor.GetCommonHeaders(Items);
@@ -81,7 +89,7 @@ namespace FileJoiner.ViewModels
             }
             catch (System.Exception ex)
             {
-                Debug.Write("Cannot save result file");
+                Debug.Write("Cannot save result file. " + ex.Message);
             }
         }
 

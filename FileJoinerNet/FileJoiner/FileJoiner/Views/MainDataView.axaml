@@ -7,16 +7,16 @@
 		<DockPanel DockPanel.Dock="Bottom" 
 				   Height="50">
 				<StackPanel Margin="5" Orientation="Horizontal" VerticalAlignment="Center">
-					<TextBlock>Status:</TextBlock>
-					<TextBlock>12345</TextBlock>
+					<TextBlock Text="Status: "></TextBlock>
+					<TextBlock Text="{Binding Status}"></TextBlock>
 				</StackPanel>
 			<StackPanel Orientation="Horizontal" 
 						HorizontalAlignment="Right">
-				<CheckBox>Remove duplicates</CheckBox>
+				<!--<CheckBox IsEnabled="False">Remove duplicates</CheckBox>-->
 				<Button Command="{Binding ProcessFiles}"
 						Content="Process files"
 						Width="80"
-						IsEnabled="True"
+						IsEnabled="{Binding CanExecute}"
 						Margin="5"
 						Height="30">
 				</Button>
