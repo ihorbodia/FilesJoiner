@@ -5,6 +5,12 @@ using FileJoiner.Logic;
 using System.Collections.ObjectModel;
 using IronXL;
 using System.Linq;
+using System.Threading.Tasks;
+using System.Diagnostics;
+using System.IO;
+using System;
+using System.Data;
+using FileJoiner.Helpers;
 
 namespace FileJoiner.ViewModels
 {
@@ -48,6 +54,19 @@ namespace FileJoiner.ViewModels
 
         public void ProcessFiles()
         {
+            //var worker = Task.Run(() => Process())
+            //    .ContinueWith((parameter) =>
+            //    {
+            //        var buffer = new ObservableCollection<ExtendedFile>(Items);
+            //        Items = new ObservableCollection<ExtendedFile>(buffer);
+            //    });
+            Process();
+            var buffer = new ObservableCollection<ExtendedFile>(Items);
+            Items = new ObservableCollection<ExtendedFile>(buffer);
+        }
+
+        void Process()
+        {
             fileProcessor = new FileProcessor();
             fileDataReader = new FileDataReader();
 
@@ -56,12 +75,14 @@ namespace FileJoiner.ViewModels
 
             var dataTable = fileProcessor.ComposeFiles(Items);
 
-            WorkBook wb = new WorkBook();
-            wb.LoadWorkSheet(dataTable);
-            wb.SaveAsCsv("result_data.csv", ",");
-
-            var buffer = new ObservableCollection<ExtendedFile>(Items);
-            Items = new ObservableCollection<ExtendedFile>(buffer);
+            try
+            {
+                dataTable.ToCSV("result_data.csv");
+            }
+            catch (System.Exception ex)
+            {
+                Debug.Write("Cannot save result file");
+            }
         }
 
         bool FileHasRightExtension(ExtendedFile file)
@@ -75,4 +96,6 @@ namespace FileJoiner.ViewModels
             return result;
         }
     }
+
+    
 }

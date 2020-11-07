@@ -36,13 +36,10 @@ namespace FileJoiner.Logic
         {
             DataTable dataTable = new DataTable("defaultTable");
 
-            var newHeaderRow = dataTable.NewRow();
             foreach (string header in headers)
             {
                 dataTable.Columns.Add(header);
-                newHeaderRow.SetField(header, header);
             }
-            dataTable.Rows.Add(newHeaderRow);
 
             foreach (ExtendedFile file in files)
             {

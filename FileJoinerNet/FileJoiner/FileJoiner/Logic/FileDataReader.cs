@@ -1,11 +1,9 @@
-﻿using CsvHelper;
-using FileJoiner.Helpers;
+﻿using FileJoiner.Helpers;
 using FileJoiner.Models;
 using IronXL;
 using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Globalization;
 using System.IO;
 using System.Linq;
 
@@ -22,7 +20,7 @@ namespace FileJoiner.Logic
                 {
                     if (isTextFile(file))
                     {
-                        result = ReadDataFromTextFile(file);
+                        result = ReadDataFromTextFileManually(file);
                     }
                     else if (isExcelWorksheet(file))
                     {
@@ -34,16 +32,8 @@ namespace FileJoiner.Logic
                 catch (Exception)
                 {
                     file.Processed = false;
-                    result = ReadDataFromTextFileManually(file);
                 }
                 file.DataTable = result;
-            }
-        }
-        void RemoveQuotesFromHeaderIfExists(DataTable dataTable)
-        {
-            foreach (DataColumn column in dataTable.Columns)
-            {
-                column.ColumnName = column.ColumnName.Replace("\"", "");
             }
         }
 
@@ -62,8 +52,7 @@ namespace FileJoiner.Logic
             var delimiter = getDelimiterByHeader(lines.First());
             var fileRows = lines.Select(x => x.Split(delimiter)).ToList();
             var headers = fileRows.First();
-            var columns = fileRows.First().Select(x => new DataColumn(x)).ToArray();
-
+            var columns = fileRows.First().Select(x => new DataColumn(x.TrimQuotes())).ToArray();
             table.Columns.AddRange(columns);
 
             foreach (var fileRow in fileRows.Skip(1))
@@ -73,33 +62,12 @@ namespace FileJoiner.Logic
                     var newTableRow = table.NewRow();
                     for (int i = 0; i < table.Columns.Count; i++)
                     {
-                        newTableRow[i] = fileRow[i];
+                        newTableRow[i] = fileRow[i].TrimQuotes();
                     }
                     table.Rows.Add(newTableRow);
                 }
             }
             return table;
-        }
-
-        DataTable ReadDataFromTextFile(ExtendedFile file)
-        {
-            string header = File.ReadLines(file.File.FullName).First();
-
-            using (var reader = new StreamReader(file.File.FullName))
-            using (var csv = new CsvReader(reader, CultureInfo.InvariantCulture))
-            {
-                csv.Configuration.LineBreakInQuotedFieldIsBadData = false;
-                csv.Configuration.Delimiter = getDelimiterByHeader(header);
-                //csv.Configuration.MissingFieldFound = null;
-                csv.Configuration.IgnoreQuotes = true;
-                var dt = new DataTable();
-                using (var dr = new CsvDataReader(csv))
-                {
-                    dt.Load(dr);
-                }
-                RemoveQuotesFromHeaderIfExists(dt);
-                return dt;
-            }
         }
 
         string getDelimiterByHeader(string headerRow)
