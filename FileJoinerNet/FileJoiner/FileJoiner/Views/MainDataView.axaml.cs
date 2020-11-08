@@ -1,11 +1,8 @@
 ﻿using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Markup.Xaml;
-using Avalonia.Media;
-using Avalonia.ReactiveUI;
 using FileJoiner.ViewModels;
 using System;
-using System.Drawing;
 
 namespace FileJoiner.Views
 {

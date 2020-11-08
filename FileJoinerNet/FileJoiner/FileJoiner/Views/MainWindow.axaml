@@ -7,6 +7,6 @@
 		MaxWidth="700"
 		MinWidth="700"
         Title="FileJoiner"
-		Icon="/Assets/document.png"
+		Icon="/Assets/document.ico"
 		Content="{Binding Content}">
 </Window>
