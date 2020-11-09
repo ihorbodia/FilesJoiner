@@ -46,5 +46,9 @@ namespace FileJoiner.Helpers
             }
             sw.Close();
         }
+        public static DataTable RemoveDuplicates(this DataTable dtDataTable)
+        {
+            return dtDataTable.DefaultView.ToTable(true);
+        }
     }
 }

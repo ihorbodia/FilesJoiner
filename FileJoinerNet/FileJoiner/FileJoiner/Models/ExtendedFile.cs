@@ -12,7 +12,8 @@ namespace FileJoiner.Models
             File = new FileInfo(path);
             Name = File.Name;
             Type = File.Extension.Replace(".", "").ToLower();
-            Size = File.Length / 1000;
+            var fileSize = File.Length / 1000;
+            Size = fileSize == 0 ? 1 : fileSize;
         }
         public DataTable DataTable { get; set; }
         public List<Header> Headers { get; set; }

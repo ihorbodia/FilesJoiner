@@ -13,8 +13,6 @@ namespace FileJoiner.ViewModels
     {
         #region Private properties
         string status;
-        FileDataReader fileDataReader;
-        FileProcessor fileProcessor;
         ObservableCollection<ExtendedFile> items;
         bool canExecute;
         #endregion
@@ -75,14 +73,12 @@ namespace FileJoiner.ViewModels
 
         void Process()
         {
-            fileDataReader = new FileDataReader();
-            fileProcessor = new FileProcessor();
-
-            fileDataReader.ReadFilesContent(Items);
+            var fileProcessor = new FileProcessor();
+            fileProcessor.ReadFilesContent(Items);
             fileProcessor.GetCommonHeaders(Items);
-
             var dataTable = fileProcessor.ComposeFiles(Items);
-
+            Status = "Removing duplicates";
+            dataTable = dataTable.RemoveDuplicates();
             try
             {
                 dataTable.ToCSV("result_data.csv");
@@ -104,6 +100,4 @@ namespace FileJoiner.ViewModels
             return result;
         }
     }
-
-    
 }
