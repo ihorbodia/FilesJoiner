@@ -77,7 +77,7 @@ namespace FileJoiner.ViewModels
             fileProcessor.ReadFilesContent(Items);
             fileProcessor.GetCommonHeaders(Items);
             var dataTable = fileProcessor.ComposeFiles(Items);
-            Status = "Removing duplicates";
+            Status = "Deleting duplicates";
             dataTable = dataTable.RemoveDuplicates();
             try
             {

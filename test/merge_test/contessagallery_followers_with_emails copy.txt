@@ -1,0 +1,10 @@
+Instagram	User name	Full name	Posts	Followers	Following	is_private	is_verified	Public email	Bio email	All emails	Public phone	Bio link	Bio	Profile pic
+www.instagram.com/a.vizh	a.vizh	Gela      vizh	72	588	7114	false	false	gila.saani@yahoo.com		gila.saani@yahoo.com	6606917740	http://designbygela.com/	Passionate for #design in communication, #drawing, #painting, #video_art and #teaching my knowledge to people 💪	https://instagram.fdnk6-1.fna.fbcdn.net/v/t51.2885-19/s150x150/91524943_588884328502777_235529156039802880_n.jpg?_nc_ht=instagram.fdnk6-1.fna.fbcdn.net&_nc_ohc=AGMECR_ufwUAX_wvW7L&oh=c669750852b146a2005ba453dda6b105&oe=5FABAD4F
+www.instagram.com/zairavieytes	zairavieytes	Zaira Vieytes	259	492	1511	false	false	zairavieytes@free.fr
+
+
+		zairavieytes@free.fr
+
+
+	632505575	http://www.zairavieytes.com/	Artiste plasticienne	https://instagram.fdnk6-1.fna.fbcdn.net/v/t51.2885-19/s150x150/21576857_1162963430515104_7435616918079275008_a.jpg?_nc_ht=instagram.fdnk6-1.fna.fbcdn.net&_nc_ohc=hvhUwXINYn0AX8j4ejS&oh=611e8cfca5413888373b5e586a09189f&oe=5FABC31C
+www.instagram.com/gabriela.creations	gabriela.creations	Gabriela Créations	59	989	5973	false	false	gabrielacretaions@gmail.com		gabrielacretaions@gmail.com	625334648		Brasil-Paris Artista de Bahia residente em Paris.#artiste #artisanat #luminaires #ligth  #peintre #pintora #decodesigner #designer #deco#objetdeco	https://instagram.fdnk6-1.fna.fbcdn.net/v/t51.2885-19/s150x150/87275474_239925657009949_4191953205485109248_n.jpg?_nc_ht=instagram.fdnk6-1.fna.fbcdn.net&_nc_ohc=Jxw4tO7U9Q0AX_Phhc-&oh=7258139b4f8df0c0f8c0d252d4f6182a&oe=5FA9AC17
