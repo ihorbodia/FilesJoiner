@@ -8,6 +8,8 @@
     <Description>An application for combining the content of text files and Excel into a single file.</Description>
     <PackageIcon>document.ico</PackageIcon>
     <RepositoryUrl>https://github.com/ihorbodia/FilesJoiner</RepositoryUrl>
+    <Product>FileJoiner</Product>
+    <AssemblyName>FileJoiner</AssemblyName>
   </PropertyGroup>
   <ItemGroup>
     <None Remove="Assets\document.ico" />

@@ -1,5 +1,4 @@
 ﻿using ReactiveUI;
-using System;
 
 namespace FileJoiner.ViewModels
 {
