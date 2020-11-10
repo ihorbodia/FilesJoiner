@@ -14,6 +14,7 @@ namespace FileJoiner.Helpers
             SuggestedHeaders.Add(nameof(Email), Email);
             SuggestedHeaders.Add(nameof(Bio), Bio);
             SuggestedHeaders.Add(nameof(Link), Link);
+            SuggestedHeaders.Add(nameof(Website), Website);
         }
         static List<string> Instagram = new List<string>()
         {
@@ -30,7 +31,12 @@ namespace FileJoiner.Helpers
 
         static List<string> Link = new List<string>()
         {
-            "link", "url", "website"
+            "link", "url"
+        };
+
+        static List<string> Website = new List<string>()
+        {
+            "website", "web"
         };
     }
 }

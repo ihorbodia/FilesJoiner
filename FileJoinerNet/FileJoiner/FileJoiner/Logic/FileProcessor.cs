@@ -4,8 +4,10 @@ using IronXL;
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
 
 namespace FileJoiner.Logic
 {
@@ -86,6 +88,13 @@ namespace FileJoiner.Logic
             }
         }
 
+        List<string[]> SplitLines(string[] lines, string delimiter)
+        {
+            string regexPattern = Delimiters.GetSplitPattern(delimiter);
+            var rows = lines.Select(line => Regex.Split(line, regexPattern)).ToList();
+            return rows;
+        }
+
         DataTable ReadDataFromTextFileManually(ExtendedFile file)
         {
             DataTable table = new DataTable(file.Name);
@@ -96,7 +105,7 @@ namespace FileJoiner.Logic
 
             var lines = File.ReadAllLines(file.File.FullName);
             var delimiter = Delimiters.GetDelimiterByHeader(lines.First());
-            var fileRows = lines.Select(x => x.Split(delimiter)).ToList();
+            var fileRows = SplitLines(lines, delimiter);
             var headers = fileRows.First();
             var columns = fileRows.First().Select(x => new DataColumn(x.TrimQuotes())).ToArray();
             table.Columns.AddRange(columns);
