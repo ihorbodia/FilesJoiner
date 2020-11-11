@@ -3,13 +3,14 @@
     <OutputType>WinExe</OutputType>
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <ApplicationIcon>document.ico</ApplicationIcon>
-    <Version>1.0.2</Version>
+    <Version>1.0.3</Version>
     <Authors>Ihor Bodia</Authors>
     <Description>An application for combining the content of text files and Excel into a single file.</Description>
     <PackageIcon>document.ico</PackageIcon>
     <RepositoryUrl>https://github.com/ihorbodia/FilesJoiner</RepositoryUrl>
     <Product>FileJoiner</Product>
     <AssemblyName>FileJoiner</AssemblyName>
+    <NeutralLanguage />
   </PropertyGroup>
   <ItemGroup>
     <None Remove="Assets\document.ico" />
