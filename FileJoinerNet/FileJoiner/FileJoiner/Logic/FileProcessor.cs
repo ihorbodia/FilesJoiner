@@ -1,4 +1,5 @@
-﻿using FileJoiner.Helpers;
+﻿using DynamicData;
+using FileJoiner.Helpers;
 using FileJoiner.Models;
 using IronXL;
 using System;
@@ -80,7 +81,7 @@ namespace FileJoiner.Logic
                     }
                     file.Processed = true;
                 }
-                catch (Exception)
+                catch (Exception ex )
                 {
                     file.Processed = false;
                 }
@@ -106,18 +107,20 @@ namespace FileJoiner.Logic
             var lines = File.ReadAllLines(file.File.FullName);
             var delimiter = Delimiters.GetDelimiterByHeader(lines.First());
             var fileRows = SplitLines(lines, delimiter);
-            var headers = fileRows.First();
-            var columns = fileRows.First().Select(x => new DataColumn(x.TrimQuotes())).ToArray();
+            var columns = fileRows.First()
+                .Where(x => !string.IsNullOrWhiteSpace(x))
+                .Select(x => new DataColumn(x.TrimQuotes())).ToArray();
             table.Columns.AddRange(columns);
 
             foreach (var fileRow in fileRows.Skip(1))
             {
-                if (headers.Length == fileRow.Length)
+                var updatedRow = fileRow.Where(x => !string.IsNullOrWhiteSpace(x)).ToArray();
+                if (columns.Length == updatedRow.Length)
                 {
                     var newTableRow = table.NewRow();
                     for (int i = 0; i < table.Columns.Count; i++)
                     {
-                        newTableRow[i] = fileRow[i].TrimQuotes();
+                        newTableRow[i] = updatedRow[i].TrimQuotes();
                     }
                     table.Rows.Add(newTableRow);
                 }

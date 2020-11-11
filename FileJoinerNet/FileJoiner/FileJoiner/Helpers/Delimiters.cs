@@ -26,6 +26,12 @@ namespace FileJoiner.Helpers
             return delimiter.Equals("|") ? $"\\{delimiter}{commonPattern}" : $"{delimiter}{commonPattern}";
         }
 
+        public static string CleanHeaderPattern(string delimiter)
+        {
+            string commonPattern = "{2,}";
+            return delimiter.Equals("|") ? $"\\{delimiter}{commonPattern}" : $"{delimiter}{commonPattern}";
+        }
+
         public static string GetDelimiterByHeader(string headerRow)
         {
             int wordsCount = 0;
