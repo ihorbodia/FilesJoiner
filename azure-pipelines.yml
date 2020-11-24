@@ -16,22 +16,11 @@ steps:
   inputs:
     command: 'build'
     projects: '**/FileJoiner.csproj'
+
 - task: DotNetCoreCLI@2
-  displayName: Release FileJoiner
   inputs:
     command: 'publish'
     publishWebProjects: false
     projects: '**/FileJoiner.csproj'
-
-- script: |
-    echo $(System.DefaultWorkingDirectory) # outputs System.DefaultWorkingDirectory
-    echo $(Build.ArtifactStagingDirectory) # outputs Build.ArtifactStagingDirectory
-    echo $(Build.BinariesDirectory) # outputs Build.BinariesDirectory
-
-- task: ArchiveFiles@2
-  inputs:
-    rootFolderOrFile: '$(Build.BinariesDirectory)'
-    includeRootFolder: false
-    archiveType: 'zip'
-    archiveFile: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip'
-    replaceExistingArchive: true
+    arguments: '$(System.DefaultWorkingDirectory)\**\FileJoiner.csproj /p:PublishProfile=$(System.DefaultWorkingDirectory)\FileJoinerNet\FileJoiner\FileJoiner\Properties\PublishProfiles\FolderProfile.pubxml  --configuration $(BuildConfiguration) --output  $(Build.ArtifactStagingDirectory)\ConsoleAppCore-Publish\'
+    modifyOutputPath: false
