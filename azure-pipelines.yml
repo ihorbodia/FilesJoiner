@@ -9,13 +9,20 @@ trigger:
 pool:
   vmImage: 'ubuntu-latest'
 
+
 steps:
-- task: DotNetCoreCLI@2
-  inputs:
-    command: 'build'
-    projects: '**/*.csproj'
-- task: DotNetCoreCLI@2
-  inputs:
-    command: 'publish'
-    publishWebProjects: false
-    projects: '**/*.csproj'
+  - script: |
+      echo $(System.DefaultWorkingDirectory) # outputs my value
+
+# steps:
+# - publish: $(System.DefaultWorkingDirectory)/bin/WebApp
+#   artifact: WebApp
+# - task: DotNetCoreCLI@2
+#   inputs:
+#     command: 'build'
+#     projects: '**/*.csproj'
+# - task: DotNetCoreCLI@2
+#   inputs:
+#     command: 'publish'
+#     publishWebProjects: false
+#     projects: '**/*.csproj'
