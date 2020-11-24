@@ -11,8 +11,18 @@ pool:
 
 
 steps:
-  - script: |
-      echo $(System.DefaultWorkingDirectory) # outputs my value
+- task: DotNetCoreCLI@2
+  inputs:
+    command: 'publish'
+    publishWebProjects: false
+    projects: '**/FileJoiner.csproj'
+
+- script: |
+    echo $(System.DefaultWorkingDirectory) # outputs System.DefaultWorkingDirectory
+    echo $(Build.ArtifactStagingDirectory) # outputs Build.ArtifactStagingDirectory
+    echo $(Build.BinariesDirectory) # outputs Build.BinariesDirectory
+
+
 
 # steps:
 # - publish: $(System.DefaultWorkingDirectory)/bin/WebApp
@@ -24,5 +34,12 @@ steps:
 # - task: DotNetCoreCLI@2
 #   inputs:
 #     command: 'publish'
+- task: ArchiveFiles@2
+  inputs:
+    rootFolderOrFile: '$(Build.BinariesDirectory)'
+    includeRootFolder: false
+    archiveType: 'zip'
+    archiveFile: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip'
+    replaceExistingArchive: true
 #     publishWebProjects: false
 #     projects: '**/*.csproj'
