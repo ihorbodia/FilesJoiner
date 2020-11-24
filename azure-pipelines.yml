@@ -28,5 +28,5 @@ steps:
 
 - task: PublishBuildArtifacts@1
   inputs:
-    pathToPublish: '$(Build.ArtifactStagingDirectory)/FileJoinerNet/FileJoiner/FileJoiner/Publish/Publish.zip'
+    pathToPublish: '$(Build.ArtifactStagingDirectory)/FileJoinerNet/FileJoiner/FileJoiner/Publish/'
     artifactName: drop
