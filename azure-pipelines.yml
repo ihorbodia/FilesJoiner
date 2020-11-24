@@ -23,5 +23,5 @@ steps:
     command: 'publish'
     publishWebProjects: false
     projects: '**/FileJoiner.csproj'
-    arguments: '$(System.DefaultWorkingDirectory)\FileJoinerNet\FileJoiner\FileJoiner.csproj /p:PublishProfile=$(System.DefaultWorkingDirectory)\FileJoinerNet\FileJoiner\FileJoiner\Properties\PublishProfiles\FolderProfile.pubxml  --configuration $(BuildConfiguration) --output  $(Build.ArtifactStagingDirectory)\ConsoleAppCore-Publish\'
+    arguments: '$(System.DefaultWorkingDirectory)/FileJoinerNet/FileJoiner/FileJoiner.csproj /p:PublishProfile=$(System.DefaultWorkingDirectory)/FileJoinerNet/FileJoiner/FileJoiner/Properties/PublishProfiles/FolderProfile.pubxml  --configuration Release --output  $(Build.ArtifactStagingDirectory)/ConsoleAppCore-Publish/'
     modifyOutputPath: false
