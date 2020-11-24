@@ -18,9 +18,10 @@ steps:
     projects: '**/FileJoiner.csproj'
 
 - task: DotNetCoreCLI@2
+  displayName: Publish FileJoiner
   inputs:
     command: 'publish'
     publishWebProjects: false
     projects: '**/FileJoiner.csproj'
-    arguments: '$(System.DefaultWorkingDirectory)\**\FileJoiner.csproj /p:PublishProfile=$(System.DefaultWorkingDirectory)\FileJoinerNet\FileJoiner\FileJoiner\Properties\PublishProfiles\FolderProfile.pubxml  --configuration $(BuildConfiguration) --output  $(Build.ArtifactStagingDirectory)\ConsoleAppCore-Publish\'
+    arguments: '$(System.DefaultWorkingDirectory)\FileJoinerNet\FileJoiner\FileJoiner.csproj /p:PublishProfile=$(System.DefaultWorkingDirectory)\FileJoinerNet\FileJoiner\FileJoiner\Properties\PublishProfiles\FolderProfile.pubxml  --configuration $(BuildConfiguration) --output  $(Build.ArtifactStagingDirectory)\ConsoleAppCore-Publish\'
     modifyOutputPath: false
