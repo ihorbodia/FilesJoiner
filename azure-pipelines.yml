@@ -16,22 +16,32 @@ steps:
   inputs:
     command: 'build'
     projects: '**/FileJoiner.csproj'
-- task: DownloadBuildArtifacts@0
+
+- task: DotNetCoreCLI@2
   inputs:
-    buildType: 'current'
-    downloadType: 'single'
-    artifactName: 'buildArtifact'
-    downloadPath: '$(System.ArtifactsDirectory)'
+    command: 'publish'
+    publishWebProjects: false
+    projects: '**/FileJoiner.csproj'
+    arguments: '/p:PublishProfile=$(System.DefaultWorkingDirectory)/FileJoinerNet/FileJoiner/FileJoiner/Properties/PublishProfiles/FolderProfile.pubxml'
+    zipAfterPublish: false
+    modifyOutputPath: false
+
+# - task: DownloadBuildArtifacts@0
+#   inputs:
+#     buildType: 'current'
+#     downloadType: 'single'
+#     artifactName: 'buildArtifact'
+#     downloadPath: '$(System.ArtifactsDirectory)'
+
+
+
 # - task: DotNetCoreCLI@2
 #   displayName: Publish FileJoiner
 #   inputs:
 #     command: 'publish'
 #     publishWebProjects: false
 #     projects: '**/FileJoiner.csproj'
-#     arguments: '/p:PublishProfile=$(System.DefaultWorkingDirectory)/FileJoinerNet/FileJoiner/FileJoiner/Properties/PublishProfiles/FolderProfile.pubxml'
+#     arguments: '
 #     modifyOutputPath: false
 
-# - task: PublishBuildArtifacts@1
-#   inputs:
-#     pathToPublish: '$(Build.ArtifactStagingDirectory)/FileJoinerNet/FileJoiner/FileJoiner/bin/Release/netcoreapp3.1/win-x86/publish.zip'
-#     artifactName: drop
+
