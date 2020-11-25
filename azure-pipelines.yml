@@ -28,7 +28,7 @@ steps:
 
 - task: CopyFiles@2
   inputs:
-    sourceFolder: '$(Build.SourcesDirectory)/bin/Release/netcoreapp3.1/publish/win-x86/'
+    sourceFolder: '$(Build.SourcesDirectory)'
     contents: '**/bin/**'
     targetFolder: '$(Build.ArtifactStagingDirectory)'
 - task: PublishBuildArtifacts@1
