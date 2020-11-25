@@ -27,12 +27,12 @@ steps:
 - task: CmdLine@2
   inputs:
     script: 'chmod +x FileJoiner.app'
-    workingDirectory: '**/bin/Release/netcoreapp3.1/publish/mac/'
+    workingDirectory: '$(Build.SourcesDirectory)/bin/Release/netcoreapp3.1/publish/mac/'
 
 - task: CopyFiles@2
   inputs:
     sourceFolder: '$(Build.SourcesDirectory)'
-    contents: '$(Build.SourcesDirectory)/bin/Release/netcoreapp3.1/publish/**'
+    contents: '**/bin/Release/netcoreapp3.1/publish/**'
     targetFolder: '$(Build.ArtifactStagingDirectory)'
 - task: PublishBuildArtifacts@1
   inputs:
