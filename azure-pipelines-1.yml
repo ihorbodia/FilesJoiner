@@ -20,7 +20,7 @@ steps:
   inputs:
     command: 'publish'
     publishWebProjects: false
-    projects: '/FileJoiner.csproj'
+    projects: '**/FileJoiner.csproj'
     arguments: '/p:PublishProfile=$(System.DefaultWorkingDirectory)/FileJoinerNet/FileJoiner/FileJoiner/Properties/PublishProfiles/FolderProfile.pubxml'
     zipAfterPublish: false
     modifyOutputPath: false
@@ -28,9 +28,9 @@ steps:
 - task: CopyFiles@2
   inputs:
     sourceFolder: '$(Build.SourcesDirectory)'
-    contents: '/bin/Release/netcoreapp3.1/publish/'
+    contents: '**/bin/Release/netcoreapp3.1/publish/**'
     targetFolder: '$(Build.ArtifactStagingDirectory)'
 - task: PublishBuildArtifacts@1
   inputs:
     pathToPublish: '$(Build.ArtifactStagingDirectory)'
-    artifactName: drop
+    artifactName: mac
