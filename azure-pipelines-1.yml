@@ -14,7 +14,7 @@ steps:
   displayName: Build FileJoiner
   inputs:
     command: 'build'
-    projects: '/FileJoiner.csproj'
+    projects: '**/FileJoiner.csproj'
 
 - task: DotNetCoreCLI@2
   inputs:
