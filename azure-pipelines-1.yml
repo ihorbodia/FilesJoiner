@@ -21,7 +21,7 @@ steps:
     command: 'publish'
     publishWebProjects: false
     projects: '**/FileJoiner.csproj'
-    arguments: '/p:PublishProfile=$(System.DefaultWorkingDirectory)/FileJoinerNet/FileJoiner/FileJoiner/Properties/PublishProfiles/FolderProfile.pubxml'
+    arguments: '/p:PublishProfile=$(System.DefaultWorkingDirectory)/FileJoinerNet/FileJoiner/FileJoiner/Properties/PublishProfiles/FolderProfile1.pubxml'
     zipAfterPublish: false
     modifyOutputPath: false
 
