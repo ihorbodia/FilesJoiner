@@ -27,7 +27,7 @@ steps:
 - task: CmdLine@2
   inputs:
     script: 'chmod +x FileJoiner.app'
-    workingDirectory: '/FileJoinerNet/FileJoiner/FileJoiner/bin/Release/netcoreapp3.1/publish/mac/'
+    workingDirectory: '$(Build.SourcesDirectory)/FileJoinerNet/FileJoiner/FileJoiner/bin/Release/netcoreapp3.1/publish/mac/'
 
 - task: CopyFiles@2
   inputs:
