@@ -23,7 +23,7 @@ steps:
     command: 'publish'
     publishWebProjects: false
     projects: '**/FileJoiner.csproj'
-    arguments: '/p:PublishProfile=$(System.DefaultWorkingDirectory)/FileJoinerNet/FileJoiner/FileJoiner/Properties/PublishProfiles/FolderProfile.pubxml  --configuration Release --output  $(Build.ArtifactStagingDirectory)/FileJoinerNet/FileJoiner/FileJoiner/Publish/'
+    arguments: '/p:PublishProfile=$(System.DefaultWorkingDirectory)/FileJoinerNet/FileJoiner/FileJoiner/Properties/PublishProfiles/FolderProfile.pubxml'
     modifyOutputPath: false
 
 - task: PublishBuildArtifacts@1
