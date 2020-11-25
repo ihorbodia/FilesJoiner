@@ -28,5 +28,5 @@ steps:
 
 - task: PublishBuildArtifacts@1
   inputs:
-    pathToPublish: '$(Build.ArtifactStagingDirectory)/FileJoinerNet/FileJoiner/FileJoiner/bin/Release/netcoreapp3.1/publish/mac/'
+    pathToPublish: '$(Build.ArtifactStagingDirectory)/FileJoinerNet/FileJoiner/FileJoiner/bin/Release/netcoreapp3.1/'
     artifactName: drop
