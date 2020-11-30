@@ -10,6 +10,14 @@ pool:
   vmImage: 'macOS-latest'
 
 steps:
+
+- task: NuGetCommand@2
+  displayName: Restore Nugets
+  inputs:
+    command: 'restore'
+    restoreSolution: '**/*.sln'
+    feedsToUse: 'select'
+
 - task: DotNetCoreCLI@2
   displayName: Build FileJoiner
   inputs:
@@ -17,6 +25,7 @@ steps:
     projects: '**/FileJoiner.csproj'
 
 - task: DotNetCoreCLI@2
+  displayName: Publish Application
   inputs:
     command: 'publish'
     publishWebProjects: false
@@ -24,19 +33,18 @@ steps:
     arguments: '/p:PublishProfile=$(System.DefaultWorkingDirectory)/FileJoinerNet/FileJoiner/FileJoiner/Properties/PublishProfiles/FolderProfile1.pubxml'
     zipAfterPublish: false
     modifyOutputPath: false
-
-- task: Bash@3
+- task: MSBuild@1
   inputs:
-    targetType: 'inline'
-    script: chmod +x FileJoiner
-    workingDirectory: '$(Build.SourcesDirectory)/FileJoinerNet/FileJoiner/FileJoiner/bin/Release/netcoreapp3.1/publish/mac/'
-
+    solution: '**/*.sln'
+    msbuildArguments: '-t:BundleApp -p:RuntimeIdentifier=osx-x64'
 - task: CopyFiles@2
+  displayName: Copy files to artifacts folder
   inputs:
     sourceFolder: '$(Build.SourcesDirectory)'
     contents: '**/bin/Release/netcoreapp3.1/publish/**'
     targetFolder: '$(Build.ArtifactStagingDirectory)'
 - task: PublishBuildArtifacts@1
+  displayName: Publish artifcats
   inputs:
     pathToPublish: '$(Build.ArtifactStagingDirectory)'
     artifactName: mac
