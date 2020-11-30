@@ -24,10 +24,6 @@ steps:
     arguments: '/p:PublishProfile=$(System.DefaultWorkingDirectory)/FileJoinerNet/FileJoiner/FileJoiner/Properties/PublishProfiles/FolderProfile1.pubxml'
     zipAfterPublish: false
     modifyOutputPath: false
-- task: CmdLine@2
-  inputs:
-    script: 'chmod +x FileJoiner/Сontent/MacOS/FileJoiner.dll'
-    workingDirectory: '$(Build.SourcesDirectory)/FileJoinerNet/FileJoiner/FileJoiner/bin/Release/netcoreapp3.1/publish/mac/'
 - task: Bash@3
   inputs:
     targetType: 'inline'
