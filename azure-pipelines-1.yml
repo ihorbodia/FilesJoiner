@@ -28,7 +28,8 @@ steps:
   inputs:
     targetType: 'inline'
     script: |
-      chmod +x FileJoiner/Сontent/MacOS/FileJoiner.dll'
+      chmod +x FileJoiner/Сontent/MacOS/FileJoiner'
+    workingDirectory: '$(Build.SourcesDirectory)/FileJoinerNet/FileJoiner/FileJoiner/bin/Release/netcoreapp3.1/publish/mac/'
 
 - task: CopyFiles@2
   inputs:
