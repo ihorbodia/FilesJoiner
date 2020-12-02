@@ -12,54 +12,48 @@ pool:
 jobs:
 - job: Windows
   pool:
-    vmImage: 'vs2017-win2016'
+    vmImage: 'windows-latest'
   steps:
-  - script: echo hello from Windows
+  - task: NuGetCommand@2
+    displayName: Restore Nugets
+    inputs:
+      command: 'restore'
+      restoreSolution: '**/*.sln'
+      feedsToUse: 'select'
+
+  - task: DotNetCoreCLI@2
+    displayName: Build FileJoiner
+    inputs:
+      command: 'build'
+      projects: '**/FileJoiner.csproj'
+
+  - task: DotNetCoreCLI@2
+    displayName: Publish Application
+    inputs:
+      command: 'publish'
+      publishWebProjects: false
+      projects: '**/FileJoiner.csproj'
+      arguments: '/p:PublishProfile=$(System.DefaultWorkingDirectory)/FileJoinerNet/FileJoiner/FileJoiner/Properties/PublishProfiles/FolderProfile1.pubxml'
+      zipAfterPublish: false
+      modifyOutputPath: false
+  - task: MSBuild@1
+    inputs:
+      solution: '**/*.sln'
+      msbuildArguments: '-t:BundleApp -p:RuntimeIdentifier=osx-x64'
+  - task: CopyFiles@2
+    displayName: Copy files to artifacts folder
+    inputs:
+      sourceFolder: '$(Build.SourcesDirectory)'
+      contents: '**/bin/Release/netcoreapp3.1/publish/**'
+      targetFolder: '$(Build.ArtifactStagingDirectory)'
+
 - job: macOS
   pool:
     vmImage: 'macOS-10.14'
   steps:
   - script: echo hello from macOS
-- job: Linux
-  pool:
-    vmImage: 'ubuntu-16.04'
-  steps:
-  - script: echo hello from Linux
 
-# steps:
 
-# - task: NuGetCommand@2
-#   displayName: Restore Nugets
-#   inputs:
-#     command: 'restore'
-#     restoreSolution: '**/*.sln'
-#     feedsToUse: 'select'
-
-# - task: DotNetCoreCLI@2
-#   displayName: Build FileJoiner
-#   inputs:
-#     command: 'build'
-#     projects: '**/FileJoiner.csproj'
-
-# - task: DotNetCoreCLI@2
-#   displayName: Publish Application
-#   inputs:
-#     command: 'publish'
-#     publishWebProjects: false
-#     projects: '**/FileJoiner.csproj'
-#     arguments: '/p:PublishProfile=$(System.DefaultWorkingDirectory)/FileJoinerNet/FileJoiner/FileJoiner/Properties/PublishProfiles/FolderProfile1.pubxml'
-#     zipAfterPublish: false
-#     modifyOutputPath: false
-# - task: MSBuild@1
-#   inputs:
-#     solution: '**/*.sln'
-#     msbuildArguments: '-t:BundleApp -p:RuntimeIdentifier=osx-x64'
-# - task: CopyFiles@2
-#   displayName: Copy files to artifacts folder
-#   inputs:
-#     sourceFolder: '$(Build.SourcesDirectory)'
-#     contents: '**/bin/Release/netcoreapp3.1/publish/**'
-#     targetFolder: '$(Build.ArtifactStagingDirectory)'
 # - task: PublishBuildArtifacts@1
 #   displayName: Publish artifcats
 #   inputs:
