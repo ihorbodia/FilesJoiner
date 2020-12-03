@@ -1,6 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
+    <RuntimeIdentifiers>osx-x64;win-x86</RuntimeIdentifiers>
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <ApplicationIcon>document.ico</ApplicationIcon>
     <Version>1.0.3</Version>
@@ -11,6 +12,17 @@
     <Product>FileJoiner</Product>
     <AssemblyName>FileJoiner</AssemblyName>
     <NeutralLanguage />
+    <CFBundleName>FileJoiner</CFBundleName> <!-- Also defines .app file name -->
+    <CFBundleDisplayName>FileJoiner</CFBundleDisplayName>
+    <CFBundleIdentifier>com.example</CFBundleIdentifier>
+    <CFBundleShortVersionString>1.0.3</CFBundleShortVersionString>
+    <CFBundleVersion>1.0.3</CFBundleVersion>
+    <CFBundlePackageType>AAPL</CFBundlePackageType>
+    <CFBundleSignature>FileJoiner</CFBundleSignature>
+    <CFBundleExecutable>FileJoiner</CFBundleExecutable>
+    <CFBundleIconFile>document.ico</CFBundleIconFile> <!-- Will be copied from output directory -->
+    <NSPrincipalClass>NSApplication</NSPrincipalClass>
+    <NSHighResolutionCapable>true</NSHighResolutionCapable>
   </PropertyGroup>
   <ItemGroup>
     <None Remove="Assets\document.ico" />
