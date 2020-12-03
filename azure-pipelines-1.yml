@@ -44,7 +44,7 @@ jobs:
     displayName: Copy files to artifacts folder
     inputs:
       sourceFolder: '$(Build.SourcesDirectory)'
-      contents: '**/bin/Release/netcoreapp3.1/publish/mac/'
+      contents: '**/bin/Release/netcoreapp3.1/publish/mac/FileJoiner.app'
       targetFolder: '$(Build.ArtifactStagingDirectory)'
   - task: PublishBuildArtifacts@1
     displayName: Publish artifcats
