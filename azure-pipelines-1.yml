@@ -43,20 +43,20 @@ jobs:
   - task: CopyFiles@2
     displayName: Copy files to artifacts folder
     inputs:
-      sourceFolder: '$(Build.BinariesDirectory)'
-      contents: '**/bin/Release/netcoreapp3.1/publish/**'
+      sourceFolder: '$(Build.SourcesDirectory)'
+      contents: '**/bin/Release/netcoreapp3.1/publish/mac/**'
       targetFolder: '$(Build.ArtifactStagingDirectory)'
 
-- job: macOS
-  pool:
-    vmImage: 'macOS-10.14'
-  steps:
-  - task: CopyFiles@2
-    displayName: Copy files to artifacts folder
-    inputs:
-      sourceFolder: '$(Build.BinariesDirectory)'
-      contents: '**/bin/Release/netcoreapp3.1/publish/**'
-      targetFolder: '$(Build.ArtifactStagingDirectory)'
+# - job: macOS
+#   pool:
+#     vmImage: 'macOS-10.14'
+#   steps:
+#   - task: CopyFiles@2
+#     displayName: Copy files to artifacts folder
+#     inputs:
+#       sourceFolder: '$(Build.BinariesDirectory)'
+#       contents: '**/bin/Release/netcoreapp3.1/publish/**'
+#       targetFolder: '$(Build.ArtifactStagingDirectory)'
 
 
 # - task: PublishBuildArtifacts@1
