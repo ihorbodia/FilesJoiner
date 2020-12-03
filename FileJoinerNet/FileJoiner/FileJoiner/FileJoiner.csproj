@@ -34,5 +34,6 @@
     <PackageReference Include="Avalonia.Desktop" Version="0.9.12" />
     <PackageReference Include="Avalonia.ReactiveUI" Version="0.9.12" />
     <PackageReference Include="IronXL.Excel" Version="2020.9.1" />
+    <PackageReference Include="Dotnet.Bundle" Version="*" />
   </ItemGroup>
 </Project>
