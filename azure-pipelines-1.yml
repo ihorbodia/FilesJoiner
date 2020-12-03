@@ -46,6 +46,11 @@ jobs:
       sourceFolder: '$(Build.SourcesDirectory)'
       contents: '**/bin/Release/netcoreapp3.1/publish/mac/**'
       targetFolder: '$(Build.ArtifactStagingDirectory)'
+  - task: PublishBuildArtifacts@1
+    displayName: Publish artifcats
+    inputs:
+      pathToPublish: '$(Build.ArtifactStagingDirectory)'
+      artifactName: mac
 
 # - job: macOS
 #   pool:
@@ -59,8 +64,3 @@ jobs:
 #       targetFolder: '$(Build.ArtifactStagingDirectory)'
 
 
-# - task: PublishBuildArtifacts@1
-#   displayName: Publish artifcats
-#   inputs:
-#     pathToPublish: '$(Build.ArtifactStagingDirectory)'
-#     artifactName: mac
