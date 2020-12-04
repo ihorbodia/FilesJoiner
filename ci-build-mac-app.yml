@@ -57,4 +57,4 @@ jobs:
     inputs:
       targetType: 'inline'
       script: chmod +x FileJoiner
-      workingDirectory: '$(Build.ArtifactStagingDirectory)/FileJoinerNet/FileJoiner/FileJoiner/bin/Release/netcoreapp3.1/publish/FileJoiner.app/Contents/MacOS/FileJoiner'
+      workingDirectory: '$(Build.ArtifactStagingDirectory)/mac/FileJoinerNet/FileJoiner/FileJoiner/bin/Release/netcoreapp3.1/publish/FileJoiner.app/Contents/MacOS/FileJoiner'
