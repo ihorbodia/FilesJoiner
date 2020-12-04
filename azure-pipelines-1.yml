@@ -56,12 +56,12 @@ jobs:
   pool:
     vmImage: 'macOS-10.14'
   steps:
-  - task: CopyFiles@2
-    displayName: Copy files to artifacts folder
-    inputs:
-      sourceFolder: '$(Build.BinariesDirectory)'
-      contents: '**/bin/Release/netcoreapp3.1/publish/**'
-      targetFolder: '$(Build.ArtifactStagingDirectory)'
+  # - task: CopyFiles@2
+  #   displayName: Copy files to artifacts folder
+  #   inputs:
+  #     sourceFolder: '$(Build.BinariesDirectory)'
+  #     contents: '**/bin/Release/netcoreapp3.1/publish/**'
+  #     targetFolder: '$(Build.ArtifactStagingDirectory)'
   - task: Bash@3
     displayName: Running chmod +x FileJoiner
     inputs:
