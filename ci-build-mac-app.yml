@@ -67,6 +67,7 @@ jobs:
       buildType: 'current'
       itemPattern: '**/publish/mac/**'
       downloadPath: '$(Pipeline.Workspace)/a/'
+      artifactName: 'mac'
   # - task: DownloadPipelineArtifact@2
   #   inputs:
   #     buildType: 'current'
