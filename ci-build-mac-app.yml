@@ -26,16 +26,6 @@ jobs:
     inputs:
       command: 'build'
       projects: '**/FileJoiner.csproj'
-
-  # - task: DotNetCoreCLI@2
-  #   displayName: Publish Application
-  #   inputs:
-  #     command: 'publish'
-  #     publishWebProjects: false
-  #     projects: '**/FileJoiner.csproj'
-  #     arguments: '/p:PublishProfile=$(System.DefaultWorkingDirectory)/FileJoinerNet/FileJoiner/FileJoiner/Properties/PublishProfiles/FolderProfile1.pubxml'
-  #     zipAfterPublish: false
-  #     modifyOutputPath: false
   - task: MSBuild@1
     inputs:
       solution: '**/*.sln'
@@ -68,6 +58,3 @@ jobs:
       targetType: 'inline'
       script: chmod +x FileJoiner
       workingDirectory: '$(Build.ArtifactStagingDirectory)/FileJoinerNet/FileJoiner/FileJoiner/bin/Release/netcoreapp3.1/publish/FileJoiner.app/Contents/MacOS/FileJoiner'
-
-
-
