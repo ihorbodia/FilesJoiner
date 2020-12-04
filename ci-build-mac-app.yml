@@ -62,7 +62,11 @@ jobs:
   #     sourceFolder: '$(Build.BinariesDirectory)'
   #     contents: '**/bin/Release/netcoreapp3.1/publish/**'
   #     targetFolder: '$(Build.ArtifactStagingDirectory)'
-
+  - task: DownloadBuildArtifacts@0
+    inputs:
+      buildType: 'current'
+      itemPattern: '**/publish/mac/**'
+      downloadPath: '$(Pipeline.Workspace)/a/'
   - task: DownloadPipelineArtifact@2
     inputs:
       buildType: 'current'
