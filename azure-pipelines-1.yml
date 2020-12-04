@@ -52,15 +52,22 @@ jobs:
       pathToPublish: '$(Build.ArtifactStagingDirectory)'
       artifactName: mac
 
-# - job: macOS
-#   pool:
-#     vmImage: 'macOS-10.14'
-#   steps:
-#   - task: CopyFiles@2
-#     displayName: Copy files to artifacts folder
-#     inputs:
-#       sourceFolder: '$(Build.BinariesDirectory)'
-#       contents: '**/bin/Release/netcoreapp3.1/publish/**'
-#       targetFolder: '$(Build.ArtifactStagingDirectory)'
+- job: macOS
+  pool:
+    vmImage: 'macOS-10.14'
+  steps:
+  - task: CopyFiles@2
+    displayName: Copy files to artifacts folder
+    inputs:
+      sourceFolder: '$(Build.BinariesDirectory)'
+      contents: '**/bin/Release/netcoreapp3.1/publish/**'
+      targetFolder: '$(Build.ArtifactStagingDirectory)'
+  - task: Bash@3
+    displayName: Running chmod +x FileJoiner
+    inputs:
+      targetType: 'inline'
+      script: chmod +x FileJoiner
+      workingDirectory: '$(Build.ArtifactStagingDirectory)/FileJoinerNet/FileJoiner/FileJoiner/bin/Release/netcoreapp3.1/publish/mac/FileJoiner.app/Contents/MacOS/'
+
 
 
