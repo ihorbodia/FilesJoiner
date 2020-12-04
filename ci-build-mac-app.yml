@@ -69,12 +69,11 @@ jobs:
       downloadPath: '$(System.ArtifactsDirectory)'
 
   - task: DownloadPipelineArtifact@2
-    displayName: 'Download Pipeline Artifact'
     inputs:
+      buildType: 'current'
       artifactName: 'mac'
-      itemPattern: '**/FileJoiner.app'
-      targetPath: '$(Build.ArtifactStagingDirectory)'
-
+      itemPattern: '**/publish/mac/**'
+      targetPath: '$(Pipeline.Workspace)/a/'
   - task: Bash@3
     displayName: Running chmod +x FileJoiner
     inputs:
