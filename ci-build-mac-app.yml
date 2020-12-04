@@ -65,21 +65,22 @@ jobs:
   - task: DownloadBuildArtifacts@0
     inputs:
       buildType: 'current'
-      downloadType: 'specific'
       itemPattern: '**/FileJoiner.app'
       downloadPath: '$(System.ArtifactsDirectory)'
 
-  - task: PublishBuildArtifacts@1
-    displayName: Publish artifcats
+  - task: DownloadPipelineArtifact@2
+    displayName: 'Download Pipeline Artifact'
     inputs:
-      pathToPublish: '$(Build.ArtifactStagingDirectory)'
-      artifactName: newMac
+      artifactName: 'mac'
+      itemPattern: '**/FileJoiner.app'
+      targetPath: '$(Build.ArtifactStagingDirectory)'
+
   - task: Bash@3
     displayName: Running chmod +x FileJoiner
     inputs:
       targetType: 'inline'
       script: chmod +x FileJoiner
-      workingDirectory: '$(System.ArtifactsDirectory)/FileJoiner.app/Contents/MacOS/'
+      workingDirectory: '$(Build.ArtifactStagingDirectory)/FileJoiner.app/Contents/MacOS/'
 
 
 
