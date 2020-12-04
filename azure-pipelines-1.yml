@@ -70,6 +70,11 @@ jobs:
       itemPattern: '**/FileJoiner.app'
       downloadPath: '$(System.ArtifactsDirectory)'
 
+  - task: PublishBuildArtifacts@1
+    displayName: Publish artifcats
+    inputs:
+      pathToPublish: '$(Build.ArtifactStagingDirectory)'
+      artifactName: newMac
   - task: Bash@3
     displayName: Running chmod +x FileJoiner
     inputs:
