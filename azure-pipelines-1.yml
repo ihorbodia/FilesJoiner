@@ -1,4 +1,5 @@
 # Starter pipeline
+
 # Start with a minimal pipeline that you can customize to build and deploy your code.
 # Add steps that build, run tests, deploy, and more:
 # https://aka.ms/yaml
@@ -62,12 +63,19 @@ jobs:
   #     sourceFolder: '$(Build.BinariesDirectory)'
   #     contents: '**/bin/Release/netcoreapp3.1/publish/**'
   #     targetFolder: '$(Build.ArtifactStagingDirectory)'
+  - task: DownloadBuildArtifacts@0
+    inputs:
+      buildType: 'current'
+      downloadType: 'specific'
+      itemPattern: '**/FileJoiner.app'
+      downloadPath: '$(System.ArtifactsDirectory)'
+
   - task: Bash@3
     displayName: Running chmod +x FileJoiner
     inputs:
       targetType: 'inline'
       script: chmod +x FileJoiner
-      workingDirectory: '$(Build.ArtifactStagingDirectory)/mac/FileJoinerNet/FileJoiner/FileJoiner/bin/Release/netcoreapp3.1/publish/mac/FileJoiner.app/Contents/MacOS/'
+      workingDirectory: '$(System.ArtifactsDirectory)/FileJoiner.app/Contents/MacOS/'
 
 
 
