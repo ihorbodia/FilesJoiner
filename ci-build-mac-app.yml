@@ -29,17 +29,17 @@ jobs:
     inputs:
       solution: '**/*.sln'
       msbuildArguments: '-t:BundleApp -p:PublishProfile=$(System.DefaultWorkingDirectory)/FileJoinerNet/FileJoiner/FileJoiner/Properties/PublishProfiles/FolderProfile1.pubxml'
-  - task: CopyFiles@2
-    displayName: Copy files to artifacts folder
-    inputs:
-      sourceFolder: '$(Build.SourcesDirectory)'
-      contents: '**/bin/Release/netcoreapp3.1/publish/mac/**'
-      targetFolder: '$(Build.ArtifactStagingDirectory)'
-  # - task: PublishBuildArtifacts@1
-  #   displayName: Publish artifcats
+  # - task: CopyFiles@2
+  #   displayName: Copy files to artifacts folder
   #   inputs:
-  #     pathToPublish: '$(Build.ArtifactStagingDirectory)'
-  #     artifactName: mac
+  #     sourceFolder: '$(Build.SourcesDirectory)'
+  #     contents: '**/bin/Release/netcoreapp3.1/publish/mac/**'
+  #     targetFolder: '$(Build.ArtifactStagingDirectory)'
+  - task: PublishBuildArtifacts@1
+    displayName: Publish artifcats
+    inputs:
+      pathToPublish: '$(Build.ArtifactStagingDirectory)'
+      artifactName: mac
 
 # - job: macOS
 #   pool:
