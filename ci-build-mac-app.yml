@@ -19,12 +19,6 @@ jobs:
       command: 'restore'
       restoreSolution: '**/*.sln'
       feedsToUse: 'select'
-
-  # - task: DotNetCoreCLI@2
-  #   displayName: Build FileJoiner
-  #   inputs:
-  #     command: 'build'
-  #     projects: '**/FileJoiner.csproj'
   - task: MSBuild@1
     inputs:
       solution: '**/*.sln'
