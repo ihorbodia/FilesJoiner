@@ -28,7 +28,7 @@ jobs:
   - task: MSBuild@1
     inputs:
       solution: '**/*.sln'
-      msbuildArguments: '-t:BundleApp -p:PublishProfile=$(System.DefaultWorkingDirectory)/FileJoinerNet/FileJoiner/FileJoiner/Properties/PublishProfiles/FolderProfile1.pubxml'
+      msbuildArguments: '-t:BundleApp -p:PublishProfile=$(System.DefaultWorkingDirectory)/FileJoinerNet/FileJoiner/FileJoiner/Properties/PublishProfiles/FolderProfile1.pubxml -p:PublishDir=$(Build.ArtifactStagingDirectory)'
   # - task: CopyFiles@2
   #   displayName: Copy files to artifacts folder
   #   inputs:
