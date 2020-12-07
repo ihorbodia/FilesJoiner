@@ -29,20 +29,25 @@ jobs:
       pathToPublish: '$(Build.ArtifactStagingDirectory)'
       artifactName: mac
 
-# - job: macOS
-#   pool:
-#     vmImage: 'ubuntu-latest'
-#   steps:
-#   - task: DownloadBuildArtifacts@0
-#     inputs:
-#       buildType: 'current'
-#       downloadType: 'specific'
-#       itemPattern: '**/publish/mac/**'
-#       downloadPath: '$(Pipeline.Workspace)/a/'
-#   - task: Bash@3
-#     displayName: Running chmod +x FileJoiner
-#     inputs:
-#       targetType: 'inline'
-#       script: chmod -R a+rwX mac/FileJoiner.app
-#       workingDirectory: '$(Build.ArtifactStagingDirectory)/mac/FileJoinerNet/FileJoiner/FileJoiner/bin/Release/netcoreapp3.1/publish/'
+- job: Linux
+  pool:
+    vmImage: 'ubuntu-latest'
+  steps:
+  - task: DownloadBuildArtifacts@0
+    inputs:
+      buildType: 'current'
+      downloadType: 'specific'
+      itemPattern: '**/publish/mac/**'
+      downloadPath: '$(Pipeline.Workspace)/a/'
+  - task: Bash@3
+    displayName: Running chmod +x FileJoiner
+    inputs:
+      targetType: 'inline'
+      script: chmod -R a+rwX mac/FileJoiner.app
+      workingDirectory: '$(Build.ArtifactStagingDirectory)/mac/FileJoinerNet/FileJoiner/FileJoiner/bin/Release/netcoreapp3.1/publish/'
+  - task: PublishBuildArtifacts@1
+    displayName: Publish artifcats one more time
+    inputs:
+      pathToPublish: '$(Build.ArtifactStagingDirectory)'
+      artifactName: macNew
     
