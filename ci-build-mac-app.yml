@@ -34,12 +34,24 @@ jobs:
   pool:
     vmImage: 'ubuntu-latest'
   steps:
-  - task: DownloadBuildArtifacts@0
+  - task: DownloadPipelineArtifact@2
     inputs:
       buildType: 'current'
-      downloadType: 'specific'
-      itemPattern: '**/publish/mac/**'
-      downloadPath: '$(Pipeline.Workspace)/a/'
+      artifactName: mac
+      targetPath: '$(Build.ArtifactStagingDirectory)'
+  # - task: DownloadBuildArtifacts@0
+  #   inputs:
+  #     buildType: 'current'
+  #     downloadType: 'specific'
+  #     itemPattern: '**/publish/mac/**'
+  #     downloadPath: '$(Pipeline.Workspace)/a/'
+
+  - task: Bash@3
+    displayName: Content of ArtifactStaging directory
+    inputs:
+      targetType: 'inline'
+      script: ls $(Build.ArtifactStagingDirectory)
+
   - task: Bash@3
     displayName: Running chmod +x FileJoiner
     inputs:
