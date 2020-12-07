@@ -29,10 +29,10 @@ jobs:
       pathToPublish: '$(Build.ArtifactStagingDirectory)'
       artifactName: mac
 
-- job: Linux
+- job: MacOS
   dependsOn: Windows
   pool:
-    vmImage: 'ubuntu-latest'
+    vmImage: 'macOS-latest'
   steps:
   - task: DownloadPipelineArtifact@2
     inputs:
