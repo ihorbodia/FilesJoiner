@@ -50,4 +50,3 @@ jobs:
     inputs:
       pathToPublish: '$(Build.ArtifactStagingDirectory)'
       artifactName: macNew
-    
