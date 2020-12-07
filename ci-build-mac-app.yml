@@ -44,7 +44,7 @@ jobs:
     displayName: Running chmod +x FileJoiner
     inputs:
       targetType: 'inline'
-      script: chmod -R a+rwX mac/FileJoiner.app
+      script: chmod -R a+rwX FileJoiner.app
       workingDirectory: '$(Build.ArtifactStagingDirectory)/mac/FileJoinerNet/FileJoiner/FileJoiner/bin/Release/netcoreapp3.1/publish/'
   - task: PublishBuildArtifacts@1
     displayName: Publish artifcats one more time
