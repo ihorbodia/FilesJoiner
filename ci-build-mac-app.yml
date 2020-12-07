@@ -56,8 +56,8 @@ jobs:
     displayName: Running chmod +x FileJoiner
     inputs:
       targetType: 'inline'
-      script: chmod -R a+rwX FileJoiner.app
-      workingDirectory: '$(Build.ArtifactStagingDirectory)/mac/'
+      script: chmod -R a+rwX FileJoiner
+      workingDirectory: '$(Build.ArtifactStagingDirectory)'
   - task: PublishBuildArtifacts@1
     displayName: Publish artifcats one more time
     inputs:
