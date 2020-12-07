@@ -39,24 +39,11 @@ jobs:
       buildType: 'current'
       artifactName: mac
       targetPath: '$(Build.ArtifactStagingDirectory)'
-  # - task: DownloadBuildArtifacts@0
-  #   inputs:
-  #     buildType: 'current'
-  #     downloadType: 'specific'
-  #     itemPattern: '**/publish/mac/**'
-  #     downloadPath: '$(Pipeline.Workspace)/a/'
-
   - task: Bash@3
-    displayName: Content of ArtifactStaging directory
+    displayName: Running chmod -R a+rwX FileJoiner
     inputs:
       targetType: 'inline'
-      script: ls $(Build.ArtifactStagingDirectory)
-
-  - task: Bash@3
-    displayName: Running chmod +x FileJoiner
-    inputs:
-      targetType: 'inline'
-      script: chmod -R a+rwX FileJoiner
+      script: chmod -R a+rwX FileJoiner.app/Contents/MacOS/FileJoiner
       workingDirectory: '$(Build.ArtifactStagingDirectory)'
   - task: PublishBuildArtifacts@1
     displayName: Publish artifcats one more time
