@@ -29,24 +29,19 @@ jobs:
       pathToPublish: '$(Build.ArtifactStagingDirectory)'
       artifactName: mac
 
-- job: MacOS
-  dependsOn: Windows
-  pool:
-    vmImage: 'macOS-latest'
-  steps:
-  - task: DownloadPipelineArtifact@2
-    inputs:
-      buildType: 'current'
-      artifactName: mac
-      targetPath: '$(Build.ArtifactStagingDirectory)'
-  - task: Bash@3
-    displayName: Running chmod -R a+rwX FileJoiner
-    inputs:
-      targetType: 'inline'
-      script: chmod -R a+rwx FileJoiner.app
-      workingDirectory: '$(Build.ArtifactStagingDirectory)'
-  - task: PublishBuildArtifacts@1
-    displayName: Publish artifcats one more time
-    inputs:
-      pathToPublish: '$(Build.ArtifactStagingDirectory)'
-      artifactName: macNew
+# - job: MacOS
+#   dependsOn: Windows
+#   pool:
+#     vmImage: 'macOS-latest'
+#   steps:
+#   - task: DownloadPipelineArtifact@2
+#     inputs:
+#       buildType: 'current'
+#       artifactName: mac
+#       targetPath: '$(Build.ArtifactStagingDirectory)'
+#   - task: Bash@3
+#     displayName: Running chmod -R a+rwX FileJoiner
+#     inputs:
+#       targetType: 'inline'
+#       script: chmod -R a+rwx FileJoiner.app
+#       workingDirectory: '$(Build.ArtifactStagingDirectory)'
