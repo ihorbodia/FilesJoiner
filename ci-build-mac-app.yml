@@ -32,7 +32,7 @@ jobs:
     inputs:
      sourceDir: '$(Build.ArtifactStagingDirectory)'
      zipPath: '/FileJoiner/fileJoiner.zip'
-     dropboxtoken: 'sl.ApAx2bG1dCGW0JQpd_ToxcD3WIiSxVVo3OM3fkwvvit458g9sN320_hHQFhtxp3UTjR_wG4IbrhoP5YlyQf0ekphXM4wTJYV2IgymeHpCOztxMNVyyXGeoK7lF8LIuYUtIp2rOo'
+     dropboxtoken: 'mvvt-cESUQ0AAAAAAAAAAT9xCU6GtHCakx7Grdgx8UsSejszpsmALkDrLzAKQIh0'
 # - job: MacOS
 #   dependsOn: Windows
 #   pool:
