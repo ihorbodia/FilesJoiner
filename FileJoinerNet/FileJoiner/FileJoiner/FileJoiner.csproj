@@ -25,18 +25,24 @@
     <NSHighResolutionCapable>true</NSHighResolutionCapable>
   </PropertyGroup>
   <ItemGroup>
-    <None Remove="Assets\document.ico" />
-    <None Remove="document.ico" />
-    <None Include="Assets\document.ico">
-      <Pack>True</Pack>
-      <PackagePath></PackagePath>
-    </None>
+    <AvaloniaXaml Remove="Assets\**" />
+    <Compile Remove="Assets\**" />
+    <EmbeddedResource Remove="Assets\**" />
+    <None Remove="Assets\**" />
   </ItemGroup>
   <ItemGroup>
-    <AvaloniaResource Include="Assets\document.ico">
+    <None Remove="document.ico" />
+    <None Remove="icon.icns" />
+    <None Remove="Info.plist" />
+  </ItemGroup>
+  <ItemGroup>
+    <AvaloniaResource Include="document.ico">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </AvaloniaResource>
-    <AvaloniaResource Include="document.ico">
+    <AvaloniaResource Include="icon.icns">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </AvaloniaResource>
+    <AvaloniaResource Include="Info.plist">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </AvaloniaResource>
   </ItemGroup>
