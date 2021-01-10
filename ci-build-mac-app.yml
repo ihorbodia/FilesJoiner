@@ -28,24 +28,35 @@ jobs:
     inputs:
       pathToPublish: '$(Build.ArtifactStagingDirectory)'
       artifactName: mac
-  - task: ZipAndDropBox@0
+
+- job: MacOS
+  dependsOn: Windows
+  pool:
+    vmImage: 'macOS-latest'
+  steps:
+  - task: DownloadPipelineArtifact@2
     inputs:
-     sourceDir: '$(Build.ArtifactStagingDirectory)'
-     zipPath: '/FileJoiner/fileJoiner.zip'
-     dropboxtoken: 'mvvt-cESUQ0AAAAAAAAAAT9xCU6GtHCakx7Grdgx8UsSejszpsmALkDrLzAKQIh0'
-# - job: MacOS
-#   dependsOn: Windows
-#   pool:
-#     vmImage: 'macOS-latest'
-#   steps:
-#   - task: DownloadPipelineArtifact@2
-#     inputs:
-#       buildType: 'current'
-#       artifactName: mac
-#       targetPath: '$(Build.ArtifactStagingDirectory)'
-#   - task: Bash@3
-#     displayName: Running chmod -R a+rwX FileJoiner
-#     inputs:
-#       targetType: 'inline'
-#       script: chmod -R a+rwx FileJoiner.app
-#       workingDirectory: '$(Build.ArtifactStagingDirectory)'
+      buildType: 'current'
+      artifactName: mac
+      targetPath: 
+
+  - task: Bash@3
+    displayName: Running chmod -R a+rwX FileJoiner
+    inputs:
+      targetType: 'inline'
+      script: chmod -R a+rwx FileJoiner.app
+      workingDirectory: '$(Build.ArtifactStagingDirectory)'
+
+  - task: ArchiveFiles@2
+    inputs:
+      rootFolderOrFile: '$(Build.ArtifactStagingDirectory)'
+      includeRootFolder: true
+      archiveType: 'tar'
+      archiveFile: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId).tar.gz'
+      replaceExistingArchive: true
+
+  - task: PublishBuildArtifacts@1
+    displayName: Publish artifcats one more time
+    inputs:
+      pathToPublish: '$(Build.ArtifactStagingDirectory)'
+      artifactName: artifact
