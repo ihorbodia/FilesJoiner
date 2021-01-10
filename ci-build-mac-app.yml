@@ -45,11 +45,11 @@ jobs:
     inputs:
       targetType: 'inline'
       script: chmod -R a+rwx FileJoiner.app
-      workingDirectory:
+      workingDirectory: '$(Build.ArtifactStagingDirectory)'
 
   - task: ArchiveFiles@2
     inputs:
-      rootFolderOrFile: '$(Build.ArtifactStagingDirectory)/FileJoiner.app'
+      rootFolderOrFile: '$(Build.ArtifactStagingDirectory)'
       includeRootFolder: true
       archiveType: 'tar'
       archiveFile: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId).tar.gz'
