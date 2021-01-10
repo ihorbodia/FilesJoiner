@@ -63,4 +63,4 @@ jobs:
   - task: DeleteFiles@1
     inputs:
       SourceFolder: '$(Build.ArtifactStagingDirectory)'
-      Contents: 'mac'
+      Contents: '**/*'
