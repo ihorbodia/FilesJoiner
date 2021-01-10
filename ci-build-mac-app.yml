@@ -60,3 +60,7 @@ jobs:
     inputs:
       pathToPublish: '$(Build.ArtifactStagingDirectory)'
       artifactName: artifact
+  - task: DeleteFiles@1
+    inputs:
+      SourceFolder: '$(Build.ArtifactStagingDirectory)'
+      Contents: 'mac'
