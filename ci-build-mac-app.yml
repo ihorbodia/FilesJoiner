@@ -38,7 +38,7 @@ jobs:
     inputs:
       buildType: 'current'
       artifactName: mac
-      targetPath: 
+      targetPath: '$(Build.ArtifactStagingDirectory)'
 
   - task: Bash@3
     displayName: Running chmod -R a+rwX FileJoiner
