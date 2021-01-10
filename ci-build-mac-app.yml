@@ -5,9 +5,6 @@
 
 trigger: none
 
-pool:
-  vmImage: 'macOS-latest'
-
 jobs:
 - job: Windows
   pool:
