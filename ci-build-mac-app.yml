@@ -8,7 +8,7 @@ trigger: none
 jobs:
 - job: Windows
   pool:
-    vmImage: 'ubuntu-latest'
+    vmImage: 'Windows-latest'
   steps:
   - task: NuGetCommand@2
     displayName: Restore Nugets
